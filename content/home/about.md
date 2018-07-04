@@ -12,7 +12,7 @@ weight = 5
   interests = [
     "Molecular Evolution",
     "Microbiology",
-    "Plant Cell Walls"
+    "Plant Cell Walls",
     "Earth History"
   ]
 
