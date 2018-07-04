@@ -13,6 +13,7 @@ weight = 5
     "Molecular Evolution",
     "Microbiology",
     "Plant Cell Walls"
+    "Earth History"
   ]
 
 # List your qualifications (such as academic degrees).
