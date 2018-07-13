@@ -1,5 +1,5 @@
 ---
-title: Friday Fails #1: Some Questions Are Stupid 
+title: "Friday Fails #1: Some Questions Are Stupid"
 author: Will
 date: '2018-07-13'
 slug: friday-fails-1-some-questions-are-stupid
