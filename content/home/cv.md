@@ -12,7 +12,6 @@ subtitle = ""
 
 # Order that this section will appear in.
 weight = 25
-
 +++
 
-My CV is available in [HTML](cv/) form.
+My CV is available in [HTML](cv/) form or as a [PDF](cv/cv.pdf).
