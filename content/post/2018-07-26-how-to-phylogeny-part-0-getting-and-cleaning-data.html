@@ -1,0 +1,292 @@
+---
+title: 'How to Phylogeny (Part 0: Getting and Cleaning Data)'
+author: Will
+date: '2018-07-26'
+slug: how-to-phylogeny-part-0-getting-and-cleaning-data
+categories:
+  - Bioinformatics
+tags:
+  - Molecular Evolution
+  - Phylogeny
+header:
+  caption: ''
+  image: ''
+output:
+    blogdown::html_page:
+      toc: true
+      number_sections: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
+<li><a href="#essential-tools-and-basic-knowledge"><span class="toc-section-number">1.1</span> Essential Tools and Basic Knowledge</a><ul>
+<li><a href="#fasta-format"><span class="toc-section-number">1.1.1</span> Fasta Format</a></li>
+<li><a href="#notepad"><span class="toc-section-number">1.1.2</span> Notepad++</a></li>
+<li><a href="#bioedit"><span class="toc-section-number">1.1.3</span> BioEdit</a></li>
+<li><a href="#unix-terminal"><span class="toc-section-number">1.1.4</span> Unix Terminal</a></li>
+<li><a href="#r"><span class="toc-section-number">1.1.5</span> R</a></li>
+</ul></li>
+<li><a href="#getting-data"><span class="toc-section-number">1.2</span> Getting Data</a><ul>
+<li><a href="#keyword-search"><span class="toc-section-number">1.2.1</span> Keyword Search</a></li>
+<li><a href="#blast"><span class="toc-section-number">1.2.2</span> BLAST</a></li>
+</ul></li>
+<li><a href="#cleaning-data"><span class="toc-section-number">1.3</span> Cleaning Data</a><ul>
+<li><a href="#concatenate-sequences"><span class="toc-section-number">1.3.1</span> Concatenate Sequences</a></li>
+<li><a href="#remove-duplicate-sequences"><span class="toc-section-number">1.3.2</span> Remove Duplicate Sequences</a></li>
+<li><a href="#remove-false-hits"><span class="toc-section-number">1.3.3</span> Remove False Hits</a></li>
+<li><a href="#trim-extra-domains"><span class="toc-section-number">1.3.4</span> Trim Extra Domains</a></li>
+<li><a href="#clean-up-names"><span class="toc-section-number">1.3.5</span> Clean up Names</a></li>
+</ul></li>
+<li><a href="#conclusions"><span class="toc-section-number">1.4</span> Conclusions</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p><em>Disclamer: I’m a trained microbiologist/biochemist, which means most of my bioinformatics knowledge was self-taught. What you’re about to see may not be pretty; the code might be janky or the workflow inefficient. But I have gone through countless hours of googleing, reading, and trial/error to learn this, and it works pretty well for me, so it might for you too. Let me know if you spot errors or have suggestions for improvement!</em></p>
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Hi, in this series of posts, I’ll introduce a general workflow for estimating a phylogenetic tree for a single gene. When learning phylogenetics, I often got lost in the dizzying array of tools and methods available for sequence alignment and tree building. In these posts I’ll talk about why I use the tools I currently do, and how they work. This walkthrough is meant for tricky phylogenies, where you may have a very large and divergent gene family for which it is hard to identify orthologues, align the sequences accurately, and infer an accurate phylogeny. Thus, a lot of these methods may be overkill if you have a more straightforward problem.</p>
+<p>The golden rule of data science is <code>crap_input -&gt; crap_output</code>, which means that I almost always spend more time on data preparation than actual analysis. I will try to be thorough in this post, and cover all the problems I’ve come up against in preparing sequence data from tricky datasets where you may not know which sequences belong to your gene family, or you may have very diverse sequences you want to analyze. That means this will be a <strong>long post</strong>. Chances are, you won’t need every step in this tutorial for most analyses, so feel free to skim, use the table of contents, and pick and choose the pieces you need.</p>
+<div id="essential-tools-and-basic-knowledge" class="section level2">
+<h2><span class="header-section-number">1.1</span> Essential Tools and Basic Knowledge</h2>
+<div id="fasta-format" class="section level3">
+<h3><span class="header-section-number">1.1.1</span> Fasta Format</h3>
+<p>Fasta format is a simple and common format for storing amino acid or DNA sequence data. A fasta file is formatted so that each sequence begins with a carrot <code>&gt;</code> followed by the sequence name or identifier. On a new line, the sequence is written. Fasta files are flexible in that the sequence information can be written on a single line, or many. This means that whatever text is between two identifier lines is considered the sequence. Most programs accept the 4 DNA bases, 20 amino acid single letter codes, and some gap or unknown base characters (‘-’ = gap, ’*‘= translation stop, ’X’ = unknown amino acid) as valid fasta characters. It is advised not to use spaces in sequence identifiers, as some programs don’t like them (read below for tips on reformatting identifiers). Fasta files are plain text files, and can be saved with the extensions (*.fas, *.fasta, *.seq, *.fsa, or *.txt). Some programs require other sequence formats such as phylip or nexus, there are <a href="https://www.google.com/search?q=amino%20acid%20sequence%20format%20converter" target="_blank">several online tools</a> to convert between sequence formats.</p>
+</div>
+<div id="notepad" class="section level3">
+<h3><span class="header-section-number">1.1.2</span> Notepad++</h3>
+<p>Since fasta files are plain text, we’ll often open them in a text editor to inspect them or make changes. <strong>WARNING</strong> DO NOT USE MICROSOFT WORD FOR PLAIN TEXT EDITING. Microsoft word is built for typing novels, not editing fasta files, and it will introduce all kinds of formatting that will ruin your plain text. For working with plain text, you should use notepad. But notepad does not have much functionality, so go download <a href="https://notepad-plus-plus.org/download/v7.5.7.html" target="_blank">Notepad++</a>, which is plain text editor that has all kinds of useful tools for working with these documents.</p>
+</div>
+<div id="bioedit" class="section level3">
+<h3><span class="header-section-number">1.1.3</span> BioEdit</h3>
+<p>BioEdit is a sequence alignment editor that’s now around 20 years old (as evidenced by the hilariously 90s website), but to my knowledge is still the most comprehensive software of its type. I use this program for inspecting and editing alignments mostly, but it does a ton of useful stuff. BioEdit is for Windows (<a href="http://www.mbio.ncsu.edu/BioEdit/bioedit.html" target="_blank">download here</a>), but Guangchuang Yu (author of ggtree and bioinformatics superstar) compiled a <a href="https://guangchuangyu.github.io/2016/03/yet-an-unofficial-bioedit-for-osx/" target="_blank">version for mac</a>.</p>
+</div>
+<div id="unix-terminal" class="section level3">
+<h3><span class="header-section-number">1.1.4</span> Unix Terminal</h3>
+<p>Occasionally, I’ll make use of the terminal. If you’re using a mac or linux machine, then this can be found by just typing terminal in your search bar. If you’re running Windows 10, then you can install ubuntu for windows. Just search ‘ubuntu’ in the windows store and download it. Note that you need to have the <a href="https://www.pcworld.com/article/3106463/windows/how-to-get-bash-on-windows-10-with-the-anniversary-update.html" target="_blank">linux subsystem for windows</a> enabled for this to work. I’m by no means a unix expert, but you should be familiar enough to move navigate around your directories and execute basic commands, see <a href="https://astrobiomike.github.io/bash/basics" target="_blank">this tutorial</a> on unix basics.</p>
+</div>
+<div id="r" class="section level3">
+<h3><span class="header-section-number">1.1.5</span> R</h3>
+<p>If you’re not familiar with R, please follow <a href="http://www.sthda.com/english/wiki/installing-r-and-rstudio-easy-r-programming" target="_blank">this tutorial</a> to install R and R Studio. I’ll try to provide scripts and instructions so that you can use any R code I provide without being an experienced user, but it will make your life a lot easier if you know the basics of R, I recommend <a href="http://www.sthda.com/english/wiki/r-basics-quick-and-easy" target="_blank">this tutorial</a>. At the very least you should read enough to be able to open R studio, set your working directory to the location of your input files, open a script, run it, and inspect the output.</p>
+</div>
+</div>
+<div id="getting-data" class="section level2">
+<h2><span class="header-section-number">1.2</span> Getting Data</h2>
+<p>If you’re lucky, you already have data that someone has handed you. But if not, you’ll likely turn to a public sequence database. Most of the time, this means the NCBI protein database.</p>
+<div id="keyword-search" class="section level3">
+<h3><span class="header-section-number">1.2.1</span> Keyword Search</h3>
+<p>The <a href="https://www.ncbi.nlm.nih.gov/protein" target="_blank">NCBI protein database</a> can be searched using keywords. A general search, like “glycoside hydrolase”, will yield tons of results. You can filter these results using the options on either side of the results field. Once you have filtered to your satisfaction, click the “Send to” button at the top of the page to download the results to a fasta file. <img src="/img/NCBI_protein.png" alt="Protein database tutorial" /></p>
+</div>
+<div id="blast" class="section level3">
+<h3><span class="header-section-number">1.2.2</span> BLAST</h3>
+<p>If you have a reference sequence, you can use <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins" target="_blank">protein BLAST</a> to find related sequences. You can copy and paste a sequence or upload a file with many sequences. Use the “Organism” search bar to either search a specific taxonomic subset or exclude certain taxa. <img src="/img/BLASTp.png" alt="Protein BLAST tutorial" /> After inspecting the results of your BLAST search, select your desired sequences and download as fasta file using the download button. <img src="/img/download_BLAST.png" alt="Protein BLAST download" /></p>
+</div>
+</div>
+<div id="cleaning-data" class="section level2">
+<h2><span class="header-section-number">1.3</span> Cleaning Data</h2>
+<p>After downloading and gathering your data (possibly from several sources), you need to concatenate all of your sequences into one fasta file, then filter that file to remove duplicates and dubious sequences.</p>
+<div id="concatenate-sequences" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> Concatenate Sequences</h3>
+<p>If your data is separated in multiple files (for example, from downloading hits of multiple BLAST searches), you need to concatenate it into one file. Here’s how I do it:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Make sure that all files have the same EOL format</strong> Windows and Unix machines use slightly different formatting for line breaks; NCBI downloads are formatted with unix EOL, so if you’re using a mac you’re fine, but if you’re using Windows, you will need to convert the files to Windows format. You can use Notepad++ and the command “Find in files”, then fill out as shown in the figure below and click replace in files to convert all files to Windows EOL format (thanks to Stackoverflow user Sean for this trick). <img src="/img/bulk_convert_EOL.png" alt="EOL conversion" /></p></li>
+<li><p><strong>Remove spaces in file names</strong> Spaces in file names are always bad, so I don’t understand why NCBI automatically puts them in BLAST output. Open a unix terminal, navigate to the directory with your sequence files and execute this command: <code>find . -type f -name &quot;* *.xml&quot; -exec rename &quot;s/\s/_/g&quot; {} \;</code></p></li>
+<li><p><strong>Concatenate your files</strong> Still in your unix terminal and navigate to the directory containing your sequence data. Enter this command: <code>cat $(ls -t) &gt; outputfile.txt</code>. Congrats!</p></li>
+</ol>
+</div>
+<div id="remove-duplicate-sequences" class="section level3">
+<h3><span class="header-section-number">1.3.2</span> Remove Duplicate Sequences</h3>
+<p>You will often have duplicate sequences because NCBI includes lots of duplicates in their outputs and you might have the same hit from multiple BLAST searches. If you don’t think you’re working with very closely related sequences, then a good tool to use is <a href="http://weizhongli-lab.org/cdhit_suite/cgi-bin/index.cgi?cmd=cd-hit" target="_blank">CD-HIT</a>. CD-HIT clusters sequences according to their sequence identity (the proportion of identical sites), then gives a representative sequence for each cluster. Using their web server, you can enter an identity to cluster at (say, 95% or 100%), and CD-HIT will cluster the sequences, generate a report, and you can download the representative sequences, effectively removing any duplicates (sequences with more than threshold % identity you specified).<img src="/img/CD-HIT.png" alt="CD-HIT" /></p>
+<p>This works well, unless you think you have very closely related sequences in your file that you want to keep. For example, you might have two sequences from a gene that was recently transferred between species, or has not diverged much at all, so it is &gt;95% identity, but clearly we want to keep it. In this case, we have to do some manual filtering, but R can help. Note that there is a more elegant way that this entire process could be done with one R script, but that’s a project for future me who has 42-hour days. This method is a little janky, but it works:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Remove duplicate BLAST hits</strong> If you combined the results of multiple BLAST searches, there’s a good chance that you have sequences that have the same identifier. I remove these by importing the sequences to R as a dataframe, then filtering out any sequences with duplicated names, then writing the results to a new fasta file.</li>
+</ol>
+<pre class="r"><code>## Function read Fasta
+fasta2df&lt;-function(file) {
+  fasta&lt;-readLines(file)
+  ind&lt;-grep(&quot;&gt;&quot;, fasta)
+  s&lt;-data.frame(ind=ind, from=ind+1, to=c((ind-1)[-1], length(fasta)))
+  seqs&lt;-rep(NA, length(ind))
+  for(i in 1:length(ind)) {
+    seqs[i]&lt;-paste(fasta[s$from[i]:s$to[i]], collapse=&quot;&quot;)
+  }
+  DF&lt;-data.frame(name=gsub(&quot;&gt;&quot;, &quot;&quot;, fasta[ind]), sequence=seqs, stringsAsFactors = F)
+  return(DF)
+}
+
+## Function write Fasta
+writeFasta&lt;-function(data, filename){
+  fastaLines = c()
+  for (rowNum in 1:nrow(data)){
+    fastaLines = c(fastaLines, as.character(paste(&quot;&gt;&quot;, data[rowNum,&quot;name&quot;], sep = &quot;&quot;)))
+    fastaLines = c(fastaLines,as.character(data[rowNum,&quot;sequence&quot;]))
+  }
+  fileConn&lt;-file(filename)
+  writeLines(fastaLines, fileConn)
+  close(fileConn)
+}
+
+#Read sequene file into dataframe
+seqs &lt;- fasta2df(&quot;C:/test/concatenated_sequences.txt&quot;)
+#remove sequences with identical sequence names
+seqs &lt;- seqs[!duplicated(seqs$name), ]
+#write sequences to fasta file
+writeFasta(seqs, &quot;concatenated_RemoveDuplicateSequenceNames.txt&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><p><strong>Calculate the sequence identity matrix</strong> First you need to align your sequences using MAFFT–if you don’t know how to do that, read <a href="{{% relref "post/2018-07-26-how-to-phylogeny-part-1-sequence-alignment.md" %}}">my tutorial</a> (just use default parameters). Open your sequence alignment in BioEdit, select all sequences (ctrl+A), then go to the alignment dropdown menu and select “sequence identity matrix”–save the file as *.txt.</p></li>
+<li><p><strong>Use this R script to pull out any sequences above an identity threshold</strong> Then, it’s your job to go through the sequences and decide if you think they should be included in the analysis (maybe if they’re from different species?), or if they’re just duplicates from NCBI annotation errors/vagaries and should be trashed.</p></li>
+</ol>
+<pre class="r"><code>library(gdata)
+library(tidyr)
+
+#put path of your sequence id matrix here, then read data into R
+path &lt;- (&quot;C:/test/concatenated_SeqIdMatrix&quot;) #enter the path to your sequence file here
+x &lt;- read.table(path, skip = 3, sep = &quot;\t&quot;, row.names = 1, header = T) 
+
+#function get identical sequences, enter threshold to classify as identical (ie. 0.97)
+get_identical_sequences &lt;- function(data, threshold){
+  m &lt;- as.matrix(data, header = T)
+  lowerTriangle(m, diag = T) &lt;- 0
+  df &lt;- as.data.frame(m, stringsAsFactors = F) 
+    which.names &lt;- function(df, value){
+      ind &lt;- which(df&gt;=value, arr.ind = TRUE)
+      print(paste(rownames(df)[ind[,&quot;row&quot;]],  colnames(df)[ind[,&quot;col&quot;]], sep = &#39;, &#39;))
+    }
+  df2 &lt;- data.frame(which.names(df, value = threshold), stringsAsFactors = F)
+  colnames(df2) &lt;- c(&quot;y&quot;)
+  id &lt;- separate(df2, y, into = c(&quot;Sequence 1&quot;, &quot;Sequence 2&quot;), sep = &quot;,&quot;)
+  write.csv(id, &quot;identical_sequences.csv&quot;)
+}
+
+#will write file with identical sequences as .csv you can open in excel
+get_identical_sequences(x, 0.97)</code></pre>
+</div>
+<div id="remove-false-hits" class="section level3">
+<h3><span class="header-section-number">1.3.3</span> Remove False Hits</h3>
+<p>Most sequence databases (NCBI especially) are not perfect, and will return hits that matched your search terms, but are not actually a member of the gene family you are analyzing. If you are working with well-annotated or closely related sequences, then removing false hits may be as simple as performing an alignment and inspecting it for obvious outliers. But if, like me, you work with distantly related (low sequence similarity) or poorly annotated sequences, then identifying false hits can be an arduous process. Unfortunately, there’s no method that will work in 100% of cases, but I can share some steps that I usually take. Note that this workflow involves quite a bit of manual work, so it isn’t suitable for datasets beyond maybe 1000 sequences (unless you have an army of minions).</p>
+<ol style="list-style-type: decimal">
+<li><strong>Identify conserved domains</strong> The first thing I do with a set of new sequences is run them through the Conserved Domain Database to get a visualization of what I’m working with. This tool is also super helpful for identifying false hits. First, upload your sequence file (not alignment, just sequences) to NCBI’s Batch CD-Search tool, and run it using default parameters. When it finishes, download the results with data mode “standard” selected. <img src="/img/CD-search_before.png" alt="CD-search" /> <img src="/img/Cd-search_after.png" alt="CD-search" /> Next, we need to visualize the conserved domains. You can browse them in the NCBI website, but we want a more concise and user-friendly way to quickly scan hundreds of sequences. I wrote this R script to produce domain plots for each sequence based on the output of CD-search. To do this, you will just need your sequence file, and the results you just downloaded from CD-search. Here’s what this script does briefly: load required libraries, read in data (it will prompt you for the location of the sequence file and CD-search hits file), clean up the data, combine all the data into a nice table, make domain plots that show the full length of each protein and plot all the conserved domains along that protein, finally it will save the domain plots to your working directory.</li>
+</ol>
+<pre class="r"><code>library(plyr)
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(gridExtra)
+library(stringr)
+library(gtable)
+library(randomcoloR)
+
+## Function read fasta
+fasta2df&lt;-function(file) {
+  fasta&lt;-readLines(file)
+  ind&lt;-grep(&quot;&gt;&quot;, fasta)
+  s&lt;-data.frame(ind=ind, from=ind+1, to=c((ind-1)[-1], length(fasta)))
+  seqs&lt;-rep(NA, length(ind))
+  for(i in 1:length(ind)) {
+    seqs[i]&lt;-paste(fasta[s$from[i]:s$to[i]], collapse=&quot;&quot;)
+  }
+  DF&lt;-data.frame(name=gsub(&quot;&gt;&quot;, &quot;&quot;, fasta[ind]), sequence=seqs, stringsAsFactors = F)
+  return(DF)
+}
+
+#prompt for sequence file location (fasta format)
+print(&quot;Enter your sequence file in Fasta format&quot;)
+seq_file&lt;-choose.files()
+#import sequence file as a data frame
+seq_file&lt;-fasta2df(seq_file)
+#add column with length of sequence
+seq_file$length&lt;-nchar(seq_file$sequence)
+#prompt for cd-search excel output
+print(&quot;Enter your cd-search results as an excel file&quot;)
+cdsearch&lt;-choose.files()
+#import cd-search data
+cdsearch &lt;- fread(cdsearch, header = T, skip = 7)
+
+#remove prefix from cd-search names column
+names&lt;-cdsearch$Query
+names&lt;-sub(&quot;.+?(&gt;)&quot;, &quot;&quot;, names)
+cdsearch$Query&lt;-names
+
+#remove columns you don&#39;t want from cd-search table
+cdsearch&lt;-within(cdsearch, rm(&quot;Hit type&quot;, &quot;PSSM-ID&quot;, &quot;E-Value&quot;, &quot;Bitscore&quot;, &quot;Incomplete&quot;, &quot;Superfamily&quot;))
+#remove superfamily hits
+cdsearch&lt;-cdsearch[!grepl(&quot;superfamily&quot;, cdsearch$&#39;Short name&#39;), ]
+
+#rename cd-search columns
+colnames(cdsearch)&lt;-c(&quot;Sequence&quot;, &quot;Start&quot;, &quot;End&quot;, &quot;Accession&quot;, &quot;Short_name&quot;)
+#make new dataframe with full protein data
+seq_file2&lt;-data.frame(Sequence=seq_file$name, Start=1, End=seq_file$length, Accession=&quot;Full_protein&quot;, Short_name=&quot;Full_protein&quot;)
+#make dataframe with full protein sequence data and cd-search data, then order by protein name
+df&lt;-rbind(cdsearch, seq_file2)
+df&lt;-df[order(df$Sequence),]
+
+##Add column with colors for plots
+levels&lt;-data.frame(Short_name=unique(df$Short_name),color=NA)
+levels$color[which(levels$Short_name==&quot;Full_protein&quot;)]&lt;-&quot;Black&quot;
+n_remaining_levels&lt;-length(levels$color[which(levels$Short_name!=&quot;Full_protein&quot;)])
+cols&lt;-distinctColorPalette(n_remaining_levels)
+#cols&lt;-sample(brewer.pal(n_remaining_levels,name=&quot;Set3&quot;))
+levels$color[which(levels$Short_name!=&quot;Full_protein&quot;)]&lt;-cols
+df&lt;-join(df,levels,by=&quot;Short_name&quot;)
+
+##Add column with index for each domain for plot buildilng
+dt&lt;-data.table(df)
+dt&lt;-dt[ , Index := 1:.N , by = c(&quot;Sequence&quot;) ]
+df&lt;-setDF(dt)
+
+#Split by sequence 
+seq_group&lt;-split(df, df$Sequence)
+
+##Make domain plot for each sequence
+plots_list&lt;-lapply(seq_group, function(x){
+  ggplot(x, aes(x=End, y=Index)) +
+    scale_y_continuous(breaks=x$Index, labels=x$Sequence, limits=c(min(x$Index) - 0.2, max(x$Index) + 0.2))+
+    scale_x_continuous(breaks=seq(0, max(x$End), 50))+
+    geom_segment(aes(x=Start, xend=End, y=Index, yend=Index), 
+                 linetype=1, 
+                 size=2, 
+                 color=x$color) +
+    geom_label(aes(label=str_wrap(paste(x$Short_name, paste(x$Start, x$End, sep=&quot;-&quot;), sep=&quot; &quot;),20), 
+                   x=(Start + End)/2), 
+               size=3)+
+    theme_bw()+
+    theme(panel.grid.minor=element_blank(), panel.grid.major = element_blank(), 
+          aspect.ratio = 0.5, 
+          legend.position=&quot;none&quot;,
+          axis.text.y=element_blank(),
+          axis.title.y=element_blank(),
+          axis.ticks.y=element_blank())+
+    xlab(&quot;Amino Acid Position&quot;)+
+    labs(title=str_wrap(x$Sequence, 60))
+}
+)
+
+#arrange plots on page and save as pdf
+arranged_plots&lt;-marrangeGrob(grobs=plots_list, nrow=5, ncol=3)
+ggsave(&quot;domain_plots.pdf&quot;, arranged_plots, height=20, width=20, units=&quot;in&quot;)</code></pre>
+<p>The final product will look something like this: <img src="/img/domain_plots.png" alt="domain plots" /> The sequence names are censored in this picture because it’s an ongoing project, but you can see that the domain architecture of each protein can be quickly inspected to identify proteins that completely lack the domains you’re interested in (you can toss them out), or maybe they have extra domains (probably leave those in until later), or they could have partial domains (you might want to note these and watch them later). Sometimes way that domains are named in CD-search is non-intuitive, but you can simply google any domain names that you’re not familiar with and it will usually turn up a detailed report of that domain.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p><strong>Look for conserved motifs</strong> If you are familiar with the protein you’re studying, you might know some conserved motifs that characterize this family (if you’re not familiar, do a literature search!). If so, this is very helpful in filtering false hits. First, I suggest you add some reference sequences to your sequence file (which was hopefully already filtered once using the conserved domain method). These reference sequences should be something which you are certain belongs to the protein family you are studying and are well documented so that you can easily identify the conserved motifs. Then, we align the sequences using MAFFT (using default parameters if many sequences or E-ins-i if &lt;200 sequences, <a href="{{% relref "post/2018-07-26-how-to-phylogeny-part-1-sequence-alignment.md" %}}">see my tutorial on alignment</a> and visualize the alignment in BioEdit. Any sequences which lack critical conserved motifs should be considered for tossing out (be careful to consider conservative amino acid substitutions here).</p></li>
+<li><p><strong>Look for mis-aligned sequences</strong> When inspecting the alignment above for conserved motifs, you may notice some sequences that are totally mis-aligned, or have large deletions or insertions. Usually, these can be removed, as they will complicate later analysis.</p></li>
+</ol>
+</div>
+<div id="trim-extra-domains" class="section level3">
+<h3><span class="header-section-number">1.3.4</span> Trim Extra Domains</h3>
+<p>There are several stages of trimming I usually do with alignments, but here we’ll just cover removing any extra domains that aren’t actually your protein of interest. These can be detected on the conserved domain plots that we made earlier, but they are also usually evident from a sequence alignment. Inspect the sequence alignment from your previous step. You can now compare the alignment to your conserved domain plots, or simply look for long stretches of aligned amino acids and then find the point where the conserved blocks end and the alignment becomes mostly gaps. The point where the conserved block ends is usually where other domains can become tacked on, but you should always validate this using your conserved domain plots, or by looking for conserved motifs near the termini of your protein. Once you are confident that you have identified extra domains, simply remove them from the alignment by selecting those columns in your alignment in BioEdit and deleting them.</p>
+</div>
+<div id="clean-up-names" class="section level3">
+<h3><span class="header-section-number">1.3.5</span> Clean up Names</h3>
+<p>Once your sequences are finalized, it is a good idea to clean up the names. At the most basic, you should remove spaces, colons, semicolons, and slashes, as these characters can cause errors in some downstream programs. To do this, simply open your sequence file in Notepad++, and use the search and replace feature to find any of these characters and replace them with underscores. Whenever you rename sequences, it is crucial that you keep the original file (use “save as”), so that you can always refer back to your original file if there are questions about the data source.</p>
+<p>I often want to clean up names further with a standard format like ID_Genus-species. However, since sequence names can have infinite formats depending on the data source, cleaning up names like this will depend on your data, and I’ll cover some tricks for renaming in a future post.</p>
+</div>
+</div>
+<div id="conclusions" class="section level2">
+<h2><span class="header-section-number">1.4</span> Conclusions</h2>
+<p>Yay you did it, party time!!!</p>
+<iframe src="https://giphy.com/embed/S2NTYYY9vN5vy" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen>
+</iframe>
+<p>Getting and cleaning your data is almost always the hardest part of building a phylogeny, so from here on out it’ll be much more fun, and much less manual labor, I promise!</p>
+</div>
+</div>
