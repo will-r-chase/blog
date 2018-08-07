@@ -258,11 +258,10 @@ section:last-child {
 }
 
 @media all and (max-width: 601px) {
-	/*#cv {
-		width: 95%;
-		margin: 10px auto;
-		min-width: 280px;
-	}*/
+	#cv {
+		width: auto;
+		margin: 10px;
+	}
 	
 	.sectionTitle {
 		margin-left: -2px;
@@ -287,7 +286,7 @@ section:last-child {
 	}
 	
 	#mainArea {
-		/*padding: 0 25px;*/
+		padding: 0 25px;
 	}
 
 	
