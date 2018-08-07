@@ -247,14 +247,16 @@ section:last-child {
 	}
 }*/
 
-/*--------------ALL OTHER RESPONSIVE ELEMENTS-------------*/
 @media all and (min-width: 602px) and (max-width: 800px) {
-	.keySkills {
-	-moz-column-count:1;
-	-webkit-column-count:1;
-	column-count:1;
+	#headshot {
+		display: none;
 	}
-
+	
+	.keySkills {
+	-moz-column-count:2;
+	-webkit-column-count:2;
+	column-count:2;
+	}
 }
 
 @media all and (max-width: 601px) {
@@ -264,10 +266,19 @@ section:last-child {
 		min-width: 280px;
 	}
 	
+	#headshot {
+		display: none;
+	}
+	
 	#name, #contactDetails {
 		float: none;
 		width: 100%;
 		text-align: center;
+	}
+	
+	.sectionTitle, .sectionContent {
+		float: none;
+		width: 100%;
 	}
 	
 	.sectionTitle {
@@ -276,11 +287,10 @@ section:last-child {
 	}
 	
 	.keySkills {
-		-moz-column-count:1;
-		-webkit-column-count:1;
-		column-count:1;
+		-moz-column-count:2;
+		-webkit-column-count:2;
+		column-count:2;
 	}
-
 }
 
 @media all and (max-width: 480px) {
@@ -306,6 +316,12 @@ section:last-child {
 	#name h1 {
 		line-height: .8em;
 		margin-bottom: 4px;
+	}
+}
+
+@media print {
+	#cv {
+		width: 100%;
 	}
 }
 
