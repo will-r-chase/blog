@@ -235,7 +235,7 @@ section:last-child {
 }
 
 /*--------------FLEX GRID RESPONSIVE ELEMENTS-------------*/
-@media screen and (max-width: 1200px) {
+/*@media screen and (max-width: 1200px) {
 	.box {
 		width: 40%;
 	}
@@ -245,7 +245,7 @@ section:last-child {
 	.box {
 		width: 90%;
 	}
-}
+}*/
 
 /*--------------ALL OTHER RESPONSIVE ELEMENTS-------------*/
 @media all and (min-width: 602px) and (max-width: 800px) {
@@ -259,8 +259,15 @@ section:last-child {
 
 @media all and (max-width: 601px) {
 	#cv {
-		width: auto;
-		margin: 10px;
+		width: 95%;
+		margin: 10px auto;
+		min-width: 280px;
+	}
+	
+	#name, #contactDetails {
+		float: none;
+		width: 100%;
+		text-align: center;
 	}
 	
 	.sectionTitle {
@@ -299,12 +306,6 @@ section:last-child {
 	#name h1 {
 		line-height: .8em;
 		margin-bottom: 4px;
-	}
-}
-
-@media print {
-	#cv {
-		width: 100%;
 	}
 }
 
