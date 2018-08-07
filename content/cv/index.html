@@ -9,6 +9,7 @@
 
 <link type="text/css" rel="stylesheet" href="../css/cv.css">
 <link href='https://fonts.googleapis.com/css?family=Rokkitt:regular,bold|Lato:regular,black' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <!--[if lt IE 9]>
 <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -22,9 +23,11 @@
 		</div>
 		
 		<div id="contactDetails" class="quickFade delayTwo">
-			<ul>
-				<li>email: <a href="mailto:wchase14@gmail.com" target="_blank">wchase14@gmail.com</a></li>
-				<li>website: <a href="williamrchase.com">williamrchase.com</a></li>
+			<ul class="fa-ul">
+				<li><i class="fa-li fa fa-envelope" id="icon"></i>Email: <a href="mailto:wchase14@gmail.com" target="_blank">wchase14@gmail.com</a></li>
+				<li><i class="fa-li fa fa-user" id="icon"></i>Website: <a href="williamrchase.com" target="_blank">williamrchase.com</a></li>
+        <li><i class="fa-li fa fa-github" id="icon"></i>GitHub: <a href="https://github.com/will-r-chase" target="_blank">github.com/will-r-chase</a></li>
+        <li><i class="fa-li fa fa-twitter" id="icon"></i>Twitter: <a href="https://twitter.com/W_R_Chase" target="_blank">twitter.com/W_R_Chase</a></li>
 			</ul>
 		</div>
 		<br />
@@ -33,6 +36,26 @@
 	
 	<div id="mainArea" class="quickFade delayThree">
 		<section>
+			<div class="sectionTitle">
+				<h1>Executive Summary</h1>
+			</div>
+
+			<div class="sectionContent">
+				<article>
+					<ul class="executiveSummary">
+						<li>Microbiologist with 5 years of independent research experience in a trans-disciplinary environment focusing on recombinant protein expression, phylogenetics, and molecular modeling</li>
+						<li>Deep expertise with a variety of recombinant protein expression systems, advanced imaging techniques (AFM), microbial culturing</li>
+						<li>Fluent in R; expert in many bioinformatics methods including: phylogenetics of complex gene families, horizontal gene transfer inference, selection analysis, and computational modeling of proteins</li>
+						<li>Conceived of 3 independent projects as an undergraduate researcher and taught myself the computational techniques required to answer our questions; these projects resulted in two manuscripts ready for submission, and another currently in progress</li>
+						<li>Collaborated with experts in a wide variety of fields to formulate research questions and develop methods as a part of a large trans-disciplinary research center</li>
+					</ul>
+				</article>
+			</div>
+    		<div class="clear"></div>
+			<br />
+		</section>
+
+    	<section>
 			<div class="sectionTitle">
 				<h1>Education</h1>
 			</div>
@@ -50,7 +73,7 @@
 
 		<section>
 			<div class="sectionTitle">
-				<h1>Research Experience</h1>
+				<h1>Research</h1>
 			</div>
 			
 			<div class="sectionContent">
@@ -63,18 +86,14 @@
 					<p class="subDetails">
 						<ul>
 							<li>
-								As a full time research technician with the Center for Lignocellulose Structure and Formation, my time was split between independent research, and technical assistance for lab members. I assisted lab members with protein purification, fluorescent tagging, plant histology, plant biomechanical assays, and microscopy. I also trained and supervised two undergraduate students on cloning and heterologous expression of expansin proteins.
-								My own research projects focused on better understanding the relationship between plant primary cell wall structure and plant growth. To accomplish this, I 
-								designed fluorescently tagged Carbohydrate Binding Modules as molecular probes to examine the distribution and localization of different polysaccharides in the 
-								cell wall. In conjunction, I developed novel methods in Atomic Force Microscopy to obtain nanoscale images and corresponding quantitative nanomechanical maps of the cell wall. I also designed and implemented a new statistical workflow in R—including custom algorithms—for the processing and
-								analysis of force spectroscopy data. We are currently analyzing the results of this project and expect two publications to result. 
+								As a research technician with the trans-disciplinary Center for Lignocellulose Structure and Formation (CLSF), my time was split between independent projects and collaborative research with CLSF members. I collaborated with experts in fields ranging from polymer physics to chemical enginerring to biochemistry on hypothesis generation and methods development. I also trained and supervised two undergraduate students on cloning and heterologous expression. My independent research projects focused on better understanding the relationship between plant primary cell wall structure and plant growth. I designed molecular probes to examine the distribution of different polysaccharides in the cell wall. In conjunction, I developed novel methods in Atomic Force Microscopy to obtain nanoscale images and corresponding quantitative nanomechanical maps of the cell wall. I also designed and implemented a new statistical workflow in R—including custom algorithms—for the processing and analysis of force spectroscopy data. We are currently analyzing the results of this project and expect two publications to result. 
 							</li>
 						</ul>
 					</p>
 				</article>
 				<br />
 				<article>
-					<span class="contentHeader">Independent Research</span>
+					<span class="contentHeader">Collaborative Independent Research</span>
 					<span class="contentDate">June 2016 - Present</span>
 					<p class="subDetails">Collaborators: Lori Shapiro, Olga Zhaxybayeva, Rob Dunn, Daniel Cosgrove</p>
 					<p class="subDetails">
@@ -95,8 +114,7 @@
 					<p class="subDetails">
 						<ul>
 							<li>
-								As an undergraduate, I worked in the Cosgrove lab designing and carrying out original research on the structure, function, and evolution of expansin proteins.
-								I was tasked with heterologously expressing plant expansins—a goal which has eluded the cell wall community for 30 years. Like my predecessors, I was unsuccessful, but along the way I gained valuable experience in cloning, mutagenesis, protein purification, experimental design, and heterologous expression methods for bacteria, yeast, and algae. After numerous failed attempts, I proposed a computational solution to study expansin structure-function. This proposal was funded as a research grant by the Department of Biochemistry, and I proceeded to teach myself sequence analysis, phylogenetics, and protein structural prediction. This work resulted in a first author publication which is now submitted at New Phytologist. 
+								As an undergraduate, I worked in the Cosgrove lab designing and carrying out original research on the structure, function, and evolution of expansin proteins. I was tasked with heterologously expressing plant expansins—a goal which has eluded the cell wall community for 30 years. Like my predecessors, I was unsuccessful, but along the way I gained valuable experience in cloning, mutagenesis, protein purification, experimental design, and heterologous expression methods for bacteria, yeast, and algae. After numerous failed attempts, I proposed a computational solution to study expansin structure-function. This proposal was funded as a research grant by the Department of Biochemistry, and I proceeded to teach myself sequence analysis, phylogenetics, and protein structural prediction. This work resulted in a first author publication which is now submitted at New Phytologist. 
 							</li>
 						</ul>
 					</p>
@@ -110,12 +128,14 @@
 				<h1>Publications</h1>
 			</div>
 
-			<div class="sectionContent">
+			<div class="publications">
+				<article>
 				<ol>
-					<li><em>Chase, W. R.</em>, & Cosgrove, D. J. (2018). Carbohydrate Binding Module Family 63. <i>CAZypedia.</i> <a href="https://www.cazypedia.org/index.php/Carbohydrate_Binding_Module_Family_63" target="_blank">cazypedia.org/index.php/Carbohydrate_Binding_Module_Family_63</a></li>
-					<li><em>Chase, W. R.</em>, Yang, H., & Cosgrove, D. J. (2018). An in-silico structure of the expansin AtEXPA4 reveals unique biochemical features of α-expansin. <i>Manuscript submitted for publication.</i></li>
-					<li><em>Chase, W. R.</em>, Mauck, K., Zhaxybayeva, O., Dunn, R. R., Cosgrove, D. J., Rocha, J., Kolter, R., & Shapiro S. R. (2018). From morphogenesis to pathogenesis: A cellulose loosening protein is one of the most widely distributed tools in nature. <i>Manuscript in preparation.</i></li>
+					<li><b>Chase, W. R.</b>, & Cosgrove, D. J. (2018). Carbohydrate Binding Module Family 63. <i>CAZypedia.</i> <a href="https://www.cazypedia.org/index.php/Carbohydrate_Binding_Module_Family_63" target="_blank">cazypedia.org/index.php/Carbohydrate_Binding_Module_Family_63</a></li>
+					<li><b>Chase, W. R.</b>, Yang, H., & Cosgrove, D. J. (2018). An in-silico structure of the expansin AtEXPA4 reveals unique biochemical features of α-expansin. <i>Manuscript submitted for publication.</i></li>
+					<li><b>Chase, W. R.</b>, Mauck, K., Zhaxybayeva, O., Dunn, R. R., Cosgrove, D. J., Rocha, J., Kolter, R., & Shapiro S. R. (2018). From morphogenesis to pathogenesis: A cellulose loosening protein is one of the most widely distributed tools in nature. <i>Manuscript in preparation.</i></li>
 				</ol>
+				</article>
 			</div>
 			<div class="clear"></div>
 		</section>
@@ -182,20 +202,75 @@
 			<div class="clear"></div>
 		</section>
 		
-	</div>
-</div>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-3753241-1");
-pageTracker._initData();
-pageTracker._trackPageview();
-</script>
-<p>
-	<a href="#top">Back to top</a>
-</p>
+		<section>
+			<div class="sectionTitle">
+				<h1>References</h1>
+			</div>
+
+			<article>
+				<div class="container">
+					<div class="box">
+						<div class="vcard">
+			  				<span class="fn"><b>Daniel J Cosgrove</b></span>
+			  				<div class="title">Eberly Chair in Biology</div>
+			  				<div class="org">The Pennsylvania State University</div>
+			  				<div>Relationship: Research advisor</div>
+			  					<a class="email" href="mailto:dcosgrove@psu.edu">dcosgrove@psu.edu</a>
+			  				<div class="tel">(814) 863-3892</div>
+			  				<div class="adr">
+			    			<div class="street-address">350 N Frear Lab</div>
+			   					<span class="locality">University Park</span>, 
+			    				<span class="region">PA</span>, 
+			    				<span class="postal-code">16802</span>
+			    				<span class="country-name">USA</span>
+			 				</div>
+						</div>
+					</div>
+					
+				  	<div class="box">
+						<div class="vcard">
+			  				<span class="fn"><b>James Endres Howell</b></span>
+			  				<div class="title">Assistant Teaching Professor</div>
+			  				<div class="org">The Pennsylvania State University</div>
+			  				<div>Relationship: Professor and academic advisor</div>
+			  					<a class="email" href="mailto:jhowell@psu.edu">jhowell@psu.edu</a>
+			  				<div class="tel">(814) 865-7736</div>
+			  				<div class="adr">
+			    			<div class="street-address">122A S Frear Lab</div>
+			   					<span class="locality">University Park</span>, 
+			    				<span class="region">PA</span>, 
+			    				<span class="postal-code">16802</span>
+			    				<span class="country-name">USA</span>
+			 				</div>
+						</div>
+					</div>
+
+					<div class="box">
+						<div class="vcard">
+			  				<span class="fn"><b>Olga Zhaxybayeva</b></span>
+			  				<div class="title">Associate Professor of Biological Sciences</div>
+			  				<div class="org">Dartmouth College</div>
+			  				<div>Relationship: Collaborator</div>
+			  					<a class="email" href="olga.zhaxybayeva@dartmouth.edu">olga.zhaxybayeva@dartmouth.edu</a>
+			  				<div class="adr">
+			    			<div class="street-address">333 Life Sciences Center</div>
+			   					<span class="locality">Hanover</span>, 
+			    				<span class="region">NH</span>, 
+			    				<span class="postal-code">03755</span>
+			    				<span class="country-name">USA</span>
+			 				</div>
+						</div>
+					</div>
+				</div>	
+			</article>
+			<div class="clear"></div>
+		</section>
+
+		<section>
+			<p>
+				<a href="#top">Back to top</a>
+			</p>
+		</section>
 </body>
 </html>
 

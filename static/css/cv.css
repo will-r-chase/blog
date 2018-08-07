@@ -58,7 +58,7 @@ p {
 }
 
 #name h1 {
-	font-size: 2.5em;
+	font-size: 3em;
 	font-weight: 700;
 	font-family: 'Rokkitt', Helvetica, Arial, sans-serif;
 	margin-bottom: -6px;
@@ -74,19 +74,6 @@ p {
 	padding: 0px 25px;
 }
 
-#headshot {
-	width: 12.5%;
-	float: left;
-	margin-right: 30px;
-}
-
-#headshot img {
-	width: 100%;
-	height: auto;
-	-webkit-border-radius: 50px;
-	border-radius: 50px;
-}
-
 #name {
 	float: left;
 }
@@ -97,13 +84,18 @@ p {
 
 #contactDetails ul {
 	list-style-type: none;
-	font-size: 0.9em;
 	margin-top: 2px;
 }
 
 #contactDetails ul li {
 	margin-bottom: 3px;
 	color: #444;
+  	font-size: 15px;
+}
+
+#icon {
+  font-size: 15px;
+  color: #444;
 }
 
 #contactDetails ul li a, a[href^=tel] {
@@ -119,7 +111,6 @@ p {
 #contactDetails ul li a:hover { 
 	color: #cf8a05;
 }
-
 
 section {
 	border-top: 1px solid #dedede;
@@ -142,12 +133,13 @@ section:last-child {
 .sectionContent {
 	float: right;
 	width: 72.5%;
+	padding-top: 10px;
 }
 
 .sectionTitle h1 {
 	font-family: 'Rokkitt', Helvetica, Arial, sans-serif;
 	font-style: italic;
-	font-size: 1.5em;
+	font-size: 1.8em;
 	color: #cf8a05;
 }
 
@@ -174,6 +166,31 @@ section:last-child {
 	margin-bottom: 2px;
 }
 
+.executiveSummary {
+  	list-style-type: disc;
+	margin-bottom: 20px;
+	font-size: 1em;
+	color: #444;
+	list-style-position: inside;
+	text-indent: -1.5em;
+	padding-left: 1em;
+ 	margin-left: 10px;
+}
+
+.publications {
+  	float: right;
+  	width: 72.5%;
+  	padding-top: 10px;
+}
+
+.publications li {
+  	margin:0 0 5px 0;
+}
+
+.publications ul, ol {
+  	margin-left: 15px;
+}
+
 .keySkills {
 	list-style-type: disc;
 	-webkit-column-count: 2;
@@ -195,16 +212,49 @@ section:last-child {
 	margin-bottom: 3px;
 }
 
-@media all and (min-width: 602px) and (max-width: 800px) {
-	#headshot {
-		display: none;
+
+/*--------------FLEX GRID-------------*/
+
+.container {
+	width: 72.5%;
+	float: right;
+	padding-top: 10px;
+	height: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: left;
+	flex-flow: wrap;
+}
+
+.box {
+	width: 48%;
+	height: 55%;
+	margin-right: 10px;
+  	margin-bottom: 10px;
+	box-sizing: border-box;
+}
+
+/*--------------FLEX GRID RESPONSIVE ELEMENTS-------------*/
+@media screen and (max-width: 1200px) {
+	.box {
+		width: 40%;
 	}
-	
+}
+
+@media screen and (max-width: 600px) {
+	.box {
+		width: 90%;
+	}
+}
+
+/*--------------ALL OTHER RESPONSIVE ELEMENTS-------------*/
+@media all and (min-width: 602px) and (max-width: 800px) {
 	.keySkills {
 	-moz-column-count:1;
 	-webkit-column-count:1;
 	column-count:1;
 	}
+
 }
 
 @media all and (max-width: 601px) {
@@ -212,21 +262,6 @@ section:last-child {
 		width: 95%;
 		margin: 10px auto;
 		min-width: 280px;
-	}
-	
-	#headshot {
-		display: none;
-	}
-	
-	#name, #contactDetails {
-		float: none;
-		width: 100%;
-		text-align: center;
-	}
-	
-	.sectionTitle, .sectionContent {
-		float: none;
-		width: 100%;
 	}
 	
 	.sectionTitle {
@@ -239,6 +274,7 @@ section:last-child {
 		-webkit-column-count:1;
 		column-count:1;
 	}
+
 }
 
 @media all and (max-width: 480px) {
