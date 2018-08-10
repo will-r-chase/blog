@@ -272,6 +272,11 @@ section:last-child {
 		font-size: 1.25em;
 	}
 	
+	.sectionTitle, .sectionContent, .publications, .container {
+		float: none;
+		width: 100%;
+	}
+
 	.keySkills {
 		-moz-column-count:1;
 		-webkit-column-count:1;
