@@ -116,6 +116,8 @@ p {
 section {
 	border-top: 1px solid #dedede;
 	padding: 20px 0 0;
+	overflow: hidden;	
+	word-wrap: break-word;	
 }
 
 section:first-child {
