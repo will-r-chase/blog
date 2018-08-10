@@ -1,3 +1,4 @@
+
 html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video {
 	border:0;
 	font:inherit;
@@ -234,18 +235,6 @@ section:last-child {
 	box-sizing: border-box;
 }
 
-/*--------------FLEX GRID RESPONSIVE ELEMENTS-------------*/
-@media screen and (max-width: 1200px) {
-	.box {
-		width: 40%;
-	}
-}
-
-@media screen and (max-width: 600px) {
-	.box {
-		width: 90%;
-	}
-}
 
 /*--------------ALL OTHER RESPONSIVE ELEMENTS-------------*/
 @media all and (min-width: 602px) and (max-width: 800px) {
@@ -253,6 +242,10 @@ section:last-child {
 	-moz-column-count:1;
 	-webkit-column-count:1;
 	column-count:1;
+	}
+
+  .box {
+		width: 90%;
 	}
 
 }
@@ -264,6 +257,10 @@ section:last-child {
 		min-width: 280px;
 	}
 	
+  .box {
+		width: 90%;
+	}
+  
 	#name, #contactDetails {
 		float: none;
 		width: 100%;
@@ -296,7 +293,10 @@ section:last-child {
 		padding: 0 25px;
 	}
 
-	
+  .box {
+		width: 60%;
+	}
+  
 	.keySkills {
 	-moz-column-count:1;
 	-webkit-column-count:1;
@@ -306,6 +306,12 @@ section:last-child {
 	#name h1 {
 		line-height: .8em;
 		margin-bottom: 4px;
+	}
+}
+
+@media print {
+	#cv {
+		width: 100%;
 	}
 }
 
