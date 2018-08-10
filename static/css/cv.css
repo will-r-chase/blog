@@ -236,7 +236,7 @@ section:last-child {
 }
 
 
-/*--------------ALL OTHER RESPONSIVE ELEMENTS-------------*/
+/*--------------RESPONSIVE ELEMENTS-------------*/
 @media all and (min-width: 602px) and (max-width: 800px) {
 	.keySkills {
 	-moz-column-count:1;
