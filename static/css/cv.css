@@ -171,13 +171,17 @@ section:last-child {
 
 .executiveSummary {
   	list-style-type: disc;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	font-size: 1em;
 	color: #444;
 	list-style-position: inside;
 	text-indent: -1.5em;
 	padding-left: 1em;
  	margin-left: 10px;
+}
+
+.executiveSummary li {
+  	margin:0 0 6px 0;
 }
 
 .publications {
@@ -187,7 +191,7 @@ section:last-child {
 }
 
 .publications li {
-  	margin:0 0 5px 0;
+  	margin:0 0 6px 0;
 }
 
 .publications ul, ol {
