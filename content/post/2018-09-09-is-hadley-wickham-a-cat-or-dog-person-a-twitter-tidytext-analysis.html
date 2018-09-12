@@ -1,0 +1,494 @@
+---
+title: 'Is Hadley Wickham a Cat or Dog Person: A Twitter/Tidytext analysis'
+author: Will
+date: '2018-09-12'
+slug: is-hadley-wickham-a-cat-or-dog-person-a-twitter-tidytext-analysis
+categories:
+  - R
+tags:
+  - Tidyverse
+  - Fun
+header:
+  caption: ''
+  image: ''
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<p>The more I use the tidyverse in my R coding, the more I ask myself: does Hadley Wickham hate dogs, or does he just need help with dog-related package names? See, of the packages Hadley has developed for the tidyverse, there are two that have cat-inspired names (forcats and purrr) but zero that pay homage to man’s best friend. It’s not like doggo names are hard to think of for R packages it took me 30 seconds to come up with baRk and woofR<a href="#section">**</a>. But wait, the plot thickens! Hadley claims on his personal website that he has two dogs. So what gives? Make up your mind Hadley! Clearly there’s only one way to know the truth: analyze Hadley’s tweets with the <a href="https://rtweet.info/" target="_blank">rtweet</a> and <a href="https://www.tidytextmining.com/" target="_blank">tidytext</a> packages.</p>
+<figure>
+<img src="/img/hacker_doggo.jpg" width="80%" height="80%"></img>
+<figcaption style="text-align:center;">
+such text, much tidy, wow
+</figcaption>
+</figure>
+<div id="who-does-hadley-follow" class="section level3">
+<h3>Who does Hadley follow?</h3>
+<p>First, we’ll analyze what types of accounts Hadley follows on Twitter. I’m using the rtweet package to get data through the Twitter API. I followed <a href="https://rtweet.info/articles/auth.html" target="_blank">these instructions</a> from the rtweet vingette to set up authentication info in R so that we can get data. We’ll use the <code>get_friends()</code> and <code>lookup_users()</code> functions from rtweet to get data on who Hadley follows.</p>
+<pre class="r"><code>library(rtweet)
+#authenticate twitter API
+create_token(
+  app = &quot;my_app&quot;,
+  consumer_key = &quot;my_key&quot;,
+  consumer_secret = &quot;my_key&quot;)
+
+#get data for accounts Hadley follows
+hadley_following &lt;- get_friends(&quot;hadleywickham&quot;)
+hadley_following_data &lt;- lookup_users(hadley_following$user_id)</code></pre>
+<p>Having loaded the data, we can look at the names of the accounts Hadley follows and their descriptions to see if there are any dog or cat related accounts. We’ll inspect if Hadley follows any accounts with “cat” or “dog” in the name. Next, we’ll get the descriptions for all of the accounts hadley follows, and then split them into individual words using <code>tidytext::unnest_tokens()</code>, and detect how many have pet related words.</p>
+<pre class="r"><code>library(tidyverse)
+library(tidytext)
+
+pet_words &lt;- tibble(word = 
+                      c(&quot;dog&quot;, &quot;dogs&quot;, &quot;doggo&quot;, &quot;doggos&quot;, &quot;doggie&quot;, &quot;doggies&quot;, &quot;puppy&quot;, &quot;pupper&quot;, &quot;puppies&quot;, 
+                      &quot;puppers&quot;, &quot;woof&quot;, &quot;woofer&quot;, &quot;bork&quot;, &quot;floof&quot;, &quot;cat&quot;, &quot;cats&quot;, &quot;catto&quot;, &quot;cattos&quot;, &quot;kitty&quot;, 
+                      &quot;kitties&quot;, &quot;kitten&quot;, &quot;kittens&quot;, &quot;meow&quot;))
+
+#what pet accounts does hadley follow?
+hadley_following_pets &lt;- hadley_following_data %&gt;%
+  select(screen_name, description) %&gt;%
+  filter(str_detect(screen_name, &quot;dog|cat&quot;))
+
+hadley_following_pets %&gt;%
+  knitr::kable() %&gt;%
+  kableExtra::kable_styling()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">screen_name</th>
+<th align="left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">dog_feelings</td>
+<td align="left">from the creator of <span class="citation">@dog_rates</span> ⠀⠀⠀⠀⠀⠀⠀</td>
+</tr>
+<tr class="even">
+<td align="left">dogwatisaw</td>
+<td align="left">Daily doodles of dogs wat I saw in the world. Doggos drawn from memory by <span class="citation">@alexdaish</span></td>
+</tr>
+<tr class="odd">
+<td align="left">dog_rates</td>
+<td align="left">Your Only Source For Professional Dog Ratings IG, FB, Snapchat ⇨ WeRateDogs ⠀⠀ ⠀ ⠀⠀⠀ ⠀ Business: <a href="mailto:dogratingtwitter@gmail.com">dogratingtwitter@gmail.com</a></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#what about their descriptions?
+hadley_following_description_pets &lt;- hadley_following_data %&gt;%
+  select(screen_name, description) %&gt;%
+  unnest_tokens(words, description) %&gt;%
+  count(words) %&gt;%
+  filter(words %in% pet_words$word)
+
+hadley_following_description_pets %&gt;%
+  arrange(desc(n)) %&gt;%
+  knitr::kable() %&gt;%
+  kableExtra::kable_styling(full_width = F)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+words
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+dog
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dogs
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cat
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cats
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggos
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+<p>Based on who Hadley follows, I’m going to give this round to dogs. Sure Hadley follows a couple of people that mention cats in their descriptions, but I can forgive him. After all, some of my best friends are cat people (don’t worry, I’m working on converting them). But the fact that Hadley follows not one, not two, but THREE dedicated dog accounts is defnitely reassuring. Of course, we’ve only scratched the surface (pun intended). Next we’ll analyze Hadley’s actual tweets, retweets, and likes.</p>
+</div>
+<div id="what-does-hadley-tweet-about" class="section level3">
+<h3>What does Hadley tweet about?</h3>
+<p>To analyze Hadley’s tweets, we’ll first use <code>get_timeline()</code> to get the last 3200 tweets (3200 is the max Twitter allows). Then we’ll filter these to keep or remove retweets. Then we split the tweets into words with <code>unnest_tokens()</code> with a regex that I stole from <a href="http://varianceexplained.org/r/trump-tweets/" target="_blank">David Robinson’s post on analyzing Trump’s twitter</a>. As far as I can tell, this regex allows us to split tweets into individual words, but keep words that start with things like # or @. If you are analyzing non-twitter text data, you could simply use <code>unnest_tokens(token = &quot;words&quot;)</code>. Out of curiosity (and for demonstrating a more “normal” tidytext analysis), I’ll plot Hadley’s most common words. But what we’re really interested in is his usage of cat/dog related words. To get these counts I’ll join the tidytext tokens with the list of “pet words” that we made earlier.</p>
+<pre class="r"><code>#get hadley&#39;s tweets
+hadley_tweets &lt;- get_timeline(&quot;hadleywickham&quot;, n=3200)</code></pre>
+<pre class="r"><code>#regex so that we keep @ and # stuff for twitter
+reg &lt;- &quot;([^A-Za-z\\d#@&#39;]|&#39;(?![A-Za-z\\d#@]))&quot;
+
+#remove retweets, remove links, tokenize to words
+tidy_tweets &lt;- hadley_tweets %&gt;%
+  filter(!is_retweet) %&gt;%
+  select(screen_name, status_id, text) %&gt;%
+  mutate(text = str_replace_all(text, &quot;https?://t.co/[A-Za-z\\d]+|&amp;amp;&quot;, &quot;&quot;)) %&gt;%
+  unnest_tokens(word, text, token = &quot;regex&quot;, pattern = reg) %&gt;%
+  filter(str_detect(word, &quot;[a-z]&quot;))
+
+#remove stop words then plot top frequency words
+tidy_tweets %&gt;%
+  filter(!word %in% stop_words$word) %&gt;%
+  filter(!str_detect(word, &quot;^@&quot;)) %&gt;%
+  count(word, sort = TRUE) %&gt;%
+  head(16) %&gt;%
+  mutate(word = reorder(word, n)) %&gt;%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  coord_flip() +
+  labs(y = &quot;# of uses for Hadley Wickham&quot;)</code></pre>
+<p><img src="/post/2018-09-09-is-hadley-wickham-a-cat-or-dog-person-a-twitter-tidytext-analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>#count pet words
+pet_word_counts &lt;- tidy_tweets %&gt;%
+  count(word, sort = T) %&gt;%
+  right_join(pet_words) %&gt;%
+  arrange(desc(n))
+
+pet_word_counts %&gt;%
+  head() %&gt;%
+  knitr::kable() %&gt;%
+  kableExtra::kable_styling(full_width = F)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+word
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+cat
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dog
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dogs
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggo
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggos
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggie
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+<p>Well that’s disappointing… apparently Hadley doesn’t tweet much about cats or dogs. Our analysis shows that he tweets mostly about rstats and data science stuff. Let’s repeat that same analysis but for his retweets and see what we get.</p>
+<hr />
+<pre class="r"><code>##perform same analysis as above but for tweets hadley has retweeted
+tidy_retweets &lt;- hadley_tweets %&gt;%
+  filter(is_retweet) %&gt;%
+  select(screen_name, status_id, text) %&gt;%
+  mutate(text = str_replace_all(text, &quot;https?://t.co/[A-Za-z\\d]+|&amp;amp;&quot;, &quot;&quot;)) %&gt;%
+  unnest_tokens(word, text, token = &quot;regex&quot;, pattern = reg) %&gt;%
+  filter(str_detect(word, &quot;[a-z]&quot;))
+
+retweet_pet_word_counts &lt;- tidy_retweets %&gt;%
+  count(word, sort = T) %&gt;%
+  right_join(pet_words) %&gt;%
+  arrange(desc(n))
+  
+retweet_pet_word_counts %&gt;%
+  head() %&gt;%
+  knitr::kable() %&gt;%
+  kableExtra::kable_styling(full_width = F)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+word
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+cat
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dog
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cats
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dogs
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggo
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggos
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+<p>Apparently Hadley both tweets and retweets more about cats… Yikes! Hadley how could you betray us to those fur devils??? But maybe Hadley can redeem himself–let’s look at the tweets he “likes”. To do this we’ll use the <code>get_favorites()</code> function from rtweet.</p>
+<pre class="r"><code>#get tweeets Hadley &quot;liked&quot;
+hadley_favorites &lt;- get_favorites(&quot;hadleywickham&quot;, n = 3200)</code></pre>
+<pre class="r"><code>favorite_word_counts &lt;- hadley_favorites %&gt;%
+  filter(!is_retweet) %&gt;%
+  select(screen_name, status_id, text) %&gt;%
+  mutate(text = str_replace_all(text, &quot;https?://t.co/[A-Za-z\\d]+|&amp;amp;&quot;, &quot;&quot;)) %&gt;%
+  unnest_tokens(word, text, token = &quot;regex&quot;, pattern = reg) %&gt;%
+  filter(str_detect(word, &quot;[a-z]&quot;))
+
+favorite_pet_word_counts &lt;- favorite_word_counts %&gt;%
+  count(word, sort = T) %&gt;%
+  right_join(pet_words) %&gt;%
+  arrange(desc(n))
+
+favorite_pet_word_counts %&gt;%
+  head(10) %&gt;%
+  knitr::kable() %&gt;%
+  kableExtra::kable_styling(full_width = F)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+word
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+dog
+</td>
+<td style="text-align:right;">
+15
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cat
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cats
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dogs
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+puppy
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggo
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pupper
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+floof
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggos
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doggie
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now that’s more like it! As a final comparison, let’s visualize the count of dog words or cat words from different sources.</p>
+<pre class="r"><code>dog_words &lt;- tibble(word = c(&quot;dog&quot;, &quot;dogs&quot;, &quot;doggo&quot;, &quot;doggos&quot;, &quot;doggie&quot;, &quot;doggies&quot;, &quot;puppy&quot;, &quot;pupper&quot;, &quot;puppies&quot;, 
+                             &quot;puppers&quot;, &quot;woof&quot;, &quot;woofer&quot;, &quot;bork&quot;, &quot;floof&quot;))
+cat_words &lt;- tibble(word = c(&quot;cat&quot;, &quot;cats&quot;, &quot;catto&quot;, &quot;cattos&quot;, &quot;kitty&quot;, 
+                    &quot;kitties&quot;, &quot;kitten&quot;, &quot;kittens&quot;, &quot;meow&quot;))
+
+dog_word_counts &lt;- pet_word_counts %&gt;%
+  left_join(retweet_pet_word_counts, by = &quot;word&quot;) %&gt;%
+  left_join(favorite_pet_word_counts, by = &quot;word&quot;) %&gt;%
+  rename(tweets = n.x, retweets = n.y, likes = n) %&gt;%
+  right_join(dog_words, by = &quot;word&quot;) %&gt;%
+  gather(tweets, retweets, likes, key = source, value = cases) %&gt;%
+  group_by(source) %&gt;%
+  summarize(total = sum(cases, na.rm = T)) %&gt;%
+  mutate(type = &quot;dog&quot;)
+
+cat_word_counts &lt;- pet_word_counts %&gt;%
+  left_join(retweet_pet_word_counts, by = &quot;word&quot;) %&gt;%
+  left_join(favorite_pet_word_counts, by = &quot;word&quot;) %&gt;%
+  rename(tweets = n.x, retweets = n.y, likes = n) %&gt;%
+  right_join(cat_words, by = &quot;word&quot;) %&gt;%
+  gather(tweets, retweets, likes, key = source, value = cases) %&gt;%
+  group_by(source) %&gt;%
+  summarize(total = sum(cases, na.rm = T)) %&gt;%
+  mutate(type = &quot;cat&quot;)
+ 
+dog_word_counts %&gt;%
+  rbind(cat_word_counts) %&gt;%
+  group_by(type, source) %&gt;%
+  ggplot(aes(x = type, y = total)) + 
+    geom_point(aes(color = source), size = 5) +
+    labs(x = &quot;Pet Type&quot;, y = &quot;Word Count&quot;) +
+    theme_light() +
+    theme(text = element_text(size = 16))</code></pre>
+<p><img src="/post/2018-09-09-is-hadley-wickham-a-cat-or-dog-person-a-twitter-tidytext-analysis_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>So what’s the answer? Perhaps unsurprisingly, our tidytext analysis tells us that Hadley doesn’t tweet much about cats or dogs.</p>
+<figure>
+<img src="/img/IT_doggo.jpg" width="80%" height="80%"></img>
+<figcaption style="text-align:center;">
+Doggo doing himself a confuse over these results
+</figcaption>
+</figure>
+<p>Although he had a few more likes for dogs than cats, the sample sizes are so small here that I wouldn’t give too much sway to either result. We could run some statistical tests, but again I’m dubious of small sample sizes here. I do still think it’s good evidence of Hadley being a dog person that he follows three dog related accounts, given that he only follows ~300 people, the vast majority of whom are R or data science related. But what this analysis really told us is that for people who use their twitter for mostly professional purposes (like Hadley), scraping their twitter isn’t the best way to pry into their personal lives. Luckily, I’m a top notch e-stalker and I know a better way to answer our question.</p>
+<figure style="display:block;margin-left:auto;margin-right:auto;&gt;">
+<img src="https://media.giphy.com/media/sBODtlf3xz60g/giphy.gif" width="80%" height="80%"></img>
+<figcaption style="text-align:center;">
+Me e-stalking Hadley
+</figcaption>
+</figure>
+<p>Hadley has a <a href="https://www.instagram.com/hadleywickham/" target="_blank">public instagram</a>, and a quick look reveals that he does indeed have two dogs, and about 90% of his instagram posts are of his dogs or food (I highly approve). So all is right in the world, Hadley is a confirmed foodie and dog lover. I guess the real question is how can he be so bad at coming up with dog-related package names!? Maybe that’s just the gap I will have to fill in the rstats community.</p>
+<p>Anyways, our twitter/tidytext analysis might not have been too revealing about Hadley’s pet preferences, but I hope you learned something and thought it was fun, I know I did!</p>
+<div id="section" class="section level5">
+<h5>**</h5>
+<p>**I’m unofficially tradmarking baRk and woofR as names for future R packages I plan to write. No idea what baRk will do, but woofR will definitely be an implementation of <a href="https://www.dailymotion.com/video/xde1y8" target="_blank">Ryan Howard’s genius social media bomb software idea from The Office</a>.</p>
+</div>
+</div>

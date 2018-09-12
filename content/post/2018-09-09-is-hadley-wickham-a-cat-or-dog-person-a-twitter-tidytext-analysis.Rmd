@@ -1,0 +1,228 @@
+---
+title: 'Is Hadley Wickham a Cat or Dog Person: A Twitter/Tidytext analysis'
+author: Will
+date: '2018-09-12'
+slug: is-hadley-wickham-a-cat-or-dog-person-a-twitter-tidytext-analysis
+categories:
+  - R
+tags:
+  - Tidyverse
+  - Fun
+header:
+  caption: ''
+  image: ''
+---
+
+The more I use the tidyverse in my R coding, the more I ask myself: does Hadley Wickham hate dogs, or does he just need help with dog-related package names? See, of the packages Hadley has developed for the tidyverse, there are two that have cat-inspired names (forcats and purrr) but zero that pay homage to man's best friend. It's not like doggo names are hard to think of for R packages it took me 30 seconds to come up with baRk and woofR[\*\*]. But wait, the plot thickens! Hadley claims on his personal website that he has two dogs. So what gives? Make up your mind Hadley! Clearly there's only one way to know the truth: analyze Hadley's tweets with the <a href="https://rtweet.info/" target="_blank">rtweet</a> and <a href="https://www.tidytextmining.com/" target="_blank">tidytext</a> packages.
+
+<figure>
+<img src="/img/hacker_doggo.jpg" width="80%" height="80%"></img>
+<figcaption style="text-align:center;">such text, much tidy, wow</figcaption>
+</figure>
+
+### Who does Hadley follow?
+First, we'll analyze what types of accounts Hadley follows on Twitter. I'm using the rtweet package to get data through the Twitter API. I followed <a href="https://rtweet.info/articles/auth.html" target="_blank">these instructions</a> from the rtweet vingette to set up authentication info in R so that we can get data. We'll use the `get_friends()` and `lookup_users()` functions from rtweet to get data on who Hadley follows.
+
+```{r echo = F, eval = T}
+load("hadley_tweets_tidytext.RData")
+```
+
+```{r echo = T, eval = F}
+library(rtweet)
+#authenticate twitter API
+create_token(
+  app = "my_app",
+  consumer_key = "my_key",
+  consumer_secret = "my_key")
+
+#get data for accounts Hadley follows
+hadley_following <- get_friends("hadleywickham")
+hadley_following_data <- lookup_users(hadley_following$user_id)
+```
+
+Having loaded the data, we can look at the names of the accounts Hadley follows and their descriptions to see if there are any dog or cat related accounts. We'll inspect if Hadley follows any accounts with "cat" or "dog" in the name. Next, we'll get the descriptions for all of the accounts hadley follows, and then split them into individual words using `tidytext::unnest_tokens()`, and detect how many have pet related words. 
+
+```{r echo = T, message = F, warning = F}
+library(tidyverse)
+library(tidytext)
+
+pet_words <- tibble(word = 
+                      c("dog", "dogs", "doggo", "doggos", "doggie", "doggies", "puppy", "pupper", "puppies", 
+                      "puppers", "woof", "woofer", "bork", "floof", "cat", "cats", "catto", "cattos", "kitty", 
+                      "kitties", "kitten", "kittens", "meow"))
+
+#what pet accounts does hadley follow?
+hadley_following_pets <- hadley_following_data %>%
+  select(screen_name, description) %>%
+  filter(str_detect(screen_name, "dog|cat"))
+
+hadley_following_pets %>%
+  knitr::kable() %>%
+  kableExtra::kable_styling()
+
+#what about their descriptions?
+hadley_following_description_pets <- hadley_following_data %>%
+  select(screen_name, description) %>%
+  unnest_tokens(words, description) %>%
+  count(words) %>%
+  filter(words %in% pet_words$word)
+
+hadley_following_description_pets %>%
+  arrange(desc(n)) %>%
+  knitr::kable() %>%
+  kableExtra::kable_styling(full_width = F)
+```
+
+Based on who Hadley follows, I'm going to give this round to dogs. Sure Hadley follows a couple of people that mention cats in their descriptions, but I can forgive him. After all, some of my best friends are cat people (don't worry, I'm working on converting them). But the fact that Hadley follows not one, not two, but THREE dedicated dog accounts is defnitely reassuring. Of course, we've only scratched the surface (pun intended). Next we'll analyze Hadley's actual tweets, retweets, and likes. 
+
+### What does Hadley tweet about?
+To analyze Hadley's tweets, we'll first use `get_timeline()` to get the last 3200 tweets (3200 is the max Twitter allows). Then we'll filter these to keep or remove retweets. Then we split the tweets into words with `unnest_tokens()` with a regex that I stole from <a href="http://varianceexplained.org/r/trump-tweets/" target="_blank">David Robinson's post on analyzing Trump's twitter</a>. As far as I can tell, this regex allows us to split tweets into individual words, but keep words that start with things like # or @. If you are analyzing non-twitter text data, you could simply use `unnest_tokens(token = "words")`. Out of curiosity (and for demonstrating a more "normal" tidytext analysis), I'll plot Hadley's most common words. But what we're really interested in is his usage of cat/dog related words. To get these counts I'll join the tidytext tokens with the list of "pet words" that we made earlier.
+
+```{r echo = T, warning = F, eval = F}
+#get hadley's tweets
+hadley_tweets <- get_timeline("hadleywickham", n=3200)
+```
+```{r echo = T, warning = F, message = F}
+#regex so that we keep @ and # stuff for twitter
+reg <- "([^A-Za-z\\d#@']|'(?![A-Za-z\\d#@]))"
+
+#remove retweets, remove links, tokenize to words
+tidy_tweets <- hadley_tweets %>%
+  filter(!is_retweet) %>%
+  select(screen_name, status_id, text) %>%
+  mutate(text = str_replace_all(text, "https?://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  unnest_tokens(word, text, token = "regex", pattern = reg) %>%
+  filter(str_detect(word, "[a-z]"))
+
+#remove stop words then plot top frequency words
+tidy_tweets %>%
+  filter(!word %in% stop_words$word) %>%
+  filter(!str_detect(word, "^@")) %>%
+  count(word, sort = TRUE) %>%
+  head(16) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  coord_flip() +
+  labs(y = "# of uses for Hadley Wickham")
+
+#count pet words
+pet_word_counts <- tidy_tweets %>%
+  count(word, sort = T) %>%
+  right_join(pet_words) %>%
+  arrange(desc(n))
+
+pet_word_counts %>%
+  head() %>%
+  knitr::kable() %>%
+  kableExtra::kable_styling(full_width = F)
+```
+
+Well that's disappointing... apparently Hadley doesn't tweet much about cats or dogs. Our analysis shows that he tweets mostly about rstats and data science stuff. Let's repeat that same analysis but for his retweets and see what we get.
+
+***
+
+```{r echo = T, warning = F, message = F}
+##perform same analysis as above but for tweets hadley has retweeted
+tidy_retweets <- hadley_tweets %>%
+  filter(is_retweet) %>%
+  select(screen_name, status_id, text) %>%
+  mutate(text = str_replace_all(text, "https?://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  unnest_tokens(word, text, token = "regex", pattern = reg) %>%
+  filter(str_detect(word, "[a-z]"))
+
+retweet_pet_word_counts <- tidy_retweets %>%
+  count(word, sort = T) %>%
+  right_join(pet_words) %>%
+  arrange(desc(n))
+  
+retweet_pet_word_counts %>%
+  head() %>%
+  knitr::kable() %>%
+  kableExtra::kable_styling(full_width = F)
+```
+
+Apparently Hadley both tweets and retweets more about cats... Yikes! Hadley how could you betray us to those fur devils??? But maybe Hadley can redeem himself--let's look at the tweets he "likes". To do this we'll use the `get_favorites()` function from rtweet.
+
+```{r eval = F}
+#get tweeets Hadley "liked"
+hadley_favorites <- get_favorites("hadleywickham", n = 3200)
+```
+```{r echo = T, warning = F, message = F}
+favorite_word_counts <- hadley_favorites %>%
+  filter(!is_retweet) %>%
+  select(screen_name, status_id, text) %>%
+  mutate(text = str_replace_all(text, "https?://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+  unnest_tokens(word, text, token = "regex", pattern = reg) %>%
+  filter(str_detect(word, "[a-z]"))
+
+favorite_pet_word_counts <- favorite_word_counts %>%
+  count(word, sort = T) %>%
+  right_join(pet_words) %>%
+  arrange(desc(n))
+
+favorite_pet_word_counts %>%
+  head(10) %>%
+  knitr::kable() %>%
+  kableExtra::kable_styling(full_width = F)
+```
+
+Now that's more like it! As a final comparison, let's visualize the count of dog words or cat words from different sources. 
+
+```{r message = F, warning = F}
+dog_words <- tibble(word = c("dog", "dogs", "doggo", "doggos", "doggie", "doggies", "puppy", "pupper", "puppies", 
+                             "puppers", "woof", "woofer", "bork", "floof"))
+cat_words <- tibble(word = c("cat", "cats", "catto", "cattos", "kitty", 
+                    "kitties", "kitten", "kittens", "meow"))
+
+dog_word_counts <- pet_word_counts %>%
+  left_join(retweet_pet_word_counts, by = "word") %>%
+  left_join(favorite_pet_word_counts, by = "word") %>%
+  rename(tweets = n.x, retweets = n.y, likes = n) %>%
+  right_join(dog_words, by = "word") %>%
+  gather(tweets, retweets, likes, key = source, value = cases) %>%
+  group_by(source) %>%
+  summarize(total = sum(cases, na.rm = T)) %>%
+  mutate(type = "dog")
+
+cat_word_counts <- pet_word_counts %>%
+  left_join(retweet_pet_word_counts, by = "word") %>%
+  left_join(favorite_pet_word_counts, by = "word") %>%
+  rename(tweets = n.x, retweets = n.y, likes = n) %>%
+  right_join(cat_words, by = "word") %>%
+  gather(tweets, retweets, likes, key = source, value = cases) %>%
+  group_by(source) %>%
+  summarize(total = sum(cases, na.rm = T)) %>%
+  mutate(type = "cat")
+ 
+dog_word_counts %>%
+  rbind(cat_word_counts) %>%
+  group_by(type, source) %>%
+  ggplot(aes(x = type, y = total)) + 
+    geom_point(aes(color = source), size = 5) +
+    labs(x = "Pet Type", y = "Word Count") +
+    theme_light() +
+    theme(text = element_text(size = 16))
+```
+
+So what's the answer? Perhaps unsurprisingly, our tidytext analysis tells us that Hadley doesn't tweet much about cats or dogs. 
+
+<figure>
+<img src="/img/IT_doggo.jpg" width="80%" height="80%"></img>
+<figcaption style="text-align:center;">Doggo doing himself a confuse over these results</figcaption>
+</figure>
+
+Although he had a few more likes for dogs than cats, the sample sizes are so small here that I wouldn't give too much sway to either result. We could run some statistical tests, but again I'm dubious of small sample sizes here. I do still think it's good evidence of Hadley being a dog person that he follows three dog related accounts, given that he only follows ~300 people, the vast majority of whom are R or data science related. But what this analysis really told us is that for people who use their twitter for mostly professional purposes (like Hadley), scraping their twitter isn't the best way to pry into their personal lives. Luckily, I'm a top notch e-stalker and I know a better way to answer our question.
+
+<figure style="display:block;margin-left:auto;margin-right:auto;>
+<img src="https://media.giphy.com/media/sBODtlf3xz60g/giphy.gif" width="80%" height="80%"></img>
+<figcaption style="text-align:center;">Me e-stalking Hadley</figcaption>
+</figure>
+
+Hadley has a <a href="https://www.instagram.com/hadleywickham/" target="_blank">public instagram</a>, and a quick look reveals that he does indeed have two dogs, and about 90% of his instagram posts are of his dogs or food (I highly approve). So all is right in the world, Hadley is a confirmed foodie and dog lover. I guess the real question is how can he be so bad at coming up with dog-related package names!? Maybe that's just the gap I will have to fill in the rstats community. 
+
+Anyways, our twitter/tidytext analysis might not have been too revealing about Hadley's pet preferences, but I hope you learned something and thought it was fun, I know I did!
+
+
+##### \*\*
+\*\*I'm unofficially tradmarking baRk and woofR as names for future R packages I plan to write. No idea what baRk will do, but woofR will definitely be an implementation of <a href="https://www.dailymotion.com/video/xde1y8" target="_blank">Ryan Howard's genius social media bomb software idea from The Office</a>.
