@@ -270,7 +270,12 @@ enableGitInfo = false
 [[menu.main]]
   name = "CV"
   url = "#cv"
-  weight = 5
+  weight = 4
+  
+[[menu.main]]
+  name = "Presentations"
+  url = "#presentations"
+  weight = 4
 
 [[menu.main]]
   name = "Contact"

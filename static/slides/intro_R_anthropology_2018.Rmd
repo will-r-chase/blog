@@ -1,0 +1,43 @@
+---
+title: "What I Wish I Knew When I Started R"
+author: "<br><br>Will Chase"
+date: "<br><br>2018/09/08"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["assets/shinobi.css", "assets/ninpo.css", "assets/ninjutsu.css"]
+    seal: true 
+    self_contained: false
+    nature:
+      ratio: "16:9"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+class: middle center bg-main1
+
+# Kunoichi
+#⚔
+#くノ一
+
+--
+## The Japanese word for female ninja
+
+
+---
+class: bg-main1 split-30 hide-slide-number
+
+.column.bg-main3[
+]
+.column.slide-in-right[
+.sliderbox.bg-main2.vmiddle[
+.font5[Split Cells]
+]]
+
+
+---
