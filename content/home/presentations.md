@@ -17,5 +17,5 @@ weight = 60
 
 **Here are the slides from my presentations**
 
-- [PSU Anthropology Department (2018): What I Wish I Knew When I Started R](/slides/example.html)
+- [PSU Anthropology Department (2018): What I Wish I Knew When I Started R](/slides/intro_R_anthropology_2018.html)
 

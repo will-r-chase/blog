@@ -1,12 +1,13 @@
 ---
 title: "What I Wish I Knew When I Started R"
+subtitle: "R projects, version control, and the tidyverse"
 author: "<br><br>Will Chase"
-date: "<br><br>2018/09/08"
+date: "<br><br>03-10-2018"
 output:
   xaringan::moon_reader:
     lib_dir: libs
     css: ["assets/shinobi.css", "assets/ninpo.css", "assets/ninjutsu.css"]
-    seal: true 
+    seal: true
     self_contained: false
     nature:
       ratio: "16:9"
@@ -21,23 +22,69 @@ options(htmltools.dir.version = FALSE)
 
 class: middle center bg-main1
 
-# Kunoichi
-#⚔
-#くノ一
+# Why am I here?
 
 --
-## The Japanese word for female ninja
+### -Teach you how to code in R `r emo::ji("x")`
 
+--
+### -Teach you how you *should* use R `r emo::ji("heavy_check_mark")`
+
+--
+### -Teach you how to make writing R code enjoyable `r emo::ji("heavy_check_mark")`
+
+--
+### -Teach you how to learn R `r emo::ji("heavy_check_mark")`
 
 ---
-class: bg-main1 split-30 hide-slide-number
+class: middle bg-main1
 
-.column.bg-main3[
-]
-.column.slide-in-right[
-.sliderbox.bg-main2.vmiddle[
-.font5[Split Cells]
+# How most academics learn R
+
+<img src="slide_img/throw_into_pool.gif" width=50%>
+
+---
+class: middle bg-main1
+
+# How .yellow[should] you use R?
+
+---
+layout: true
+class: split-two with-border border-white
+
+.column[
+  .split-three[
+  .row.bg-main1[.content.font2[
+Write .yellow[organized] and .yellow[portable] R code
+  ]]
+  .row.bg-main2[.content.font2[
+Write .yellow[readable] R code
+  ]]
+  .row.bg-main3[.content.font2[
+Document, share, and .yellow[learn] more R code
+]]
 ]]
 
+.column.bg-main1[.content.center.vmiddle[
+{{content}}
+]]
 
 ---
+class: hide-row2-col1 hide-row3-col1
+<img src="slide_img/R_project.png" width=80%>
+<img src="slide_img/github.png" width=80%>
+---
+class: hide-row3-col1 hide
+<img src="slide_img/tidyverse.png" width=80%>
+---
+class:
+<img src="slide_img/twitter.jpg" width=40%>
+<img src="slide_img/r4ds.png" width=40%>
+<img src="slide_img/stack_overflow.png" width=40%>
+---
+class: fade-row2-col1 fade-row3-col1
+---
+layout: false
+class: bg.main-1
+
+
