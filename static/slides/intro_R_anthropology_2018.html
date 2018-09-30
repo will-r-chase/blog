@@ -76,7 +76,7 @@ class: hide-row2-col1 hide-row3-col1
 &lt;img src="slide_img/R_project.png" width=80%&gt;
 &lt;img src="slide_img/github.png" width=80%&gt;
 ---
-class: hide-row3-col1 hide
+class: hide-row3-col1
 &lt;img src="slide_img/tidyverse.png" width=80%&gt;
 ---
 class:
@@ -87,7 +87,329 @@ class:
 class: fade-row2-col1 fade-row3-col1
 ---
 layout: false
-class: bg.main-1
+class: bg-main1
+
+# Making your R work .yellow[organized] and .yellow[portable]
+.blockquote.font_large[
+One day you will need to quit R, go do something else and return to your analysis later.&lt;/br&gt;&lt;/br&gt;
+One day you will have multiple analyses going that use R and you want to keep them separate.&lt;/br&gt;&lt;/br&gt;
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.&lt;/br&gt;
+]
+ 
+---
+class: bg-main1
+
+# Making your R work .yellow[organized] and .yellow[portable]
+.blockquote.font_large[
+One day you will need to quit R, go do something else and return to your analysis later.&lt;/br&gt;&lt;/br&gt;
+One day you will have multiple analyses going that use R and you want to keep them separate.&lt;/br&gt;&lt;/br&gt;
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.&lt;/br&gt;
+&lt;/br&gt; 
+&lt;/br&gt;
+To handle these real life situations, you need to make two decisions:&lt;/br&gt;
+]
+ 
+---
+class: bg-main1
+
+# Making your R work .yellow[organized] and .yellow[portable]
+.blockquote.font_large[
+One day you will need to quit R, go do something else and return to your analysis later.&lt;/br&gt;&lt;/br&gt;
+One day you will have multiple analyses going that use R and you want to keep them separate.&lt;/br&gt;&lt;/br&gt;
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.&lt;/br&gt;
+&lt;/br&gt; 
+&lt;/br&gt;
+To handle these real life situations, you need to make two decisions:&lt;/br&gt;
+1. What about your analysis is “real”, i.e. you will save it as your lasting record of what happened?&lt;/br&gt;
+]
+ 
+---
+class: bg-main1
+
+# Making your R work .yellow[organized] and .yellow[portable]
+.blockquote.font_large[
+One day you will need to quit R, go do something else and return to your analysis later.&lt;/br&gt;&lt;/br&gt;
+One day you will have multiple analyses going that use R and you want to keep them separate.&lt;/br&gt;&lt;/br&gt;
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.&lt;/br&gt;
+&lt;/br&gt; 
+&lt;/br&gt;
+To handle these real life situations, you need to make two decisions:&lt;/br&gt;
+1. What about your analysis is “real”, i.e. you will save it as your lasting record of what happened?&lt;/br&gt;
+2. Where does your analysis “live”?&lt;/br&gt;
+&lt;/br&gt;
+-_Jenny Bryan_
+]
+ 
+---
+class: bg-main1
+
+# Making your R work .yellow[organized] and .yellow[portable]
+##What about your analysis is .yellow["real"]
+&lt;/br&gt;
+-"Interactive" typing of your code
+--
+
+```r
+x &lt;- 5
+y &lt;- 10
+
+x + y
+```
+
+```
+## [1] 15
+```
+--
+&lt;/br&gt;
+-Saving your code as a script &lt;-- .yellow["real"]
+&lt;/br&gt;
+--
+.center[&lt;img src="slide_img/script.png" width=40%&gt;]
+---
+class: bg-main1
+
+# Making your R work .yellow[organized] and .yellow[portable]
+##Where does your analysis .yellow["live"]
+&lt;/br&gt;
+&lt;/br&gt;
+&lt;/br&gt;
+###Setting your working directory (path)
+&lt;/br&gt;
+&lt;/br&gt;
+`setwd(C:/users/will/my_data)`
+&lt;/br&gt;
+&lt;/br&gt;
+`getwd()`
+---
+class: bg-main1
+
+#What do you do when you open R?
+&lt;/br&gt;
+&lt;/br&gt;
+--
+.float-left[&lt;img src="slide_img/IT_doggo.jpg" width=50%&gt;]
+--
+.float-right[&lt;img src="slide_img/gandalf.jpg" width = 50%&gt;]
+---
+class: bg-main1
+
+.float-left[&lt;img src="slide_img/bad_files.png" width=50%&gt;]
+--
+.float-right[&lt;img src="slide_img/where_is_my_data.png" width=50%&gt;]
+--
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[`setwd(will/folder-that-only-exists-on-this-computer)`]
+
+---
+class: bg-main1 vmiddle center
+
+&lt;img src="slide_img/matrix.jpg" width=50%&gt;
+---
+class: split-25 bg-main1 with-border
+
+.row[
+#What .yellow[should] you do when you open R?]
+.row[
+  .split-three.with-border[
+  .column.bg-orange[.content[
+#Open (or make) an R project
+&lt;img src="slide_img/R_project_mine.png" width=40%&gt;
+&lt;img src="slide_img/open_project.png" width=40%&gt;
+    ]]
+  .column[.content[
+  
+  ]]
+  .column[.content[
+  
+  ]]
+]]
+---
+class: bg-main1
+
+#What is an R project?
+.font_large[
++ A way to keep all files (scripts, inputs, figures) associated with a project organized in one place&lt;/br&gt;&lt;/br&gt;
+
+]
+---
+class: bg-main1
+
+#What is an R project?
+.font_large[
++ A way to keep all files (scripts, inputs, figures) associated with a project organized in one place&lt;/br&gt;&lt;/br&gt;
++ Many useful options for saving your R history or environment&lt;/br&gt;&lt;/br&gt;
+
+]
+---
+class: bg-main1
+
+#What is an R project?
+.font_large[
++ A way to keep all files (scripts, inputs, figures) associated with a project organized in one place&lt;/br&gt;&lt;/br&gt;
++ Many useful options for saving your R history or environment&lt;/br&gt;&lt;/br&gt;
++ keeps your files and scripts in a centralized working directory&lt;/br&gt;&lt;/br&gt;
+
+]
+---
+class: bg-main1
+
+#What is an R project?
+.font_large[
++ A way to keep all files (scripts, inputs, figures) associated with a project organized in one place&lt;/br&gt;&lt;/br&gt;
++ Many useful options for saving your R history or environment&lt;/br&gt;&lt;/br&gt;
++ keeps your files and scripts in a centralized working directory&lt;/br&gt;&lt;/br&gt;
++ allows for version control and portability&lt;/br&gt;
+]
+---
+class: bg-main1
+
+#What is an R project?
+.font_large[
++ A way to keep all files (scripts, inputs, figures) associated with a project organized in one place&lt;/br&gt;&lt;/br&gt;
++ Many useful options for saving your R history or environment&lt;/br&gt;&lt;/br&gt;
++ keeps your files and scripts in a centralized working directory&lt;/br&gt;&lt;/br&gt;
++ allows for version control and portability&lt;/br&gt;
+]
+&lt;img src="slide_img/R_project_mine.png" width=40%&gt;
+&lt;img src="slide_img/open_project.png" width=40%&gt;
+---
+class: split-25 bg-main1 fade-row2-col1 with-border
+
+.row[
+#What .yellow[should] you do when you open R?]
+.row[
+  .split-three.with-border[
+  .column[.content[
+#Open (or make) an R project
+&lt;img src="slide_img/R_project_mine.png" width=40%&gt;
+&lt;img src="slide_img/open_project.png" width=40%&gt;
+    ]]
+  .column.bg-orange[.content[
+#git pull
+.center[&lt;img src="slide_img/github.png" width=70%&gt;]
+  ]]
+  .column[.content[
+  
+  ]]
+]]
+---
+class: bg-main1 vmiddle
+
+&lt;img src="slide_img/doggo_version_control.jpg" width=40%&gt;
+---
+class: bg-main1 
+#What is version control?
+--
+.center[&lt;img src="slide_img/final_final.jpg" width=60%&gt;]
+---
+class: bg-main1 vmiddle center
+&lt;img src="slide_img/version_control.png" width=80%&gt;
+---
+class: bg-main1
+#Integrate GitHub with R projects
+
+.float-left[&lt;img src="slide_img/project_options.png" width=50%&gt;]
+--
+.float-right[&lt;img src="slide_img/git_R.png" width=50%&gt;]
+--
+.font_large[This guide by Hadley Wickham is my all-time favorite explanation of git/github and how it integrates with R]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[&lt;a href="http://r-pkgs.had.co.nz/git.html" target="_blank"&gt;http://r-pkgs.had.co.nz/git.html&lt;/a&gt;]
+---
+class: split-25 bg-main1 fade-row2-col1 fade-row2-col2 with-border
+
+.row[
+#What .yellow[should] you do when you open R?]
+.row[
+  .split-three.with-border[
+  .column[.content[
+#Open (or make) an R project
+&lt;img src="slide_img/R_project_mine.png" width=40%&gt;
+&lt;img src="slide_img/open_project.png" width=40%&gt;
+    ]]
+  .column[.content[
+#git pull
+.center[&lt;img src="slide_img/github.png" width=70%&gt;]
+  ]]
+  .column.bg-orange[.content[
+#Write code, save scripts and results, commit change, and push to github
+  
+  ]]
+]]
+---
+class: bg-main1 
+#Now, just write the code...
+&lt;/br&gt;
+&lt;/br&gt;
+--
+.center[&lt;img src="slide_img/draw_owl.jpg_large" width=50%&gt;]
+---
+class: split-two with-border border-white fade-row1-col1 fade-row3-col1
+
+.column[
+  .split-three[
+  .row.bg-main1[.content.font2[
+Write .yellow[organized] and .yellow[portable] R code
+  ]]
+  .row.bg-main2[.content.font2[
+Write .yellow[readable] R code
+  ]]
+  .row.bg-main3[.content.font2[
+Document, share, and .yellow[learn] more R code
+]]
+]]
+
+.column.bg-main1[.content.center.vmiddle[
+&lt;img src="slide_img/tidyverse.png" width=80%&gt;
+]]
+---
+class: bg-main1
+#What is the .yellow[tidyverse?]
+&lt;/br&gt;
+&lt;/br&gt;
+.center[&lt;img src="slide_img/tidy_workflow.png" width=60%&gt;]
+---
+class: bg-main1
+#What is the .yellow[tidyverse?]
+&lt;/br&gt;
+&lt;/br&gt;
+.center[&lt;img src="slide_img/tidy_data.jpg" width=60%&gt;]
+---
+class: bg-main1
+#Why use the .yellow[tidyverse?]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[
++ Makes coding simpler
+]
+---
+class: bg-main1
+#Why use the .yellow[tidyverse?]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[
++ Makes coding simpler
+&lt;/br&gt;
+&lt;/br&gt;
++ Makes code human-readable
+]
+---
+class: bg-main1
+#Why use the .yellow[tidyverse?]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[
++ Makes coding simpler
+&lt;/br&gt;
+&lt;/br&gt;
++ Makes code human-readable
+&lt;/br&gt;
+&lt;/br&gt;
++ Makes coding more fun and enjoyable
+]
+---
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
