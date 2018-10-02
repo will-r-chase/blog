@@ -19,24 +19,32 @@ class: center, middle, inverse, title-slide
 
 ---
 
+exclude: true
+&lt;style type="text/css"&gt;
+code.r{
+  font-size: 16px;
+}
+pre {
+  font-size: 16px !important;
+}
+&lt;/style&gt;
 
-
-
-class: middle center bg-main1
+---
+class: bg-main1
 
 # Why am I here?
 
 --
-### -Teach you how to code in R ❌
+### Teach you how to code in R ❌
 
 --
-### -Teach you how you *should* use R ✔️
+### Teach you how you *should* use R ✔️
 
 --
-### -Teach you how to make writing R code enjoyable ✔️
+### Teach you how to make writing R code enjoyable ✔️
 
 --
-### -Teach you how to learn R ✔️
+### Teach you how to learn R ✔️
 
 ---
 class: middle bg-main1
@@ -176,7 +184,7 @@ class: bg-main1
 ###Setting your working directory (path)
 &lt;/br&gt;
 &lt;/br&gt;
-`setwd(C:/users/will/my_data)`
+`setwd("C:/users/will/my_data")`
 &lt;/br&gt;
 &lt;/br&gt;
 `getwd()`
@@ -199,7 +207,7 @@ class: bg-main1
 --
 &lt;/br&gt;
 &lt;/br&gt;
-.font_large[`setwd(will/folder-that-only-exists-on-this-computer)`]
+.font_large[`setwd("will/folder-that-only-exists-on-this-computer")`]
 
 ---
 class: bg-main1 vmiddle center
@@ -393,7 +401,7 @@ class: bg-main1
 + Makes coding simpler
 &lt;/br&gt;
 &lt;/br&gt;
-+ Makes code human-readable
++ Makes code more human-readable
 ]
 ---
 class: bg-main1
@@ -404,12 +412,558 @@ class: bg-main1
 + Makes coding simpler
 &lt;/br&gt;
 &lt;/br&gt;
-+ Makes code human-readable
++ Makes code more human-readable
 &lt;/br&gt;
 &lt;/br&gt;
 + Makes coding more fun and enjoyable
 ]
 ---
+class: bg-main1
+#Writing .yellow[readable] code
+&lt;/br&gt;
+&lt;/br&gt;
+--
+.blockquote.font_large[
+Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live.&lt;/br&gt;
+-_John Woods_
+]
+--
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[Spoiler alert: ]
+
+---
+class: bg-main1
+#Writing .yellow[readable] code
+&lt;/br&gt;
+&lt;/br&gt;
+
+.blockquote.font_large[
+Always code as if the guy who ends up maintaining your code will be a .yellow[violent psychopath who knows where you live.]&lt;/br&gt;
+-_John Woods_
+]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[Spoiler alert: .yellow[that's you]]
+---
+class: bg-main1
+#Writing .yellow[readable] code
+&lt;/br&gt;
+&lt;/br&gt;
+##Envison how you want your data to look, then map out the steps to get from your current data to the desired format
+###Write them out!
+&lt;img src="slide_img/dplyr_hex.jpg" width=30%&gt;
+&lt;img src="slide_img/dplyr_verbs.jpg" width=60%&gt;
+---
+class: bg-main1 font_small
+
+```r
+library(tidyverse)
+
+#Data
+data &lt;- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("fair", "good", "bad", "good", "bad"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+
+options(tibble.width = Inf, width = 150)
+data
+```
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+---
+class: bg-main1
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+&lt;/br&gt;
+.font_large[
+Goal: calculate average GPA based on course rating
+]
+---
+class: bg-main1
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+&lt;/br&gt;
+.font_large[
+Goal: calculate average GPA based on course rating
+&lt;/br&gt;
+1. `filter` observations with no GPA value
+]
+---
+class: bg-main1
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+&lt;/br&gt;
+.font_large[
+Goal: calculate average GPA based on course rating
+&lt;/br&gt;
+1. `filter` observations with no GPA value
+&lt;/br&gt;
+&lt;/br&gt;
+2. `select` columns of interest
+]
+---
+class: bg-main1
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+&lt;/br&gt;
+.font_large[
+Goal: calculate average GPA based on course rating
+&lt;/br&gt;
+1. `filter` observations with no GPA value
+&lt;/br&gt;
+&lt;/br&gt;
+2. `select` columns of interest
+&lt;/br&gt;
+&lt;/br&gt;
+3. `group_by` course rating
+]
+---
+class: bg-main1
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+&lt;/br&gt;
+.font_large[
+Goal: calculate average GPA based on course rating
+&lt;/br&gt;
+1. `filter` observations with no GPA value
+&lt;/br&gt;
+&lt;/br&gt;
+2. `select` columns of interest
+&lt;/br&gt;
+&lt;/br&gt;
+3. `group_by` course rating
+&lt;/br&gt;
+&lt;/br&gt;
+4. `summarize` GPA as mean value
+]
+
+---
+class: bg-main1
+#Sidebar: WTF is .yellow[`%&gt;%`]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[`input %&gt;% operation`]
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[read as .yellow["pipe to"] or .yellow["THEN"]]
+---
+class: bg-main1
+##Goal: calculate average GPA based on course rating
+.font_medium[
+1. `filter` observations with no GPA value
+&lt;/br&gt;
+&lt;/br&gt;
+2. `select` columns of interest
+&lt;/br&gt;
+&lt;/br&gt;
+3. `group_by` course rating
+&lt;/br&gt;
+&lt;/br&gt;
+4. `summarize` GPA as mean value
+]
+###Make a new dataframe for each step
+
+```r
+data2 &lt;- filter(data, is.na(subject_GPA) == FALSE)
+data3 &lt;- select(data2, subject_GPA, course_rating)
+data4 &lt;- group_by(data3, course_rating)
+data5 &lt;- summarize(data4, avg_GPA = mean(subject_GPA))
+```
+--
+###Replace the old data for each step
+
+```r
+data &lt;- filter(data, is.na(subject_GPA) == FALSE)
+data &lt;- select(data, subject_GPA, course_rating)
+data &lt;- group_by(data, course_rating)
+data &lt;- summarize(data, avg_GPA = mean(subject_GPA))
+```
+---
+class: bg-main1
+##Write a nested expression
+
+```r
+avg_gpa &lt;- 
+  summarize(
+    group_by(
+      select(
+        filter(data, is.na(subject_GPA) == FALSE),
+      subject_GPA, course_rating),
+    course_rating),
+  avg_GPA = mean(subject_GPA))
+```
+--
+&lt;img src="slide_img/my_eyes.gif" width=50%&gt;
+---
+class: bg-main1
+##The dplyr way
+
+```r
+avg_gpa &lt;- data %&gt;%
+  filter(is.na(subject_GPA) == F) %&gt;%
+  select(subject_GPA, course_rating) %&gt;%
+  group_by(course_rating) %&gt;%
+  summarize(avg_GPA = mean(subject_GPA))
+```
+--
+
+```
+## # A tibble: 3 x 2
+##   course_rating avg_GPA
+##   &lt;chr&gt;           &lt;dbl&gt;
+## 1 bad              3   
+## 2 fair             2.2 
+## 3 good             3.75
+```
+---
+class: bg-main1
+#Make a messy table into polished format
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 ok                    2.2 Biology             
+## 2      23112 female               20 great                 3.8 biology/statistics  
+## 3      45765 female               20 terrible              3   Anthropology        
+## 4      92992 male                 18 amazing               3.7 anthropology/Biology
+## 5      85828 male                 18 horrible             NA   Anthropology
+```
+##What we want to do:
+&lt;/br&gt;
+.font_large[
+1. Standardize the `course_rating` categories
+]
+---
+class: bg-main1
+#Make a messy table into polished format
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 ok                    2.2 Biology             
+## 2      23112 female               20 great                 3.8 biology/statistics  
+## 3      45765 female               20 terrible              3   Anthropology        
+## 4      92992 male                 18 amazing               3.7 anthropology/Biology
+## 5      85828 male                 18 horrible             NA   Anthropology
+```
+##What we want to do:
+&lt;/br&gt;
+.font_large[
+1. Standardize the `course_rating` categories
+&lt;/br&gt;
+&lt;/br&gt;
+2. Clean up the `subject_major` column
+]
+---
+class: bg-main1
+#Make a messy table into polished format
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 ok                    2.2 Biology             
+## 2      23112 female               20 great                 3.8 biology/statistics  
+## 3      45765 female               20 terrible              3   Anthropology        
+## 4      92992 male                 18 amazing               3.7 anthropology/Biology
+## 5      85828 male                 18 horrible             NA   Anthropology
+```
+##What we want to do:
+&lt;/br&gt;
+.font_large[
+1. Standardize the `course_rating` categories
+&lt;/br&gt;
+&lt;/br&gt;
+2. Clean up the `subject_major` column
+&lt;/br&gt;
+&lt;/br&gt;
+3. Reorder and rename the columns
+]
+---
+class: bg-main1
+#Make a messy table into polished format
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 ok                    2.2 Biology             
+## 2      23112 female               20 great                 3.8 biology/statistics  
+## 3      45765 female               20 terrible              3   Anthropology        
+## 4      92992 male                 18 amazing               3.7 anthropology/Biology
+## 5      85828 male                 18 horrible             NA   Anthropology
+```
+
+```r
+data %&gt;% 
+  mutate(course_rating = 
+           case_when(
+             course_rating == "ok" ~ "fair",
+             course_rating == "great" | course_rating == "amazing" ~ "good",
+             course_rating == "terrible" | course_rating == "horrible" ~ "bad"
+        ))
+```
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 fair                  2.2 Biology             
+## 2      23112 female               20 good                  3.8 biology/statistics  
+## 3      45765 female               20 bad                   3   Anthropology        
+## 4      92992 male                 18 good                  3.7 anthropology/Biology
+## 5      85828 male                 18 bad                  NA   Anthropology
+```
+---
+class: bg-main1
+#Make a messy table into polished format
+
+```
+## # A tibble: 5 x 6
+##   subject_ID subject_sex subject_age course_rating subject_GPA subject_major       
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;               
+## 1      15243 male                 22 ok                    2.2 Biology             
+## 2      23112 female               20 great                 3.8 biology/statistics  
+## 3      45765 female               20 terrible              3   Anthropology        
+## 4      92992 male                 18 amazing               3.7 anthropology/Biology
+## 5      85828 male                 18 horrible             NA   Anthropology
+```
+
+```r
+data %&gt;%
+  mutate(subject_major = tolower(subject_major)) %&gt;%
+  tidyr::separate(subject_major, into = c("major_1", "major_2"), sep="/") %&gt;%
+  mutate(double_major = 
+           case_when(
+             is.na(major_2) == FALSE ~ "yes",
+             is.na(major_2) == TRUE ~ "no"
+        ))
+```
+
+```
+## # A tibble: 5 x 8
+##   subject_ID subject_sex subject_age course_rating subject_GPA major_1      major_2    double_major
+##        &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;       
+## 1      15243 male                 22 fair                  2.2 biology      &lt;NA&gt;       no          
+## 2      23112 female               20 good                  3.8 biology      statistics yes         
+## 3      45765 female               20 bad                   3   anthropology &lt;NA&gt;       no          
+## 4      92992 male                 18 good                  3.7 anthropology biology    yes         
+## 5      85828 male                 18 bad                  NA   anthropology &lt;NA&gt;       no
+```
+---
+class: bg-main1
+#Make a messy table into polished format
+
+```r
+data %&gt;%
+  arrange(course_rating) %&gt;%
+  select("Subject ID" = subject_ID, 
+         "Course Rating" = course_rating, 
+         "Subject Age" = subject_age,
+         "Subject GPA" = subject_GPA,
+         "Double Major" = double_major,
+         "First Major" = major_1,
+         "Second Major" = major_2)
+```
+
+```
+## # A tibble: 5 x 7
+##   `Subject ID` `Course Rating` `Subject Age` `Subject GPA` `Double Major` `First Major` `Second Major`
+##          &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;         &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;         
+## 1        45765 bad                        20           3   no             anthropology  &lt;NA&gt;          
+## 2        85828 bad                        18          NA   no             anthropology  &lt;NA&gt;          
+## 3        15243 fair                       22           2.2 no             biology       &lt;NA&gt;          
+## 4        23112 good                       20           3.8 yes            biology       statistics    
+## 5        92992 good                       18           3.7 yes            anthropology  biology
+```
+---
+class: bg-main1
+#One more example: .yellow[wide] to .yellow[long] format
+.pull-left[&lt;img src="slide_img/wide_vs_long.png" width=30%&gt;]
+.pull-right.font_medium[
++ Generally, wide format is better for presentation, and long format is better for plotting or doing analysis
++ But these are also useful functions for general data wrangling
+]
+---
+class: bg-main1
+#.yellow[Wide] to .yellow[long] format
+
+###Here's our .yellow[wide] format data:
+
+```
+## # A tibble: 4 x 5
+##   subject_ID course_rating grade_1 grade_2 grade_3
+##        &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1      15243 fair               70      65      83
+## 2      23112 good               95      94      91
+## 3      45765 bad                80      86      89
+## 4      92992 good               92      87     100
+```
+###Go from .yellow[wide] to .yellow[long] format with `tidyr::gather()`
+
+```r
+plot_data &lt;- data %&gt;%
+  select(-subject_ID) %&gt;%
+  tidyr::gather(key = subject_attribute, value = value, -course_rating)
+```
+
+```
+## # A tibble: 12 x 3
+##    course_rating subject_attribute value
+##    &lt;chr&gt;         &lt;chr&gt;             &lt;dbl&gt;
+##  1 fair          grade_1              70
+##  2 good          grade_1              95
+##  3 bad           grade_1              80
+##  4 good          grade_1              92
+##  5 fair          grade_2              65
+##  6 good          grade_2              94
+##  7 bad           grade_2              86
+##  8 good          grade_2              87
+##  9 fair          grade_3              83
+## 10 good          grade_3              91
+## 11 bad           grade_3              89
+## 12 good          grade_3             100
+```
+---
+class: bg-main1
+#.yellow[Wide] to .yellow[long] format
+
+```r
+ggplot(plot_data, aes(x = course_rating, y = value, color = subject_attribute)) + 
+  geom_point(size = 3) + 
+  scale_color_viridis_d() + 
+  theme_light()
+```
+
+![](intro_R_anthropology_2018_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+---
+class: split-two with-border border-white fade-row1-col1 fade-row2-col1
+
+.column[
+  .split-three[
+  .row.bg-main1[.content.font2[
+Write .yellow[organized] and .yellow[portable] R code
+  ]]
+  .row.bg-main2[.content.font2[
+Write .yellow[readable] R code
+  ]]
+  .row.bg-main3[.content.font2[
+Document, share, and .yellow[learn] more R code
+]]
+]]
+
+.column.bg-main1[.content.center.vmiddle[
+&lt;img src="slide_img/r4ds.png" width=30%&gt;
+]]
+---
+class: bg-main1 vmiddle center
+#A plug for (maybe) my .yellow[favorite] thing in R
+---
+class: bg-main1
+##.yellow[Document] your analyses, make a .yellow[website], write your .yellow[thesis], make .yellow[slides]... the world is your oyster!
+.center[&lt;img src="slide_img/rmarkdown_universe.jpg" width=100%&gt;]
+---
+class: bg-main1
+#Where can I .yellow[learn] more&lt;/br&gt;
+--
+Read this (free) book
+.font_large[http://r4ds.had.co.nz/]
+&lt;img src="slide_img/hadley.jpg" width=20%&gt;
+&lt;img src="slide_img/r4ds.png" width=30%&gt;
+---
+class: bg-main1
+#And this one!
+.center[&lt;img src="slide_img/r_markdown_book.jpg" width=30%&gt;]
+---
+class: bg-main1
+#Where can I .yellow[learn] more &lt;/br&gt;
+--
+The #rstats community!
+&lt;img src="slide_img/twitter.jpg" width=15%&gt;
+&lt;img src="slide_img/stack_overflow.png" width=20%&gt;
+&lt;img src="slide_img/R_ladies.png" width=15%&gt;
+&lt;/br&gt;
+&lt;/br&gt;
+.font_large[Monday's @3:00--We R: PSU useR group]
+&lt;/br&gt;
+.font_medium[October 29th: learn how to make websites in R from your's truly]
+&lt;/br&gt;
+.font_large[@dataandme @JennyBryan @WeAreRLadies] &lt;/br&gt;&lt;/br&gt;
+--
+.font_large[Cheat sheets! &lt;/br&gt;]
+https://www.rstudio.com/resources/cheatsheets/ &lt;/br&gt;&lt;/br&gt;
+--
+.font_large[R bloggers &lt;/br&gt;]
+amazing data wrangling with dplyr tutorial: https://suzan.rbind.io/categories/tutorial/ &lt;/br&gt;&lt;/br&gt;
+--
+.font_large[How to google (I have to google 80% of what I do in R)&lt;/br&gt;]
+http://datacarpentry.org/semester-biology/materials/googling-for-help/
+---
+class: bg-main1 center
+#Thanks!
+
+&lt;img src="slide_img/thank_you.gif" width=80%&gt;
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

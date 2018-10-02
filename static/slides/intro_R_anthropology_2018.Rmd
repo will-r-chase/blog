@@ -15,26 +15,34 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
-
+exclude: true
+<style type="text/css">
+code.r{
+  font-size: 16px;
+}
+pre {
+  font-size: 16px !important;
+}
+</style>
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 ```
-
-class: middle center bg-main1
+---
+class: bg-main1
 
 # Why am I here?
 
 --
-### -Teach you how to code in R `r emo::ji("x")`
+### Teach you how to code in R `r emo::ji("x")`
 
 --
-### -Teach you how you *should* use R `r emo::ji("heavy_check_mark")`
+### Teach you how you *should* use R `r emo::ji("heavy_check_mark")`
 
 --
-### -Teach you how to make writing R code enjoyable `r emo::ji("heavy_check_mark")`
+### Teach you how to make writing R code enjoyable `r emo::ji("heavy_check_mark")`
 
 --
-### -Teach you how to learn R `r emo::ji("heavy_check_mark")`
+### Teach you how to learn R `r emo::ji("heavy_check_mark")`
 
 ---
 class: middle bg-main1
@@ -169,7 +177,7 @@ class: bg-main1
 ###Setting your working directory (path)
 </br>
 </br>
-`setwd(C:/users/will/my_data)`
+`setwd("C:/users/will/my_data")`
 </br>
 </br>
 `getwd()`
@@ -192,7 +200,7 @@ class: bg-main1
 --
 </br>
 </br>
-.font_large[`setwd(will/folder-that-only-exists-on-this-computer)`]
+.font_large[`setwd("will/folder-that-only-exists-on-this-computer")`]
 
 ---
 class: bg-main1 vmiddle center
@@ -386,7 +394,7 @@ class: bg-main1
 + Makes coding simpler
 </br>
 </br>
-+ Makes code human-readable
++ Makes code more human-readable
 ]
 ---
 class: bg-main1
@@ -397,9 +405,491 @@ class: bg-main1
 + Makes coding simpler
 </br>
 </br>
-+ Makes code human-readable
++ Makes code more human-readable
 </br>
 </br>
 + Makes coding more fun and enjoyable
 ]
 ---
+class: bg-main1
+#Writing .yellow[readable] code
+</br>
+</br>
+--
+.blockquote.font_large[
+Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live.</br>
+-_John Woods_
+]
+--
+</br>
+</br>
+.font_large[Spoiler alert: ]
+
+---
+class: bg-main1
+#Writing .yellow[readable] code
+</br>
+</br>
+
+.blockquote.font_large[
+Always code as if the guy who ends up maintaining your code will be a .yellow[violent psychopath who knows where you live.]</br>
+-_John Woods_
+]
+</br>
+</br>
+.font_large[Spoiler alert: .yellow[that's you]]
+---
+class: bg-main1
+#Writing .yellow[readable] code
+</br>
+</br>
+##Envison how you want your data to look, then map out the steps to get from your current data to the desired format
+###Write them out!
+<img src="slide_img/dplyr_hex.jpg" width=30%>
+<img src="slide_img/dplyr_verbs.jpg" width=60%>
+---
+class: bg-main1 font_small
+```{r message = F}
+library(tidyverse)
+
+#Data
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("fair", "good", "bad", "good", "bad"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+
+options(tibble.width = Inf, width = 150)
+data
+```
+---
+class: bg-main1
+```{r echo=F}
+options(tibble.width = Inf, width = 150)
+data
+```
+</br>
+.font_large[
+Goal: calculate average GPA based on course rating
+]
+---
+class: bg-main1
+```{r echo=F}
+options(tibble.width = Inf, width = 150)
+data
+```
+</br>
+.font_large[
+Goal: calculate average GPA based on course rating
+</br>
+1. `filter` observations with no GPA value
+]
+---
+class: bg-main1
+```{r echo=F}
+options(tibble.width = Inf, width = 150)
+data
+```
+</br>
+.font_large[
+Goal: calculate average GPA based on course rating
+</br>
+1. `filter` observations with no GPA value
+</br>
+</br>
+2. `select` columns of interest
+]
+---
+class: bg-main1
+```{r echo=F}
+options(tibble.width = Inf, width = 150)
+data
+```
+</br>
+.font_large[
+Goal: calculate average GPA based on course rating
+</br>
+1. `filter` observations with no GPA value
+</br>
+</br>
+2. `select` columns of interest
+</br>
+</br>
+3. `group_by` course rating
+]
+---
+class: bg-main1
+```{r echo=F}
+options(tibble.width = Inf, width = 150)
+data
+```
+</br>
+.font_large[
+Goal: calculate average GPA based on course rating
+</br>
+1. `filter` observations with no GPA value
+</br>
+</br>
+2. `select` columns of interest
+</br>
+</br>
+3. `group_by` course rating
+</br>
+</br>
+4. `summarize` GPA as mean value
+]
+
+---
+class: bg-main1
+#Sidebar: WTF is .yellow[`%>%`]
+</br>
+</br>
+.font_large[`input %>% operation`]
+</br>
+</br>
+.font_large[read as .yellow["pipe to"] or .yellow["THEN"]]
+---
+class: bg-main1
+##Goal: calculate average GPA based on course rating
+.font_medium[
+1. `filter` observations with no GPA value
+</br>
+</br>
+2. `select` columns of interest
+</br>
+</br>
+3. `group_by` course rating
+</br>
+</br>
+4. `summarize` GPA as mean value
+]
+###Make a new dataframe for each step
+```{r eval=F}
+data2 <- filter(data, is.na(subject_GPA) == FALSE)
+data3 <- select(data2, subject_GPA, course_rating)
+data4 <- group_by(data3, course_rating)
+data5 <- summarize(data4, avg_GPA = mean(subject_GPA))
+```
+--
+###Replace the old data for each step
+```{r eval=F}
+data <- filter(data, is.na(subject_GPA) == FALSE)
+data <- select(data, subject_GPA, course_rating)
+data <- group_by(data, course_rating)
+data <- summarize(data, avg_GPA = mean(subject_GPA))
+```
+---
+class: bg-main1
+##Write a nested expression
+```{r eval=F}
+avg_gpa <- 
+  summarize(
+    group_by(
+      select(
+        filter(data, is.na(subject_GPA) == FALSE),
+      subject_GPA, course_rating),
+    course_rating),
+  avg_GPA = mean(subject_GPA))
+```
+--
+<img src="slide_img/my_eyes.gif" width=50%>
+---
+class: bg-main1
+##The dplyr way
+```{r}
+avg_gpa <- data %>%
+  filter(is.na(subject_GPA) == F) %>%
+  select(subject_GPA, course_rating) %>%
+  group_by(course_rating) %>%
+  summarize(avg_GPA = mean(subject_GPA))
+```
+--
+```{r echo=F}
+avg_gpa
+```
+---
+class: bg-main1
+#Make a messy table into polished format
+```{r echo=F}
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("ok", "great", "terrible", "amazing", "horrible"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+options(tibble.width = Inf, width = 150)
+data
+```
+##What we want to do:
+</br>
+.font_large[
+1. Standardize the `course_rating` categories
+]
+---
+class: bg-main1
+#Make a messy table into polished format
+```{r echo=F}
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("ok", "great", "terrible", "amazing", "horrible"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+options(tibble.width = Inf, width = 150)
+data
+```
+##What we want to do:
+</br>
+.font_large[
+1. Standardize the `course_rating` categories
+</br>
+</br>
+2. Clean up the `subject_major` column
+]
+---
+class: bg-main1
+#Make a messy table into polished format
+```{r echo=F}
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("ok", "great", "terrible", "amazing", "horrible"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+options(tibble.width = Inf, width = 150)
+data
+```
+##What we want to do:
+</br>
+.font_large[
+1. Standardize the `course_rating` categories
+</br>
+</br>
+2. Clean up the `subject_major` column
+</br>
+</br>
+3. Reorder and rename the columns
+]
+---
+class: bg-main1
+#Make a messy table into polished format
+```{r echo=F}
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("ok", "great", "terrible", "amazing", "horrible"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+options(tibble.width = Inf, width = 150)
+data
+```
+```{r warning=F, message=F}
+data %>% 
+  mutate(course_rating = 
+           case_when(
+             course_rating == "ok" ~ "fair",
+             course_rating == "great" | course_rating == "amazing" ~ "good",
+             course_rating == "terrible" | course_rating == "horrible" ~ "bad"
+        ))
+```
+---
+class: bg-main1
+#Make a messy table into polished format
+```{r echo=F}
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992, 85828),
+  subject_sex = c("male", "female", "female", "male", "male"),
+  subject_age = c(22, 20, 20, 18, 18),
+  course_rating = c("ok", "great", "terrible", "amazing", "horrible"),
+  subject_GPA = c(2.2, 3.8, 3.0, 3.7, NA),
+  subject_major = c("Biology", "biology/statistics", "Anthropology", "anthropology/Biology", "Anthropology")
+)
+options(tibble.width = Inf, width = 150)
+data
+```
+```{r warning=F, message=F, eval=F}
+data %>%
+  mutate(subject_major = tolower(subject_major)) %>%
+  tidyr::separate(subject_major, into = c("major_1", "major_2"), sep="/") %>%
+  mutate(double_major = 
+           case_when(
+             is.na(major_2) == FALSE ~ "yes",
+             is.na(major_2) == TRUE ~ "no"
+        ))
+```
+```{r echo=F, warning=F}
+data %>% 
+  mutate(course_rating = 
+           case_when(
+             course_rating == "ok" ~ "fair",
+             course_rating == "great" | course_rating == "amazing" ~ "good",
+             course_rating == "terrible" | course_rating == "horrible" ~ "bad"
+        )) %>%
+  mutate(subject_major = tolower(subject_major)) %>%
+  tidyr::separate(subject_major, into = c("major_1", "major_2"), sep="/") %>%
+  mutate(double_major = 
+           case_when(
+             is.na(major_2) == FALSE ~ "yes",
+             is.na(major_2) == TRUE ~ "no"
+        ))
+```
+---
+class: bg-main1
+#Make a messy table into polished format
+```{r eval=F}
+data %>%
+  arrange(course_rating) %>%
+  select("Subject ID" = subject_ID, 
+         "Course Rating" = course_rating, 
+         "Subject Age" = subject_age,
+         "Subject GPA" = subject_GPA,
+         "Double Major" = double_major,
+         "First Major" = major_1,
+         "Second Major" = major_2)
+```
+```{r echo=F, warning=F}
+data %>% 
+  mutate(course_rating = 
+           case_when(
+             course_rating == "ok" ~ "fair",
+             course_rating == "great" | course_rating == "amazing" ~ "good",
+             course_rating == "terrible" | course_rating == "horrible" ~ "bad"
+        )) %>%
+  mutate(subject_major = tolower(subject_major)) %>%
+  tidyr::separate(subject_major, into = c("major_1", "major_2"), sep="/") %>%
+  mutate(double_major = 
+           case_when(
+             is.na(major_2) == FALSE ~ "yes",
+             is.na(major_2) == TRUE ~ "no"
+        )) %>%
+  arrange(course_rating) %>%
+  select("Subject ID" = subject_ID, 
+         "Course Rating" = course_rating, 
+         "Subject Age" = subject_age,
+         "Subject GPA" = subject_GPA,
+         "Double Major" = double_major,
+         "First Major" = major_1,
+         "Second Major" = major_2)
+```
+---
+class: bg-main1
+#One more example: .yellow[wide] to .yellow[long] format
+.pull-left[<img src="slide_img/wide_vs_long.png" width=30%>]
+.pull-right.font_medium[
++ Generally, wide format is better for presentation, and long format is better for plotting or doing analysis
++ But these are also useful functions for general data wrangling
+]
+---
+class: bg-main1
+#.yellow[Wide] to .yellow[long] format
+
+###Here's our .yellow[wide] format data:
+```{r echo=F}
+data <- tibble(
+  subject_ID = c(15243, 23112, 45765, 92992),
+  course_rating = c("fair", "good", "bad", "good"),
+  grade_1 = c(70, 95, 80, 92),
+  grade_2 = c(65, 94, 86, 87), 
+  grade_3 = c(83, 91, 89, 100)
+)
+
+data
+```
+###Go from .yellow[wide] to .yellow[long] format with `tidyr::gather()`
+```{r}
+plot_data <- data %>%
+  select(-subject_ID) %>%
+  tidyr::gather(key = subject_attribute, value = value, -course_rating)
+```
+```{r echo=F}
+plot_data
+```
+---
+class: bg-main1
+#.yellow[Wide] to .yellow[long] format
+```{r fig.width=7, fig.height=6}
+ggplot(plot_data, aes(x = course_rating, y = value, color = subject_attribute)) + 
+  geom_point(size = 3) + 
+  scale_color_viridis_d() + 
+  theme_light()
+```
+---
+class: split-two with-border border-white fade-row1-col1 fade-row2-col1
+
+.column[
+  .split-three[
+  .row.bg-main1[.content.font2[
+Write .yellow[organized] and .yellow[portable] R code
+  ]]
+  .row.bg-main2[.content.font2[
+Write .yellow[readable] R code
+  ]]
+  .row.bg-main3[.content.font2[
+Document, share, and .yellow[learn] more R code
+]]
+]]
+
+.column.bg-main1[.content.center.vmiddle[
+<img src="slide_img/r4ds.png" width=30%>
+]]
+---
+class: bg-main1 vmiddle center
+#A plug for (maybe) my .yellow[favorite] thing in R
+---
+class: bg-main1
+##.yellow[Document] your analyses, make a .yellow[website], write your .yellow[thesis], make .yellow[slides]... the world is your oyster!
+.center[<img src="slide_img/rmarkdown_universe.jpg" width=100%>]
+---
+class: bg-main1
+#Where can I .yellow[learn] more</br>
+--
+Read this (free) book
+.font_large[http://r4ds.had.co.nz/]
+<img src="slide_img/hadley.jpg" width=20%>
+<img src="slide_img/r4ds.png" width=30%>
+---
+class: bg-main1
+#And this one!
+.center[<img src="slide_img/r_markdown_book.jpg" width=30%>]
+---
+class: bg-main1
+#Where can I .yellow[learn] more </br>
+--
+The #rstats community!
+<img src="slide_img/twitter.jpg" width=15%>
+<img src="slide_img/stack_overflow.png" width=20%>
+<img src="slide_img/R_ladies.png" width=15%>
+</br>
+</br>
+.font_large[Monday's @3:00--We R: PSU useR group]
+</br>
+.font_medium[October 29th: learn how to make websites in R from your's truly]
+</br>
+.font_large[@dataandme @JennyBryan @WeAreRLadies] </br></br>
+--
+.font_large[Cheat sheets! </br>]
+https://www.rstudio.com/resources/cheatsheets/ </br></br>
+--
+.font_large[R bloggers </br>]
+amazing data wrangling with dplyr tutorial: https://suzan.rbind.io/categories/tutorial/ </br></br>
+--
+.font_large[How to google (I have to google 80% of what I do in R)</br>]
+http://datacarpentry.org/semester-biology/materials/googling-for-help/
+---
+class: bg-main1 center
+#Thanks!
+
+<img src="slide_img/thank_you.gif" width=80%>
+
+
