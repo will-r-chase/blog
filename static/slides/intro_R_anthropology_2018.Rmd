@@ -99,7 +99,7 @@ class: bg-main1
 .blockquote.font_large[
 One day you will need to quit R, go do something else and return to your analysis later.</br></br>
 One day you will have multiple analyses going that use R and you want to keep them separate.</br></br>
-One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.</br>
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back out into the world.
 ]
  
 ---
@@ -109,7 +109,7 @@ class: bg-main1
 .blockquote.font_large[
 One day you will need to quit R, go do something else and return to your analysis later.</br></br>
 One day you will have multiple analyses going that use R and you want to keep them separate.</br></br>
-One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.</br>
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back out into the world.
 </br> 
 </br>
 To handle these real life situations, you need to make two decisions:</br>
@@ -122,7 +122,7 @@ class: bg-main1
 .blockquote.font_large[
 One day you will need to quit R, go do something else and return to your analysis later.</br></br>
 One day you will have multiple analyses going that use R and you want to keep them separate.</br></br>
-One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.</br>
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back out into the world.
 </br> 
 </br>
 To handle these real life situations, you need to make two decisions:</br>
@@ -136,7 +136,7 @@ class: bg-main1
 .blockquote.font_large[
 One day you will need to quit R, go do something else and return to your analysis later.</br></br>
 One day you will have multiple analyses going that use R and you want to keep them separate.</br></br>
-One day you will need to bring data from the outside world into R and send numerical results and figures from R back    out into the world.</br>
+One day you will need to bring data from the outside world into R and send numerical results and figures from R back out into the world.
 </br> 
 </br>
 To handle these real life situations, you need to make two decisions:</br>
@@ -310,9 +310,9 @@ class: bg-main1 vmiddle center
 class: bg-main1
 #Integrate GitHub with R projects
 
-.float-left[<img src="slide_img/project_options.png" width=50%>]
+.float-left[<img src="slide_img/project_options.png" width=40%>]
 --
-.float-right[<img src="slide_img/git_R.png" width=50%>]
+.float-right[<img src="slide_img/git_R.png" width=40%>]</br>
 --
 .font_large[This guide by Hadley Wickham is my all-time favorite explanation of git/github and how it integrates with R]
 </br>
@@ -445,8 +445,8 @@ class: bg-main1
 </br>
 ##Envison how you want your data to look, then map out the steps to get from your current data to the desired format
 ###Write them out!
-<img src="slide_img/dplyr_hex.jpg" width=30%>
-<img src="slide_img/dplyr_verbs.jpg" width=60%>
+<img src="slide_img/dplyr_hex.jpg" width=20%>
+<img src="slide_img/dplyr_verbs.jpg" width=50%>
 ---
 class: bg-main1 font_small
 ```{r message = F}
@@ -792,9 +792,7 @@ class: bg-main1
 ]
 ---
 class: bg-main1
-#.yellow[Wide] to .yellow[long] format
-
-###Here's our .yellow[wide] format data:
+.font_large[Here's our .yellow[wide] format data:]
 ```{r echo=F}
 data <- tibble(
   subject_ID = c(15243, 23112, 45765, 92992),
@@ -803,10 +801,9 @@ data <- tibble(
   grade_2 = c(65, 94, 86, 87), 
   grade_3 = c(83, 91, 89, 100)
 )
-
 data
 ```
-###Go from .yellow[wide] to .yellow[long] format with `tidyr::gather()`
+.font_large[Go from .yellow[wide] to .yellow[long] format with `tidyr::gather()`]
 ```{r}
 plot_data <- data %>%
   select(-subject_ID) %>%
@@ -849,7 +846,7 @@ class: bg-main1 vmiddle center
 ---
 class: bg-main1
 ##.yellow[Document] your analyses, make a .yellow[website], write your .yellow[thesis], make .yellow[slides]... the world is your oyster!
-.center[<img src="slide_img/rmarkdown_universe.jpg" width=100%>]
+.center[<img src="slide_img/rmarkdown_universe.jpg" width=85%>]
 ---
 class: bg-main1
 #Where can I .yellow[learn] more</br>
@@ -865,11 +862,20 @@ class: bg-main1
 ---
 class: bg-main1
 #Where can I .yellow[learn] more </br>
+</br></br>
+#Stat545 from UBC with @JennyBryan
+</br>
+</br>
+.font_large[http://stat545.com/topics.html]
+<img src="slide_img/jenny_bryan.jpg" width=30%>
+---
+class: bg-main1
+#Where can I .yellow[learn] more </br>
 --
-The #rstats community!
-<img src="slide_img/twitter.jpg" width=15%>
+.font_small[The #rstats community!]
+<img src="slide_img/twitter.jpg" width=10%>
 <img src="slide_img/stack_overflow.png" width=20%>
-<img src="slide_img/R_ladies.png" width=15%>
+<img src="slide_img/R_ladies.png" width=10%>
 </br>
 </br>
 .font_large[Monday's @3:00--We R: PSU useR group]
@@ -891,5 +897,16 @@ class: bg-main1 center
 #Thanks!
 
 <img src="slide_img/thank_you.gif" width=80%>
+---
+class: bg-main1 
+#Bonus!
+
+##Learn some ggplot with interactive addin esquisse
+
+`install.packages("esquisse")`</br>
+`data(iris)`</br>
+`esquisse:::esquisser()`</br>
+<img src="slide_img/esquisse.gif" width=50%>
+
 
 
