@@ -94,6 +94,12 @@ class: fade-row2-col1 fade-row3-col1
 ---
 layout: false
 class: bg-main1
+#First, some .yellow[terminology]
+
+.center[<img src="slide_img/rstudio.png" width=60%>]
+---
+layout: false
+class: bg-main1
 
 # Making your R work .yellow[organized] and .yellow[portable]
 .blockquote.font_large[
