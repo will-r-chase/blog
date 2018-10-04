@@ -15,7 +15,11 @@ weight = 60
 
 +++
 
-**Here are the slides from my presentations**
+**Here are the slides from my talks**
 
 - [PSU Anthropology Department (2018): What I Wish I Knew When I Started R](/slides/intro_R_anthropology_2018.html)
 
+
+**Here are PDFs of my posters**
+
+- [PSU Bioinformatics and Genomics Retreat (2018): Microbial Expansin Evolution](/slides/microbial_expansin_evolution.pdf)
