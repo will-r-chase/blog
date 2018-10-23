@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Making websites in R with Blogdown</title>
+    <meta charset="utf-8">
+    <meta name="author" content="  Will Chase" />
+    <link rel="stylesheet" href="assets\shinobi.css" type="text/css" />
+    <link rel="stylesheet" href="assets\ninpo.css" type="text/css" />
+    <link rel="stylesheet" href="assets\ninjutsu.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Making websites in R with Blogdown
+### <br><br>Will Chase
+### <br><br>29-10-2018
+
+---
+
+exclude: true
+&lt;style type="text/css"&gt;
+code.r{
+  font-size: 16px;
+}
+pre {
+  font-size: 16px !important;
+}
+&lt;/style&gt;
+
+---
+class: bg-main1
+# What are we going to cover?
+&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;
+--
+##What is Blogdown? Why should I use it?
+
+--
+##Building and customizing a website
+
+--
+##Pro tips and where to learn more
+
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[&lt;img src="slide_img/rmarkdown_universe.jpg" width=90%&gt;]
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[&lt;img src="slide_img/rmarkdown_universe2.jpg" width=90%&gt;]
+---
+class: bg-main1
+# Rmarkdown: combine code and text
+.center[&lt;img src="slide_img/rmarkdown_example.jpg" width = 90%&gt;]
+---
+class: bg-main1
+# You can do .yellow[whaaaat]?
+
+Some things you can do in rmarkdown:
+.font_large[
++ collapsable text/code
++ embedded html widgets or shiny apps
++ multiple tabs
++ fancy bootstrap styling
++ execute non-R code (SQL, python, C++, Java, more)
++ pretty much anything if you know some HTML/CSS
+]
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[&lt;img src="slide_img/rmarkdown_universe.jpg" width=90%&gt;]
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[&lt;img src="slide_img/rmarkdown_universe3.jpg" width=90%&gt;]
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+&lt;/br&gt;&lt;/br&gt;
+## Blogdown is .yellow[fast]
+.float-right[&lt;img src="slide_img/fast_doggo.jpg" width = 40%&gt;]
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+&lt;/br&gt;&lt;/br&gt;
+## Blogdown is .yellow[fast]
+&lt;/br&gt;&lt;/br&gt;
+## If you blog about .yellow[R], Blogdown is for you!
+.float-right[&lt;img src="slide_img/rmarkdown_hex.png" width = 40%&gt;]
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+&lt;/br&gt;&lt;/br&gt;
+## Blogdown is .yellow[fast]
+&lt;/br&gt;&lt;/br&gt;
+## If you blog about .yellow[R], Blogdown is for you!
+&lt;/br&gt;&lt;/br&gt;
+## Blogdown gives you .yellow[control]!
+.float-right[&lt;img src="slide_img/he_man.gif" width = 40%&gt;]
+---
+class: bg-main1
+# A Blogdown roadmap
+.center[&lt;img src="slide_img/blogdown_roadmap.jpg" width=90%&gt;]
+---
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

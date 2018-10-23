@@ -1,0 +1,114 @@
+---
+title: "Making websites in R with Blogdown"
+author: "<br><br>Will Chase"
+date: "<br><br>29-10-2018"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["assets/shinobi.css", "assets/ninpo.css", "assets/ninjutsu.css"]
+    seal: true
+    self_contained: false
+    nature:
+      ratio: "16:9"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+exclude: true
+<style type="text/css">
+code.r{
+  font-size: 16px;
+}
+pre {
+  font-size: 16px !important;
+}
+</style>
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+---
+class: bg-main1
+# What are we going to cover?
+</br></br></br>
+--
+##What is Blogdown? Why should I use it?
+
+--
+##Building and customizing a website
+
+--
+##Pro tips and where to learn more
+
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[<img src="slide_img/rmarkdown_universe.jpg" width=90%>]
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[<img src="slide_img/rmarkdown_universe2.jpg" width=90%>]
+---
+class: bg-main1
+# Rmarkdown: combine code and text
+.center[<img src="slide_img/rmarkdown_example.jpg" width = 90%>]
+---
+class: bg-main1
+# You can do .yellow[whaaaat]?
+
+Some things you can do in rmarkdown:
+.font_large[
++ collapsable text/code
++ embedded html widgets or shiny apps
++ multiple tabs
++ fancy bootstrap styling
++ execute non-R code (SQL, python, C++, Java, more)
++ pretty much anything if you know some HTML/CSS
+]
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[<img src="slide_img/rmarkdown_universe.jpg" width=90%>]
+---
+class: bg-main1
+# The Rmarkdown Universe
+
+.center[<img src="slide_img/rmarkdown_universe3.jpg" width=90%>]
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+</br></br>
+## Blogdown is .yellow[fast]
+.float-right[<img src="slide_img/fast_doggo.jpg" width = 40%>]
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+</br></br>
+## Blogdown is .yellow[fast]
+</br></br>
+## If you blog about .yellow[R], Blogdown is for you!
+.float-right[<img src="slide_img/rmarkdown_hex.png" width = 40%>]
+---
+class: bg-main1
+# Why use .yellow[Blogdown]?
+</br></br>
+## Blogdown is .yellow[fast]
+</br></br>
+## If you blog about .yellow[R], Blogdown is for you!
+</br></br>
+## Blogdown gives you .yellow[control]!
+.float-right[<img src="slide_img/he_man.gif" width = 40%>]
+---
+class: bg-main1
+# A Blogdown roadmap
+.center[<img src="slide_img/blogdown_roadmap.jpg" width=90%>]
+---
+
+
+
+
