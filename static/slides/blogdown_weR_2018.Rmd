@@ -28,9 +28,10 @@ options(htmltools.dir.version = FALSE)
 ```
 ---
 class: bg-main1
-# What are we going to cover?
+#What are we going to cover?
 </br></br></br>
 --
+
 ##What is Blogdown? Why should I use it?
 
 --
@@ -52,19 +53,19 @@ class: bg-main1
 ---
 class: bg-main1
 # Rmarkdown: combine code and text
-.center[<img src="slide_img/rmarkdown_example.jpg" width = 90%>]
+.center[<img src="slide_img/rmarkdown_example.jpg" width = 92%>]
 ---
 class: bg-main1
 # You can do .yellow[whaaaat]?
 
-Some things you can do in rmarkdown:
-.font_large[
-+ collapsable text/code
-+ embedded html widgets or shiny apps
-+ multiple tabs
-+ fancy bootstrap styling
-+ execute non-R code (SQL, python, C++, Java, more)
-+ pretty much anything if you know some HTML/CSS
+.font_large[Some things you can do in rmarkdown:
+
++ collapsable text/code</br></br>
++ embedded html widgets or shiny apps</br></br>
++ multiple tabs</br></br>
++ fancy bootstrap styling</br></br>
++ execute non-R code (SQL, python, C++, Java, more)</br></br>
++ pretty much anything if you know some HTML/CSS</br></br>
 ]
 ---
 class: bg-main1
@@ -80,35 +81,77 @@ class: bg-main1
 class: bg-main1
 # Why use .yellow[Blogdown]?
 ---
-class: bg-main1
+class: bg-main1 split-25
+.row[
 # Why use .yellow[Blogdown]?
 </br></br>
+]
+.row[
+.split-two[
+.column[
 ## Blogdown is .yellow[fast]
-.float-right[<img src="slide_img/fast_doggo.jpg" width = 40%>]
+]
+.column[
+<img src="slide_img/fast_doggo.jpg" width = 80%>
+]
+]
+]
 ---
-class: bg-main1
+class: bg-main1 split-25
+.row[
 # Why use .yellow[Blogdown]?
 </br></br>
+]
+.row[
+.split-two[
+.column[
 ## Blogdown is .yellow[fast]
 </br></br>
 ## If you blog about .yellow[R], Blogdown is for you!
-.float-right[<img src="slide_img/rmarkdown_hex.png" width = 40%>]
+]
+.column[
+<img src="slide_img/rmarkdown_hex.png" width = 50%>
+]
+]
+]
 ---
-class: bg-main1
+class: bg-main1 split-25
+.row[
 # Why use .yellow[Blogdown]?
 </br></br>
+]
+.row[
+.split-two[
+.column[
 ## Blogdown is .yellow[fast]
 </br></br>
 ## If you blog about .yellow[R], Blogdown is for you!
 </br></br>
 ## Blogdown gives you .yellow[control]!
-.float-right[<img src="slide_img/he_man.gif" width = 40%>]
+]
+.column[
+<img src="slide_img/he_man.gif" width = 80%>
+]
+]
+]
 ---
 class: bg-main1
 # A Blogdown roadmap
-.center[<img src="slide_img/blogdown_roadmap.jpg" width=90%>]
+.center[<img src="slide_img/blogdown_roadmap.jpg" width=93%>]
 ---
+class: bg-main1
+# Step 1: .yellow[setup]
 
+.font_large[`install.packages("blogdown")`]
 
+## If you don't have one, make a GitHub account, install git, and connect your Rstudio to GitHub
+.font_large[Follow this tutorial: <a href="http://r-pkgs.had.co.nz/git.html" target="_blank">http://r-pkgs.had.co.nz/git.html</a>]
+</br></br>
+--
+</br></br>
+## Browse the Hugo themes and decide on your favorite (I use the Academic theme)
+</br>
+.font_large[<a href="https://themes.gohugo.io/" target="_blank">https://themes.gohugo.io/</a>]
+---
 
 
