@@ -6,7 +6,7 @@ output:
   xaringan::moon_reader:
     lib_dir: libs
     css: ["assets/shinobi.css", "assets/ninpo.css", "assets/ninjutsu.css"]
-    seal: true
+    seal: false
     self_contained: false
     nature:
       ratio: "16:9"
@@ -27,7 +27,55 @@ pre {
 options(htmltools.dir.version = FALSE)
 ```
 ---
+class: split-two
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+.column.bg-main1[
+.font4[Making websites in R with the Blogdown package]
+</br></br></br></br>
+.font3[Will Chase]
+.font_large[We R: PSU useR group</br>
+Oct 29, 2018]
+</br>
+.font_large[
+<ul class="fa-ul">
+				<li><i class="fa-li fa fa-envelope" id="icon"></i><a href="mailto:wchase14@gmail.com" target="_blank">wchase14@gmail.com</a></li>
+				<li><i class="fa-li fa fa-user" id="icon"></i><a href="williamrchase.com" target="_blank">williamrchase.com</a></li>
+        <li><i class="fa-li fa fa-github" id="icon"></i><a href="https://github.com/will-r-chase" target="_blank">github.com/will-r-chase</a></li>
+        <li><i class="fa-li fa fa-twitter" id="icon"></i><a href="https://twitter.com/W_R_Chase" target="_blank">@W_R_Chase</a></li>
+			</ul>
+]
+]
+.column.bg-main3.center[
+<img src="slide_img/bad_bitches.gif" width=80%>
+]
+---
+class: bg-main1 split-two
+.column[
+#Women’s visibility in academic seminars: Women ask fewer questions than men
+</br></br></br>
+##Alecia J. Carter , Alyssa Croft, Dieter Lukas, Gillian M. Sandstrom
+##2018
+]
+.column[
+<img src="slide_img/women_questions.png" width=80%>
+]
+
+---
 class: bg-main1
+#Can we try something?
+</br></br></br>
+--
+
+##If you have questions, please tweet (do @ me) or email me
+</br></br>
+##You can write down your questions and I'll give a minute at the end to send them to me
+</br></br>
+##At the end I will pick questions and we can discuss
+--
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 #What are we going to cover?
 </br></br></br>
 --
@@ -42,20 +90,24 @@ class: bg-main1
 
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # The Rmarkdown Universe
 
 .center[<img src="slide_img/rmarkdown_universe.jpg" width=90%>]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # The Rmarkdown Universe
 
 .center[<img src="slide_img/rmarkdown_universe2.jpg" width=90%>]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # Rmarkdown: combine code and text
 .center[<img src="slide_img/rmarkdown_example.jpg" width = 92%>]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # You can do .yellow[whaaaat]?
 
 .font_large[Some things you can do in rmarkdown:
@@ -69,19 +121,23 @@ class: bg-main1
 ]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # The Rmarkdown Universe
 
 .center[<img src="slide_img/rmarkdown_universe.jpg" width=90%>]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # The Rmarkdown Universe
 
 .center[<img src="slide_img/rmarkdown_universe3.jpg" width=90%>]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # Why use .yellow[Blogdown]?
 ---
 class: bg-main1 split-25
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 .row[
 # Why use .yellow[Blogdown]?
 </br></br>
@@ -98,6 +154,7 @@ class: bg-main1 split-25
 ]
 ---
 class: bg-main1 split-25
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 .row[
 # Why use .yellow[Blogdown]?
 </br></br>
@@ -116,6 +173,7 @@ class: bg-main1 split-25
 ]
 ---
 class: bg-main1 split-25
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 .row[
 # Why use .yellow[Blogdown]?
 </br></br>
@@ -136,10 +194,12 @@ class: bg-main1 split-25
 ]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # A Blogdown roadmap
-.center[<img src="slide_img/blogdown_roadmap.jpg" width=93%>]
+.center[<img src="slide_img/blogdown_roadmap.jpg" width=92%>]
 ---
 class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
 # Step 1: .yellow[setup]
 
 .font_large[`install.packages("blogdown")`]
@@ -150,7 +210,7 @@ class: bg-main1
 --
 </br></br>
 ## Browse the Hugo themes and decide on your favorite (I use the Academic theme)
-</br>
+
 .font_large[<a href="https://themes.gohugo.io/" target="_blank">https://themes.gohugo.io/</a>]
 ---
 
