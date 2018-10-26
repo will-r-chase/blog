@@ -213,5 +213,99 @@ class: bg-main1
 
 .font_large[<a href="https://themes.gohugo.io/" target="_blank">https://themes.gohugo.io/</a>]
 ---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 1: .yellow[build] your website (only takes 3 clicks!)
 
+.float-left[<img src="slide_img/new_project.jpg" width=48%>]
+.float-right[<img src="slide_img/blogdown_project.jpg" width=48%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 1: .yellow[build] your website
+.center[<img src="slide_img/make_blogdown.jpg" widht=80%>]
+---
+class: bg-main1
+#Preview with `blogdown::serve_site()`
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+.float-left[<img src="slide_img/blog_folder.jpg" width=40%>]
+.float-right[<img src="slide_img/serve_site.jpg" width=40%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+.center[<img src="slide_img/view_site.jpg" width=60%>]
+---
+class: bg-main1
+#This is your website... isn't that amazing!?
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+.center[<img src="slide_img/blog_example.jpg" width=100%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 2: .yellow[Connect] your website to github
+.float-left[<img src="slide_img/new_repo.jpg" width=45%>]
+.float-right[<img src="slide_img/blog_new_repo.jpg" width=45%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 2: .yellow[Connect] your website to github
+.center[<img src="slide_img/repo_setup2.jpg" width=70%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 2: .yellow[Connect] your website to github
+
+### Go to Rstudio and open a terminal (Tools>Terminal>New Terminal)
+--
+
+### Type `git init` then restart Rstudio
+--
+<img src="slide_img/git_R.png" width=50%>
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 2: .yellow[Connect] your website to github
+</br></br>
+`git add ` > ` git commit -m "initial commit"`
+</br> 
+<img src="slide_img/commit_blog.jpg" width=100%>
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 2: .yellow[Connect] your website to github
+</br></br></br>
+###Go back to your terminal and type the two lines from GitHub </br></br>
+###`git remote add origin YOUR_REPO`</br></br>
+###`git push -u origin master`
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 3: .yellow[Deploy] your website
+</br></br></br>
+###Go to <a href="https://www.netlify.com/" target="_blank">https://www.netlify.com/</a>
+</br>
+<img src="slide_img/netlify_login.jpg" width=50%>
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 3: .yellow[Deploy] your website
+.center[<img src="slide_img/netlify_new_site.jpg" width=80%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 3: .yellow[Deploy] your website
+.center[<img src="slide_img/hugo_deploy.jpg" width=40%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 3: .yellow[Deploy] your website
+</br></br></br>
+##That's it, your website is up and running!
+--
+
+##Things you should do:
+###-Change name of site</br></br>
+###-Set up https</br></br>
+###-Set up disqus comments and google analytics
+---
 
