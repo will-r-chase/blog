@@ -30,7 +30,7 @@ options(htmltools.dir.version = FALSE)
 class: split-two
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 .column.bg-main1[
-.font4[Making websites in R with the Blogdown package]
+.font3[Making websites in R with the Blogdown package]
 </br></br></br></br>
 .font3[Will Chase]
 .font_large[We R: PSU useR group</br>
@@ -238,7 +238,9 @@ class: bg-main1
 class: bg-main1
 #This is your website... isn't that amazing!?
 .corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
-.center[<img src="slide_img/blog_example.jpg" width=100%>]
+.center[<img src="slide_img/example_blog.png" width=76%>]
+</br>
+Picture is me lookin' slick circa 2008
 ---
 class: bg-main1
 .corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
@@ -308,4 +310,58 @@ class: bg-main1
 ###-Set up https</br></br>
 ###-Set up disqus comments and google analytics
 ---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 4: .yellow[Customize] your website
+</br></br></br>
+###Edit your .yellow[config.toml] file to change options like your "about me", picture, education, contact info, active widgets, etc.
+</br></br>
+###Read here about how to add a custom CV to your website <a href="https://www.williamrchase.com/post/a-responsive-cv-template-with-html-css-hermione-grangers-cv/" target="_blank">a plug for myself</a>
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 4: .yellow[Customize] your website
+
+###Read the Academic theme documentation for everything you need to know about customizing your website and authoring content
+</br>
+<a href="https://sourcethemes.com/academic/docs/" target="_blank">https://sourcethemes.com/academic/docs/</a>
+</br>
+.center[<img src="slide_img/academic_docs.png" width=50%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Step 5: .yellow[Author] content
+</br></br>
+.float-left[<img src="slide_img/r_markdown_book.jpg" width=30%>]
+.float-right[<img src="slide_img/blogdown_addins.png" width=50%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#Putting it all together: your blogdown workflow
+
+--
+
+##Open `blog.rproj` > `addins New Post` > Author content and save > `git commit` > `git push`
+
+--
+</br>
+.center[<img src="slide_img/blogdown_roadmap.jpg" width=60%>]
+---
+class: bg-main1
+.corner-box.top-right[Questions: @W_R_Chase or wchase14@gmail.com]
+#See something you like on a Blogdown site?
+
+##Just go check out their github and see how they did it!
+
+<img src="slide_img/github_blog.png" width=50%>
+---
+class: bg-main1
+.center.yellow[
+#Thank You!
+]
+</br>
+.center[<img src="slide_img/pumpkin.jpg" width=40%>]
+</br></br>
+.center.font_large[Questions: wchase14@gmail.com or @W_R_Chase]
+
 

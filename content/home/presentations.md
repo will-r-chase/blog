@@ -18,6 +18,7 @@ weight = 60
 **Here are the slides from my talks**
 
 - [PSU Anthropology Department (2018): What I Wish I Knew When I Started R](/slides/intro_R_anthropology_2018.html)
+- [We R PSU useR group (2018): Building Websites in R with the Blogdown Package](/slides/blogdown_weR_2018.html)
 
 
 **Here are PDFs of my posters**
