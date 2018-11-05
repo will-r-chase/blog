@@ -1,0 +1,138 @@
+---
+title: Finding Combinations in the Tidyverse
+author: Will
+date: '2018-11-04'
+slug: finding-combinations-in-the-tidyverse
+categories:
+  - R
+tags:
+  - Tidyverse
+header:
+  caption: ''
+  image: ''
+output:
+  blogdown::html_page:
+    toc: true
+---
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+```
+```{r echo = F, message = F, warning = F, error = F}
+library(tidyverse)
+library(microbenchmark)
+```
+
+#Introduction
+Drama, intrigue, arrogance, dashed hopes, rock-bottom, perseverance, and eventual triumph, this post has it all! It starts with me watching Rachael Tatman's recent live-coding video, and ends with a thrilling race-to-the-bottom between two pathetically slow functions. What lies ahead: many a WTF moment, lots of trial and error, and some useful tidyverse data wrangling tips.  
+
+Rachael Tatman is a data scientist at Kaggle, and does these <a href="https://www.youtube.com/watch?v=eNKXJwIOsnc" target="_blank">awesome live coding sessions</a> every Friday. I was watching her most recent cast when she ran into a bug. Rachael was analyzing some data from kaggle kernels trying to figure out which packages are most often loaded together, but ran into a hiccup with an initial data transformation. Here's the problem: 
+```{r}
+#the dataset has two columns: the first is a list of R packages
+#the second is a number that indexes which kaggle kernel loaded those packages
+
+data <- tibble(package = c("dplyr", "ggplot2", "xml", "stringr", 
+                           "caret", "tidytext", "dplyr", "xgboost", 
+                           "dplyr", "ggplot2"), 
+               kernel = c(1, 1, 1, 2, 2, 2, 3, 4, 4, 4))
+
+head(data)
+```
+
+What Rachael needed for her analysis was a dataframe with two columns containing the packages that co-occur by kernel index. So essentially, we want to take the input dataframe, group by the kernel index, and then compute all pairwise combinations of the package column for each kernel group. Sounds like an EZPZ tidyverse problem, right? Well...
+
+#Trials and tribulations
+
+```{r}
+data %>%
+  group_by(kernel) %>%
+  combn(data$package, 2)
+```
+
+This was Rachael's first attempt, and it made sense to me. The `combn(x, m, ...)` function takes a vector, x, and computes all m-wise combinations (so we want m = 2). We basically want to group by kernel, then compute combn. But this solution fails. Here, I think Rachael was betrayed by using Kaggle kernels (no shade on Kaggle). Her error message was `length(m) == 1L is not TRUE`. In Rstudio, my error message was the same, but included `Error in combn(., data$package, 2)`. Ah hah! So we can see that `combn()` is not playing nice with the pipe. Even though the data is the first argument, `combn()` is confused, and it's shifting all the arguments to the right, so it thinks we're specifying `m=data$package`. We can fix this using a nifty magrittr trick: enclose the "non-pipe-friendly" function in curly braces, and it won't automatically pipe the previous output as the first argument. If we do that, we get
+
+```{r}
+data %>%
+  group_by(kernel) %>%
+  {combn(data$package, m=2)} %>%
+  t() %>%
+  head(10)
+```
+Well, damn. That's not right. It seems to be ignoring our grouping and computing every pairwise combination in the dataset (also ignoring uniqueness?). Sidenote: we have to add `t()` at the end because for some god forsaken reason, `combn()` returns a wide format matrix (WAT!?). Next, Rachael tried something like this:
+
+```{r}
+data %>%
+  group_by(kernel) %>%
+  select(package) %>%
+  combn(., m=2) %>%
+  t()
+```
+I thought it was a good idea to just pipe the vector in, but this gives some garbage. In my arrogance and naivete, I thought I knew exactly what was wrong and how to fix it. Using `select()` and specifying one column returns a 1 column tibble, not a vector, so if you're piping data into a function that expects a vector you can use `pull()` which returns a vector. I told Rachael so much over Twitter. But here's the thing, that still doesn't work:
+
+```{r}
+data %>%
+  group_by(kernel) %>%
+  pull(package) %>%
+  combn(., m=2) %>%
+  t() %>%
+  head(10)
+```
+Now we're basically back where we started, the grouping has not been preserved and we're getting all possible combinations not combinations by group. At this point, Rachael did exactly the right thing, gave up on the fancy tidyverse vectorized solution and instead wrote a for loop. Her loop worked nicely and she moved on to the meat of the analysis. But as Rachael acknowledges, loops are slow in R. In this case it's not a big deal, but if you were computing this on millions of variables, or putting this in production code with lots of on-the-fly computation it could be an issue. And after realizing my `pull()` solution failed, this problem was just nagging at me... it should be simple!
+
+#The solution
+My mission: make a vectorized solution to compute all pairwise combinations on a grouped variable. 
+
+I really think there should be a way to do this by grouping on the kernel variable and computing the combinations after that... or maybe something with `tidyr::expand()` followed by some joins. I'm sure someone better at SQL could figure this out, but I couldn't so I went for a solution that involves splitting the original dataframe into individual dataframes for each kernel, then mapping `combn()` over each dataframe. Here's my solution:
+
+```{r}
+data %>%
+  group_by(kernel) %>%
+  filter(n() > 1) %>%
+  split(.$kernel) %>%
+  map(., 1) %>%
+  map(~combn(.x, m = 2)) %>%
+  map(~t(.x)) %>%
+  map_dfr(as_tibble)
+```
+The breakdown: 
+
+1. We can't compute pairwise combinations in kernels that only loaded 1 package, so we filter out length 1 groups in the first two lines
+2. Next we split our dataframe into a list of dataframes where each one represents a single kernel
+3. We extract the "package" column from each dataframe
+4. We map `combn()` to each of the package vectors
+5. We transpose the result because as mentioned above, combn has a WTF!? output
+6. We convert each of the combn matrices to a tibble and row bind (map_dfr row binds the resuling list of dataframes)
+
+This is an admittedly clunky solution. It feels wrong that I had to use 4 `map()` statements (I'm pretty lousy at purrr, there's probably a better way to do this). Given how clunky this looks to me, I wondered if it was actually faster than the for loop that Rachael ended up using. So, I replicated her loop and ran a benchmark vs my vectorized solution. Ready, set, go!
+
+```{r}
+#my solution
+microbenchmark(
+edges <- 
+  data %>%
+  group_by(kernel) %>%
+  filter(n() > 1) %>%
+  split(.$kernel) %>%
+  map(., 1) %>%
+  map(~combn(.x, m = 2)) %>%
+  map(~t(.x)) %>%
+  map_dfr(as_tibble) 
+)
+
+#rachaels solution
+edges_rach <- data.frame(matrix(NA, nrow = 0, ncol = 2))
+
+microbenchmark(
+for(i in unique(data$kernel)) {
+  current_kernel <- data$package[data$kernel == i]
+  if(length(current_kernel) > 1) {
+    new_pairs <- t(combn(current_kernel, 2))
+    edges_rach <- rbind(edges_rach, new_pairs)
+  }
+})
+```
+Apparently my not-so-pretty solution was about twice as fast as the loop solution, which just emphasizes why vectorizing your iteration is such a good idea in R (if you're going for speed). In the end this wasn't really about speed, as both solutions do the job plenty fast for this data. The best part of this for me was learning more tidyverse tips and tricks. Here's what I learned from doing this exercise:
+
+1. You can surround a function in {} to avoid piping the left hand side as the first argument to the right hand side
+2. `group_by(var) %>% filter(n() > m)` is a really nice solution to filter a dataset by group size
+3. bind_rows doesn't work on matrices
+4. Vectorized operations really are much faster than loops in R

@@ -1,0 +1,177 @@
+---
+title: Finding Combinations in the Tidyverse
+author: Will
+date: '2018-11-04'
+slug: finding-combinations-in-the-tidyverse
+categories:
+  - R
+tags:
+  - Tidyverse
+header:
+  caption: ''
+  image: ''
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#trials-and-tribulations">Trials and tribulations</a></li>
+<li><a href="#the-solution">The solution</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Drama, intrigue, arrogance, dashed hopes, rock-bottom, perseverance, and eventual triumph, this post has it all! It starts with me watching Rachael Tatman’s recent live-coding video, and ends with a thrilling race-to-the-bottom between two pathetically slow functions. What lies ahead: many a WTF moment, lots of trial and error, and some useful tidyverse data wrangling tips.</p>
+<p>Rachael Tatman is a data scientist at Kaggle, and does these <a href="https://www.youtube.com/watch?v=eNKXJwIOsnc" target="_blank">awesome live coding sessions</a> every Friday. I was watching her most recent cast when she ran into a bug. Rachael was analyzing some data from kaggle kernels trying to figure out which packages are most often loaded together, but ran into a hiccup with an initial data transformation. Here’s the problem:</p>
+<pre class="r"><code>#the dataset has two columns: the first is a list of R packages
+#the second is a number that indexes which kaggle kernel loaded those packages
+
+data &lt;- tibble(package = c(&quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;xml&quot;, &quot;stringr&quot;, 
+                           &quot;caret&quot;, &quot;tidytext&quot;, &quot;dplyr&quot;, &quot;xgboost&quot;, 
+                           &quot;dplyr&quot;, &quot;ggplot2&quot;), 
+               kernel = c(1, 1, 1, 2, 2, 2, 3, 4, 4, 4))
+
+head(data)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   package  kernel
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 dplyr         1
+## 2 ggplot2       1
+## 3 xml           1
+## 4 stringr       2
+## 5 caret         2
+## 6 tidytext      2</code></pre>
+<p>What Rachael needed for her analysis was a dataframe with two columns containing the packages that co-occur by kernel index. So essentially, we want to take the input dataframe, group by the kernel index, and then compute all pairwise combinations of the package column for each kernel group. Sounds like an EZPZ tidyverse problem, right? Well…</p>
+</div>
+<div id="trials-and-tribulations" class="section level1">
+<h1>Trials and tribulations</h1>
+<pre class="r"><code>data %&gt;%
+  group_by(kernel) %&gt;%
+  combn(data$package, 2)</code></pre>
+<pre><code>## Error in combn(., data$package, 2): length(m) == 1L is not TRUE</code></pre>
+<p>This was Rachael’s first attempt, and it made sense to me. The <code>combn(x, m, ...)</code> function takes a vector, x, and computes all m-wise combinations (so we want m = 2). We basically want to group by kernel, then compute combn. But this solution fails. Here, I think Rachael was betrayed by using Kaggle kernels (no shade on Kaggle). Her error message was <code>length(m) == 1L is not TRUE</code>. In Rstudio, my error message was the same, but included <code>Error in combn(., data$package, 2)</code>. Ah hah! So we can see that <code>combn()</code> is not playing nice with the pipe. Even though the data is the first argument, <code>combn()</code> is confused, and it’s shifting all the arguments to the right, so it thinks we’re specifying <code>m=data$package</code>. We can fix this using a nifty magrittr trick: enclose the “non-pipe-friendly” function in curly braces, and it won’t automatically pipe the previous output as the first argument. If we do that, we get</p>
+<pre class="r"><code>data %&gt;%
+  group_by(kernel) %&gt;%
+  {combn(data$package, m=2)} %&gt;%
+  t() %&gt;%
+  head(10)</code></pre>
+<pre><code>##       [,1]      [,2]      
+##  [1,] &quot;dplyr&quot;   &quot;ggplot2&quot; 
+##  [2,] &quot;dplyr&quot;   &quot;xml&quot;     
+##  [3,] &quot;dplyr&quot;   &quot;stringr&quot; 
+##  [4,] &quot;dplyr&quot;   &quot;caret&quot;   
+##  [5,] &quot;dplyr&quot;   &quot;tidytext&quot;
+##  [6,] &quot;dplyr&quot;   &quot;dplyr&quot;   
+##  [7,] &quot;dplyr&quot;   &quot;xgboost&quot; 
+##  [8,] &quot;dplyr&quot;   &quot;dplyr&quot;   
+##  [9,] &quot;dplyr&quot;   &quot;ggplot2&quot; 
+## [10,] &quot;ggplot2&quot; &quot;xml&quot;</code></pre>
+<p>Well, damn. That’s not right. It seems to be ignoring our grouping and computing every pairwise combination in the dataset (also ignoring uniqueness?). Sidenote: we have to add <code>t()</code> at the end because for some god forsaken reason, <code>combn()</code> returns a wide format matrix (WAT!?). Next, Rachael tried something like this:</p>
+<pre class="r"><code>data %&gt;%
+  group_by(kernel) %&gt;%
+  select(package) %&gt;%
+  combn(., m=2) %&gt;%
+  t()</code></pre>
+<pre><code>## Adding missing grouping variables: `kernel`</code></pre>
+<pre><code>##      [,1]       [,2]        
+## [1,] Numeric,10 Character,10</code></pre>
+<p>I thought it was a good idea to just pipe the vector in, but this gives some garbage. In my arrogance and naivete, I thought I knew exactly what was wrong and how to fix it. Using <code>select()</code> and specifying one column returns a 1 column tibble, not a vector, so if you’re piping data into a function that expects a vector you can use <code>pull()</code> which returns a vector. I told Rachael so much over Twitter. But here’s the thing, that still doesn’t work:</p>
+<pre class="r"><code>data %&gt;%
+  group_by(kernel) %&gt;%
+  pull(package) %&gt;%
+  combn(., m=2) %&gt;%
+  t() %&gt;%
+  head(10)</code></pre>
+<pre><code>##       [,1]      [,2]      
+##  [1,] &quot;dplyr&quot;   &quot;ggplot2&quot; 
+##  [2,] &quot;dplyr&quot;   &quot;xml&quot;     
+##  [3,] &quot;dplyr&quot;   &quot;stringr&quot; 
+##  [4,] &quot;dplyr&quot;   &quot;caret&quot;   
+##  [5,] &quot;dplyr&quot;   &quot;tidytext&quot;
+##  [6,] &quot;dplyr&quot;   &quot;dplyr&quot;   
+##  [7,] &quot;dplyr&quot;   &quot;xgboost&quot; 
+##  [8,] &quot;dplyr&quot;   &quot;dplyr&quot;   
+##  [9,] &quot;dplyr&quot;   &quot;ggplot2&quot; 
+## [10,] &quot;ggplot2&quot; &quot;xml&quot;</code></pre>
+<p>Now we’re basically back where we started, the grouping has not been preserved and we’re getting all possible combinations not combinations by group. At this point, Rachael did exactly the right thing, gave up on the fancy tidyverse vectorized solution and instead wrote a for loop. Her loop worked nicely and she moved on to the meat of the analysis. But as Rachael acknowledges, loops are slow in R. In this case it’s not a big deal, but if you were computing this on millions of variables, or putting this in production code with lots of on-the-fly computation it could be an issue. And after realizing my <code>pull()</code> solution failed, this problem was just nagging at me… it should be simple!</p>
+</div>
+<div id="the-solution" class="section level1">
+<h1>The solution</h1>
+<p>My mission: make a vectorized solution to compute all pairwise combinations on a grouped variable.</p>
+<p>I really think there should be a way to do this by grouping on the kernel variable and computing the combinations after that… or maybe something with <code>tidyr::expand()</code> followed by some joins. I’m sure someone better at SQL could figure this out, but I couldn’t so I went for a solution that involves splitting the original dataframe into individual dataframes for each kernel, then mapping <code>combn()</code> over each dataframe. Here’s my solution:</p>
+<pre class="r"><code>data %&gt;%
+  group_by(kernel) %&gt;%
+  filter(n() &gt; 1) %&gt;%
+  split(.$kernel) %&gt;%
+  map(., 1) %&gt;%
+  map(~combn(.x, m = 2)) %&gt;%
+  map(~t(.x)) %&gt;%
+  map_dfr(as_tibble)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   V1      V2      
+##   &lt;chr&gt;   &lt;chr&gt;   
+## 1 dplyr   ggplot2 
+## 2 dplyr   xml     
+## 3 ggplot2 xml     
+## 4 stringr caret   
+## 5 stringr tidytext
+## 6 caret   tidytext
+## 7 xgboost dplyr   
+## 8 xgboost ggplot2 
+## 9 dplyr   ggplot2</code></pre>
+<p>The breakdown:</p>
+<ol style="list-style-type: decimal">
+<li>We can’t compute pairwise combinations in kernels that only loaded 1 package, so we filter out length 1 groups in the first two lines</li>
+<li>Next we split our dataframe into a list of dataframes where each one represents a single kernel</li>
+<li>We extract the “package” column from each dataframe</li>
+<li>We map <code>combn()</code> to each of the package vectors</li>
+<li>We transpose the result because as mentioned above, combn has a WTF!? output</li>
+<li>We convert each of the combn matrices to a tibble and row bind (map_dfr row binds the resuling list of dataframes)</li>
+</ol>
+<p>This is an admittedly clunky solution. It feels wrong that I had to use 4 <code>map()</code> statements (I’m pretty lousy at purrr, there’s probably a better way to do this). Given how clunky this looks to me, I wondered if it was actually faster than the for loop that Rachael ended up using. So, I replicated her loop and ran a benchmark vs my vectorized solution. Ready, set, go!</p>
+<pre class="r"><code>#my solution
+microbenchmark(
+edges &lt;- 
+  data %&gt;%
+  group_by(kernel) %&gt;%
+  filter(n() &gt; 1) %&gt;%
+  split(.$kernel) %&gt;%
+  map(., 1) %&gt;%
+  map(~combn(.x, m = 2)) %&gt;%
+  map(~t(.x)) %&gt;%
+  map_dfr(as_tibble) 
+)</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                                                                                                                                  expr
+##  edges &lt;- data %&gt;% group_by(kernel) %&gt;% filter(n() &gt; 1) %&gt;% split(.$kernel) %&gt;%      map(., 1) %&gt;% map(~combn(.x, m = 2)) %&gt;% map(~t(.x)) %&gt;%      map_dfr(as_tibble)
+##       min      lq     mean   median       uq      max neval
+##  3.419253 3.50298 3.758947 3.616674 3.735337 6.454507   100</code></pre>
+<pre class="r"><code>#rachaels solution
+edges_rach &lt;- data.frame(matrix(NA, nrow = 0, ncol = 2))
+
+microbenchmark(
+for(i in unique(data$kernel)) {
+  current_kernel &lt;- data$package[data$kernel == i]
+  if(length(current_kernel) &gt; 1) {
+    new_pairs &lt;- t(combn(current_kernel, 2))
+    edges_rach &lt;- rbind(edges_rach, new_pairs)
+  }
+})</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                                                                                                                                                                                                     expr
+##  for (i in unique(data$kernel)) {     current_kernel &lt;- data$package[data$kernel == i]     if (length(current_kernel) &gt; 1) {         new_pairs &lt;- t(combn(current_kernel, 2))         edges_rach &lt;- rbind(edges_rach, new_pairs)     } }
+##       min       lq     mean   median       uq      max neval
+##  6.763212 7.010779 7.294071 7.099776 7.198713 9.902973   100</code></pre>
+<p>Apparently my not-so-pretty solution was about twice as fast as the loop solution, which just emphasizes why vectorizing your iteration is such a good idea in R (if you’re going for speed). In the end this wasn’t really about speed, as both solutions do the job plenty fast for this data. The best part of this for me was learning more tidyverse tips and tricks. Here’s what I learned from doing this exercise:</p>
+<ol style="list-style-type: decimal">
+<li>You can surround a function in {} to avoid piping the left hand side as the first argument to the right hand side</li>
+<li><code>group_by(var) %&gt;% filter(n() &gt; m)</code> is a really nice solution to filter a dataset by group size</li>
+<li>bind_rows doesn’t work on matrices</li>
+<li>Vectorized operations really are much faster than loops in R</li>
+</ol>
+</div>
