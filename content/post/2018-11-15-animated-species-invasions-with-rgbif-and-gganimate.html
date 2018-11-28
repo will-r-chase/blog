@@ -1,0 +1,214 @@
+---
+title: Animated Species Invasions with rgbif and gganimate
+author: Will
+date: '2018-11-15'
+slug: animated-species-invasions-with-rgbif-and-gganimate
+categories:
+  - Bioinformatics
+  - R
+tags:
+  - Tidyverse
+  - gganimate
+  - rgbif
+header:
+  caption: ''
+  image: ''
+output:
+  blogdown::html_page:
+    toc: true
+    number_sections: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#getting-data-with-rgbif"><span class="toc-section-number">2</span> Getting data with rgbif</a></li>
+<li><a href="#data-cleaning"><span class="toc-section-number">3</span> Data cleaning</a></li>
+<li><a href="#data-wrangling"><span class="toc-section-number">4</span> Data wrangling</a></li>
+<li><a href="#make-the-animation"><span class="toc-section-number">5</span> Make the animation</a></li>
+<li><a href="#another-example-with-kudzu"><span class="toc-section-number">6</span> Another example with Kudzu</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Since I discovered <strong>GBIF</strong>, I’ve been hooked. What is GBIF? From their website: “GBIF—the <a href="https://www.gbif.org/" target="_blank">Global Biodiversity Information Facility</a>—is an international network and research infrastructure funded by the world’s governments and aimed at providing anyone, anywhere, open access to data about all types of life on Earth.” In 2018, GBIF passed the mark of <strong>one billion occurence records</strong>, which is just incredible. As far as open science projects go, GBIF should be a model for everyone. They’ve not only made their data available, but they’ve made it accessible. Their massive database is lightning fast thanks to hadoop and related tools running the backend, their interface and user experience is top notch (and multilingual!), they’re pushing the biodiversity field forward by creating new standards and tools, and they’re supporting early career scientists and open source projects that tie in with their mission.</p>
+<p>I’ve spent hours playing with the GBIF website, where you can look at species occurences on a map and filter by time, taxonomy, etc. But what if we want to analyze this data ourselves in R? Luckily Scott Chamberlain at <a href="https://ropensci.org/" target="_blank">rOpenSci</a> has written the <code>rgbif</code> package, which lets us interact with the GBIF API to download data into R. I’ve also been playing with Thomas Lin Pedersen’s excellent redesign of the <code>gganimate</code> package, and I thought that <strong>visualizing species occurence through time</strong> would be an excellent way to utilize both of these tools!</p>
+<p>Which species should we animate? Well I live in Pennsylvania, where we’ve heard a lot about the Spotted Lanterfly recently. The Spotted Lanternfly is an invasive insect pest that is native to China but recently spread to Pennsylvania. This pest represents a huge threat to agriculture as it can feed on fruit and lumber trees. My plan is to fetch some data on the Spotted Lanternfly (and other invasive species) from GBIF using the rgbif package, and then animate their spread through time in the style outlined by Daniela Vázquez in <a href="https://d4tagirl.com/2017/05/how-to-plot-animated-maps-with-gganimate" target="_blank">this excellent blog post</a>, but I’ll use the updated <code>gganimate</code>.</p>
+</div>
+<div id="getting-data-with-rgbif" class="section level1">
+<h1><span class="header-section-number">2</span> Getting data with rgbif</h1>
+<p>First we’ll load the <code>rgbif</code> package to get data, and the <code>tidyverse</code> for some data cleaning</p>
+<pre class="r"><code>#load packages
+library(rgbif)
+library(tidyverse)
+library(gganimate)</code></pre>
+<p>Getting data with <code>rgbif</code> is dead simple, just use the <code>occ_search()</code> function with the species name.</p>
+<pre class="r"><code>#get data for spotted lanternfly
+fly &lt;- occ_search(scientificName = &quot;Lycorma delicatula&quot;)</code></pre>
+<p>This gives us a dataframe where each row is one species occurence record. As we can see, there’s tons of information here. I’m going to clean up some names and select only a few columns that we’ll focus on today. I’m also going to remove some occurences that have missing data.</p>
+</div>
+<div id="data-cleaning" class="section level1">
+<h1><span class="header-section-number">3</span> Data cleaning</h1>
+<pre class="r"><code>#select the columns we need and filter missing data out
+fly_data &lt;- 
+  fly$data %&gt;%
+  select(lon = decimalLongitude, lat = decimalLatitude, date = eventDate) %&gt;%
+  filter(!is.na(date)) %&gt;%
+  filter(!(is.na(lat) | is.na(lon))) %&gt;%
+  mutate(date = parse_datetime(date))</code></pre>
+<p>Next I’m going to round the longitude and latitude values to the first decimal place. I’m doing this because there are many records that are in clusters and I want to see each cluster as one point that will grow over time. If you were doing this for a smaller area like a single state or country you might want to leave things more spread out, but I’m working globally so I’m ok with sacrificing some resolution in the data. I’m also going to round the dates down to the nearest month since I want my animation to proceed month-by-month.</p>
+<pre class="r"><code>fly_data$lon &lt;- round(fly_data$lon, 1)
+fly_data$lat &lt;- round(fly_data$lat, 1)
+fly_data$date &lt;- lubridate::floor_date(fly_data$date, unit = &quot;month&quot;)</code></pre>
+<p>Next I’m going to add some useful fields for later and clean up the data a little bit. I’m adding a location ID so that we can see how many unique locations we have and group by that variable later. Then I’m going to add a <strong>tally</strong> to see how many occurences there are for each location and date. Finally I’ll make sure there’s no duplicates.</p>
+</div>
+<div id="data-wrangling" class="section level1">
+<h1><span class="header-section-number">4</span> Data wrangling</h1>
+<pre class="r"><code>fly_data_edited &lt;-
+  fly_data %&gt;%
+  group_by(lon, lat) %&gt;%
+  { mutate(ungroup(.), location = group_indices(.)) } %&gt;%
+  ungroup() %&gt;%
+  group_by(location, date, lon, lat) %&gt;%
+  add_tally() %&gt;%
+  arrange(location, date) %&gt;%
+  summarize_all(sum) %&gt;%
+  ungroup()</code></pre>
+<p>This is looking good, but for this animation, <strong>I want each location to start out as a small circle and grow over time as we add more members</strong>. To get this “growing” and make a smooth animation, I’m going to use tidyr::expand along a dummy field that has all dates to get the number of occurences for each location at every month between the start and end of our animation. Then I’ll get the cumulative sum so that we can make each location “grow”. This data wrangling step is a little unorthodox, and there’s probably a better way to do it, but this will work.</p>
+<pre class="r"><code>#get all dates in dataset
+all_dates &lt;- seq(min(fly_data_edited$date), max(fly_data_edited$date), by = &quot;month&quot;)
+#make into a dummy tibble
+dates_df &lt;- tibble(lon = runif(length(all_dates)), lat = runif(length(all_dates)), date = all_dates, location = as.integer(rep(10000, length(all_dates))), n = as.integer(rep(0, length(all_dates))))
+
+#expand+clean the data
+fly_data_anim &lt;-
+  as.tibble(rbind(fly_data_edited, dates_df)) %&gt;%
+  tidyr::expand(date, nesting(location, lon, lat)) %&gt;%
+  left_join(., fly_data_edited, by=c(&quot;location&quot;, &quot;date&quot;)) %&gt;%
+  select(date, location, lon.x, lat.x, n) %&gt;%
+  replace_na(list(n=0)) %&gt;% 
+  group_by(location) %&gt;%
+  mutate(n_sum = cumsum(n)) %&gt;%
+  arrange(location, date) %&gt;%
+  select(-5) %&gt;%
+  rename(lon = lon.x, lat = lat.x) %&gt;%
+  filter(location != 10000) %&gt;%
+  filter(date &gt;= &quot;2000-01-01&quot;) %&gt;%
+  arrange(n_sum)</code></pre>
+<p>You’ll notice that at the end I filtered out any entries that were before the year 2000. This is because after looking at the data, I noticed there’s almost no change during this period, but it adds a ton of dead frames to the beginning of the animation, so I just removed it to make our visualization more dynamic.</p>
+</div>
+<div id="make-the-animation" class="section level1">
+<h1><span class="header-section-number">5</span> Make the animation</h1>
+<p>Now here comes the animation! First we’ll build a map with <code>ggplot</code>, add our locations with <code>geom_point()</code> and then use <code>gganimate::transition_time()</code> to flow through the dates and make the points grow.</p>
+<pre class="r"><code>#define colors
+colors &lt;- c(&quot;#3e0074&quot;, &quot;#8900ff&quot;, &quot;#a360fb&quot;, &quot;#a360fb&quot;, &quot;#d0a3ff&quot;, &quot;#d0a3ff&quot;, &quot;#d0a3ff&quot;, &quot;#d0a3ff&quot;)
+pal &lt;- colorRampPalette(colors)
+
+#make our ggplot
+world &lt;- ggplot() +
+  borders(&quot;world&quot;, colour = &quot;black&quot;, fill = &quot;white&quot;) +
+  geom_point(data = fly_data_anim, aes(x = lon, y = lat, size = ifelse(n_sum==0, NA, n_sum), colour = n_sum),
+             alpha = .5) +
+  scale_size_continuous(range = c(1, 6)) +
+  scale_colour_gradientn(colours = pal(256)) +
+  labs(title = &quot;Documented Locations of Spotted Lanternfly&quot;, 
+       subtitle = &quot;Date: {frame_time}&quot;) +
+  theme(plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 14),
+        axis.line = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = &quot;#b3cde0&quot;),
+        legend.position = &quot;none&quot;) +
+  coord_map(xlim = c(-180,180), ylim = c(-60, 90)) +
+  transition_time(date) +
+  ease_aes(&quot;linear&quot;)
+
+#make the animation
+animate(world, nframes = 100, fps = 10, height = 604, width = 1000, renderer = gifski_renderer(loop = FALSE))</code></pre>
+<p><img src="/post/2018-11-15-animated-species-invasions-with-rgbif-and-gganimate_files/figure-html/unnamed-chunk-7-1.gif" /><!-- --></p>
+<p><strong>If animation isn’t playing, click it or reload page, it’s set to stop at the last frame</strong></p>
+<p>Nice! I think there’s room for improvement in the aesthetics of this animation, and maybe we could cut off a few more of the early years, but I’ll leave that for next time. I think this shows super clearly how there was a long period where the Spotted Lanternfly was isolated to China, and then in the 2010s it spread quickly to korea and other areas in East Asia, before spreading to Pennsylvania in 2016 (official dates from the USDA say the first occurence in PA was 2014). And our animation shows very clearly that the invasion is in full swing, exploding to record numbers in 2018… yikes!</p>
+</div>
+<div id="another-example-with-kudzu" class="section level1">
+<h1><span class="header-section-number">6</span> Another example with Kudzu</h1>
+<p>This is too fun, so let’s do one more. Up next, Kudzu! Kudzu is one of the most costly and problematic invasive species in the United States. Kudzu is a vine that grows fast and chokes out whatever it covers. The vine was spread to the US from Japan and has since covered much of the southern US. I actually don’t know when Kudzu was spread to the US, so this will be a learning experience for me!</p>
+<pre class="r"><code>######kudzu
+#get the data
+kudzu &lt;- occ_search(scientificName = &quot;Pueraria montana var. lobata&quot;)
+
+kudzu_data &lt;- 
+  kudzu$data %&gt;%
+  select(lon = decimalLongitude, lat = decimalLatitude, date = eventDate) %&gt;%
+  filter(!is.na(date)) %&gt;%
+  filter(!(is.na(lat) | is.na(lon))) %&gt;%
+  mutate(date = parse_datetime(date))
+
+kudzu_data$lon &lt;- round(kudzu_data$lon, 1)
+kudzu_data$lat &lt;- round(kudzu_data$lat, 1)
+kudzu_data$date &lt;- lubridate::floor_date(kudzu_data$date, unit = &quot;month&quot;)
+
+kudzu_data_edited &lt;-
+  kudzu_data %&gt;%
+  group_by(lon, lat) %&gt;%
+  { mutate(ungroup(.), location = group_indices(.)) } %&gt;%
+  ungroup() %&gt;%
+  group_by(location, date, lon, lat) %&gt;%
+  add_tally() %&gt;%
+  arrange(location, date) %&gt;%
+  summarize_all(sum) %&gt;%
+  ungroup()
+
+kudzu_all_dates &lt;- seq(min(kudzu_data_edited$date), max(kudzu_data_edited$date), by = &quot;month&quot;)
+
+kudzu_dates_df &lt;- tibble(lon = runif(length(kudzu_all_dates)), lat = runif(length(kudzu_all_dates)), date = kudzu_all_dates, location = as.integer(rep(10000, length(kudzu_all_dates))), n = as.integer(rep(0, length(kudzu_all_dates))))
+
+kudzu_data_anim &lt;-
+  as.tibble(rbind(kudzu_data_edited, kudzu_dates_df)) %&gt;%
+  tidyr::expand(date, nesting(location, lon, lat)) %&gt;%
+  left_join(., kudzu_data_edited, by=c(&quot;location&quot;, &quot;date&quot;)) %&gt;%
+  select(date, location, lon.x, lat.x, n) %&gt;%
+  replace_na(list(n=0)) %&gt;% 
+  group_by(location) %&gt;%
+  mutate(n_sum = cumsum(n)) %&gt;%
+  arrange(location, date) %&gt;%
+  select(-5) %&gt;%
+  rename(lon = lon.x, lat = lat.x) %&gt;%
+  filter(location != 10000) %&gt;%
+  arrange(n_sum)
+
+colors &lt;- c(&quot;#3e0074&quot;, &quot;#8900ff&quot;, &quot;#a360fb&quot;, &quot;#a360fb&quot;, &quot;#d0a3ff&quot;, &quot;#d0a3ff&quot;, &quot;#d0a3ff&quot;, &quot;#d0a3ff&quot;)
+pal &lt;- colorRampPalette(colors)
+
+#make our ggplot
+world &lt;- ggplot() +
+  borders(&quot;world&quot;, colour = &quot;black&quot;, fill = &quot;white&quot;) +
+  geom_point(data = kudzu_data_anim, aes(x = lon, y = lat, size = ifelse(n_sum==0, NA, n_sum), colour = n_sum),
+             alpha = .5) +
+  scale_size_continuous(range = c(1, 8)) +
+  scale_colour_gradientn(colours = pal(256)) +
+  labs(title = &quot;Documented Locations of Kudzu&quot;, 
+       subtitle = &quot;Date: {frame_time}&quot;) +
+  theme(plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 14),
+        axis.line = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = &quot;#b3cde0&quot;),
+        legend.position = &quot;none&quot;) +
+  coord_map(xlim = c(-180,180), ylim = c(-60, 90)) +
+  transition_time(date) +
+  ease_aes(&quot;linear&quot;)
+
+animate(world, nframes = 300, fps = 20, height = 604, width = 1000)</code></pre>
+<p><img src="/post/2018-11-15-animated-species-invasions-with-rgbif-and-gganimate_files/figure-html/unnamed-chunk-8-1.gif" /><!-- --></p>
+<p>Wow, looks like Kudzu is a problem in Australia as well! According to our map, Kudzu spread to the US in the 60s, and has just gotten worse since then. The infestation in Australia happened around the same time, could there be a related cause?</p>
+<p>I’m super addicted to these maps. Of course they’re not representative of actual species ranges, as they’re affected by sampling bias, but I do think it’s a great way to get an initial look at occurence data, and we can even see lots of patterns like invasive species that match well with published in-depth studies. To end, I’ll leave you with a similar gif that I made for Thanksgiving showing the GBIF occurences of Wild Turkey (Meleagris gallopavo) through time in the United States. I worked harder on the aesthetics for this one, and I think it’s a good example of how cool these visualizations can be!</p>
+<p><img src="/img/turkey_gif.gif" /></p>
+</div>
