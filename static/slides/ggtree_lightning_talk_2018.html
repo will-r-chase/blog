@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Visualizing Phylogenetic Trees with ggtree</title>
+    <meta charset="utf-8">
+    <meta name="author" content="  Will Chase" />
+    <link rel="stylesheet" href="assets\shinobi.css" type="text/css" />
+    <link rel="stylesheet" href="assets\ninpo.css" type="text/css" />
+    <link rel="stylesheet" href="assets\ninjutsu.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+exclude: true
+&lt;style type="text/css"&gt;
+code.r{
+  font-size: 16px;
+}
+pre {
+  font-size: 16px !important;
+}
+&lt;/style&gt;
+
+
+
+---
+class: split-two
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"&gt;
+.column.bg-main1[
+.font3[Visualizing Phylogenetic Trees in R with ggtree]
+&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;
+.font3[Will Chase]
+&lt;/br&gt;
+.font_large[
+&lt;ul class="fa-ul"&gt;
+&lt;li&gt;&lt;i class="fa-li fa fa-envelope" id="icon"&gt;&lt;/i&gt;&lt;a href="mailto:wchase14@gmail.com" target="_blank"&gt;wchase14@gmail.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;i class="fa-li fa fa-user" id="icon"&gt;&lt;/i&gt;&lt;a href="williamrchase.com" target="_blank"&gt;williamrchase.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;i class="fa-li fa fa-github" id="icon"&gt;&lt;/i&gt;&lt;a href="https://github.com/will-r-chase" target="_blank"&gt;github.com/will-r-chase&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;i class="fa-li fa fa-twitter" id="icon"&gt;&lt;/i&gt;&lt;a href="https://twitter.com/W_R_Chase" target="_blank"&gt;@W_R_Chase&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+]]
+.column.bg-main3.center[
+&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;
+&lt;img src="slide_img/ggtree_hex.png" width=70%&gt;
+]
+---
+class: split-two
+
+.column.bg-main1[
+#What is .yellow[ggtree?]
+&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;
+.font_large[
++ Implements a .yellow[grammer of graphics] for phylogenetic trees
+&lt;/br&gt;&lt;/br&gt;
++ Facilitates visualization of phyloenies with .yellow[associated data]
+&lt;/br&gt;&lt;/br&gt;
++ Helpers for .yellow[tree manipulation] and .yellow[data import]
+]]
+.column.bg-main3[
+&lt;img src="slide_img/eco_tree.png" width=100%&gt;
+]
+---
+class: bg-main1
+
+# Applications
+
+--
+
+## .yellow[Molecular evolution/genetics]
+
+--
+
+## Morphological phylogenies
+
+--
+
+## .yellow[Linguistic dendrograms]
+
+--
+
+## Any other character based dendrogram
+---
+class: bg-main1
+# What can you do with .yellow[ggtree?]
+&lt;/br&gt;&lt;/br&gt;
+.center[&lt;img src="slide_img/tree_types.png" width=45%&gt;]
+---
+class: bg-main1
+# What can you do with .yellow[ggtree?]
+&lt;/br&gt;&lt;/br&gt;
+.center[&lt;img src="slide_img/ggtree_1.jpg" width=60%&gt;]
+---
+class: bg-main1
+# What can you do with .yellow[ggtree?]
+&lt;/br&gt;&lt;/br&gt;
+.center[&lt;img src="slide_img/ggtree_2.gif" width=60%&gt;]
+---
+class: bg-main1
+# What can you do with .yellow[ggtree?]
+&lt;/br&gt;&lt;/br&gt;
+.center[&lt;img src="slide_img/ggtree_3.jpg" width=55%&gt;]
+---
+class: bg-main1
+# How to plot a .yellow[ggtree?]
+
+.font_large[easy, it's just like ggplot!]
+
+`ggtree(tree) + geom_point(aes(shape=isTip, color=isTip), size=3)`
+
+&lt;img src="slide_img/how_to_tree.png" width = 40%&gt;
+---
+class: bg-main1
+# Getting data into ggtree
+
+.font_large[treeio package provides functions for reading and writing phylogenetic data]
+.center[&lt;img src="slide_img/treeio.png" width=35%&gt;]
+.font_large[supports .yellow[newick, nexus, phylip, .nhx, jplace]]
+
+---
+class: bg-main1
+
+# treeio supports:
+
+--
+
+## BEAST
+
+--
+
+## RAxML
+
+--
+
+## MrBayes
+
+--
+
+## HyPhy
+
+--
+
+## RevBayes
+
+--
+
+## PPlacer
+
+--
+
+## r8s
+
+--
+
+## more!
+
+---
+class: bg-main1
+
+# Tidytree
+
+## Uses .yellow[tidy data] principles to allow manipulation of `phylo` objects
+
+`x &lt;- as_tibble(tree)` &lt;/br&gt;
+`x`&lt;/br&gt;
+`A tibble: 7 x 4`&lt;/br&gt;
+`parent  node branch.length label`&lt;/br&gt;
+`&lt;int&gt; &lt;int&gt;         &lt;dbl&gt; &lt;chr&gt;`&lt;/br&gt;
+`1      7     1       0.472   t2  ` &lt;/br&gt;
+`2      7     2       0.274   t1   `&lt;/br&gt;
+`3      6     3       0.674   t4  ` &lt;/br&gt;
+`4      5     4       0.00202 t3   `&lt;/br&gt;
+`5      5     5       NA      &lt;NA&gt; `&lt;/br&gt;
+`6      5     6       0.0393  &lt;NA&gt; `&lt;/br&gt;
+`7      6     7       0.435   &lt;NA&gt;`&lt;/br&gt;
+---
+class: bg-main1
+
+# Makes manipulating trees, adding tree data easy
+
+`parent()` &lt;/br&gt;
+`child()`&lt;/br&gt;
+`MRCA()`&lt;/br&gt;
+
+# Allows easy grouping for annotation
+
+`group_clade()`&lt;/br&gt;
+`group_OTU()`&lt;/br&gt;
+
+---
+class: bg-main1
+# Go make some trees!
+
+.center[&lt;img src="slide_img/Fig3_HGTtree.png" width=50%&gt;]
+---
+class: bg-main1
+.center.yellow[
+# Thank You!
+]
+&lt;/br&gt;
+.center[&lt;img src="slide_img/pumpkin.jpg" width=40%&gt;]
+&lt;/br&gt;&lt;/br&gt;
+.center.font_large[Questions?]
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
