@@ -1,0 +1,459 @@
+---
+title: The Most Dangerous Place to be Transgender
+author: Will
+date: '2019-01-03'
+slug: the-most-dangerous-place-to-be-transgender
+categories:
+  - R
+tags:
+  - Tidyverse
+  - LGBT
+  - tdor
+header:
+  caption: ''
+  image: ''
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Trigger warning
+This is an exploratory data analysis of murders of transgender people. The data contains graphic descriptions of violence against transgender people. 
+
+# Introduction
+
+This is a horrific dataset. I would like to begin by asking anyone reading to take a moment and think about what this analysis represents. Each of the 2705 individuals in this dataset was a transgender person who was murdered or comitted suicide. The goal of Transgender Day of Rememberance is to ensure that these individuals are remembered and honored. With the nature of this data, it's more relevant than ever that we remember each of these data points was a real person with a name, a life, and people who loved them. To emphasize this goal, <a href="https://twitter.com/campkels" target="_blank">Kelsey Campbell</a> of Gayta Science made an amazing <a href="https://www.gaytascience.com/tdor2018/" target="_blank">interactive visualization of the TDoR data</a> that I encourage everyone to go explore. Further, all of this data is based on the <a href="https://tdor.translivesmatter.info/" target="_blank">Trans Lives Matter project</a> where you can explore this data in greater detail. I also thank <a href="https://twitter.com/R_LGBTQ" target="_blank">RainbowR</a>, <a href="https://twitter.com/R_Forwards" target="_blank">R Forwards</a>, and all the folks at the Cardiff R useR group who organized and participated in the tdor2018 and made these data available as an R package.
+
+My goal in this analysis is to analyze which factors are most associated with violence against transgender people, focusing on location in particular. I will use the data from `tdor` package, which is an R wrapper for the incredible work done by <a href="https://twitter.com/annajayne" target="_blank">Anna-Jayne Metcalfe</a> to assemble these data. While my analysis will be broad, I have striven to do this with individuals in mind. I put a great deal of effort into including as many individuals as possible by incorporating more complex data wrangling and improved geocoding rather than ignoring data that had missing values. I think this was a great motivator to try harder than I normally do to deal better with missing values. Having said that, I did filter out individuals who did not have a reported cause of death, or who were reported as suicides. I hope in the future I can do a separate analysis focused on suicides, but because my focus in this analysis is on violence, I focused on those deaths.
+
+
+# Getting and cleaning data
+
+Here I'm importing the `tdor` data then doing some improved geocoding based on the lon/lat to get better country and region values. I follow that with some basic data cleaning. 
+
+```{r}
+#load packages
+library(tidyverse)
+library(magrittr)
+library(kableExtra)
+
+#get data
+data <- tdor::tdor
+
+#clean col names
+data %<>% janitor::clean_names()
+
+#improve geocoding based on lon/lat
+NAm=data.frame(lat=c(90,       90,  78.13,   57.5,  15,  15,  1.25,  1.25,  51,  60,    60, 90),
+               lon=c(-168.75 ,-10 ,-10     ,-37.5 ,-30 ,-75 ,-82.5 ,-105  ,-180 ,-180 ,-168.75, -168.75))
+
+NAm2 = data.frame(lat=c(51,    51,  60, 51),
+                  lon=c(166.6, 180, 180, 166.6))
+
+SAm = data.frame(lat=c(1.25,   1.25,  15,  15, -60, -60, 1.25),
+                 lon=c(-105, -82.5,  -75, -30, -30, -105, -105))
+
+europe=data.frame(lat=c(90,   90,  42.5, 42.5, 40.79, 41, 40.55, 40.40, 40.05, 39.17, 35.46, 
+                        33,   38,  35.42, 28.25, 15,  57.5,  78.13, 90),
+                  lon=c(-10, 77.5, 48.8, 30,   28.81, 29, 27.31, 26.75, 26.36, 25.19, 27.91,
+                        27.5, 10, -10,  -13,   -30, -37.5, -10, -10))
+
+africa=data.frame(lat=c(15,  28.25 ,35.42 ,38 ,33   ,31.74 ,29.54 ,27.78 ,11.3 ,12.5 ,-60 ,-60, 15),
+                  lon=c(-30 ,-13   ,-10 ,10 ,27.5 ,34.58 ,34.92 ,34.46 ,44.3 ,52    ,75 ,-30, -30))
+
+australia=data.frame(lat=c(-11.88, -10.27, -10 ,-30    ,-52.5 ,-31.88, -11.88),
+                     lon=c(110,      140  ,145 ,161.25 ,142.5  ,110, 110))
+
+asia=data.frame(lat=c(90   ,42.5 ,42.5 ,40.79 ,41 ,40.55 ,40.4  ,40.05 ,39.17 ,35.46 ,33   ,
+                      31.74 ,29.54 ,27.78 ,11.3 ,12.5 ,-60 ,-60 ,-31.88 ,-11.88 ,-10.27 ,33.13 ,51    ,60  ,90, 90),
+                lon=c(77.5 ,48.8 ,30   ,28.81 ,29 ,27.31 ,26.75 ,26.36 ,25.19 ,27.91 ,27.5 ,
+                      34.58 ,34.92 ,34.46 ,44.3 ,52   ,75  ,110  ,110   ,110    ,140    ,140   ,166.6 ,180 ,180, 77.5))
+
+asia2=data.frame(lat=c(90    ,90      ,60      ,60, 90),
+                 lon=c(-180 ,-168.75 ,-168.75 ,-180, -180))
+
+antarctica=data.frame(lat=c(-60, -60, -90, -90, -60),
+                      lon=c(-180, 180, 180, -180, -180))
+
+continents=list(
+  y=c(NAm$lat, NA, NAm2$lat, NA, SAm$lat, NA, europe$lat,NA,africa$lat,NA,
+      australia$lat,NA,asia$lat,NA,asia2$lat,NA,antarctica$lat),
+  x=c(NAm$lon, NA, NAm2$lon, NA, SAm$lon, NA,europe$lon,NA,africa$lon,NA,
+      australia$lon,NA,asia$lon,NA,asia2$lon,NA,antarctica$lon),
+  names=c("North America", "North America:2", "South America", "Europe",
+          "Africa","Australia","Asia","Asia:2","Antarctica"))
+class(continents) <- "map"
+
+data$country_2 <- maps::map.where(rworldmap::countriesCoarse, x=data$longitude, y=data$latitude)
+data$continent <- maps::map.where(continents, x=data$longitude, y=data$latitude)
+
+##define theme for plots
+theme_black = function(base_size = 12, base_family = "") {
+  
+  theme_grey(base_size = base_size, base_family = base_family) %+replace%
+    
+    theme(
+      # Specify axis options
+      axis.line = element_blank(),  
+      axis.text.x = element_text(size = base_size, color = "white", lineheight = 0.9),  
+      axis.text.y = element_text(size = base_size, color = "white", lineheight = 0.9),  
+      axis.ticks = element_line(color = "white", size  =  0.2),  
+      axis.title.x = element_text(size = base_size*1.2, color = "white", margin = margin(0, 10, 0, 0)),  
+      axis.title.y = element_text(size = base_size*1.2, color = "white", angle = 90, margin = margin(0, 10, 0, 0)),  
+      axis.ticks.length = unit(0.3, "lines"),   
+      # Specify legend options
+      legend.background = element_rect(color = NA, fill = "black"),  
+      legend.key = element_rect(color = "white",  fill = "black"),  
+      legend.key.size = unit(1.2, "lines"),  
+      legend.key.height = NULL,  
+      legend.key.width = NULL,      
+      legend.text = element_text(size = base_size, color = "white"),  
+      legend.title = element_text(size = base_size*1.2, face = "bold", hjust = 0, color = "white"),  
+      legend.position = "right",  
+      legend.text.align = NULL,  
+      legend.title.align = NULL,  
+      legend.direction = "vertical",  
+      legend.box = NULL, 
+      # Specify panel options
+      panel.background = element_rect(fill = "black", color  =  NA),  
+      panel.border = element_rect(fill = NA, color = "white"),  
+      panel.grid.major.x = element_line(color = "grey35"),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.spacing = unit(0.2, "lines"),   
+      # Specify facetting options
+      strip.background = element_rect(fill = "grey30", color = "grey10"),  
+      strip.text.x = element_text(size = base_size*0.8, color = "white"),  
+      strip.text.y = element_text(size = base_size*0.8, color = "white",angle = -90),  
+      # Specify plot options
+      plot.background = element_rect(color = "black", fill = "black"),  
+      plot.title = element_text(size = base_size*1.5, color = "white", vjust = 5),  
+      plot.margin = unit(rep(1, 4), "lines")
+      
+    )
+  
+}
+
+theme_black_map = function(base_size = 12, base_family = "") {
+  
+  theme_grey(base_size = base_size, base_family = base_family) %+replace%
+    
+    theme(
+      # Specify axis options
+      axis.line = element_blank(),  
+      axis.text.x = element_blank(),  
+      axis.text.y = element_blank(),  
+      axis.ticks = element_blank(),  
+      axis.title.x = element_blank(),  
+      axis.title.y = element_blank(),  
+      # Specify legend options
+      legend.background = element_rect(color = NA, fill = "black"),  
+      legend.key = element_rect(color = "white",  fill = "black"),  
+      legend.key.size = unit(1.2, "lines"),  
+      legend.key.height = NULL,  
+      legend.key.width = NULL,      
+      legend.text = element_text(size = base_size, color = "white"),  
+      legend.title = element_text(size = base_size*1.2, face = "bold", hjust = 0, color = "white"),  
+      legend.position = "right",  
+      legend.text.align = NULL,  
+      legend.title.align = NULL,  
+      legend.direction = "vertical",  
+      legend.box = NULL, 
+      # Specify panel options
+      panel.background = element_rect(fill = "black", color  =  NA),  
+      panel.border = element_blank(),  
+      panel.grid.major = element_blank(),  
+      panel.spacing = unit(0.2, "lines"),   
+      # Specify facetting options
+      strip.background = element_rect(fill = "grey30", color = "grey10"),  
+      strip.text.x = element_text(size = base_size*0.8, color = "white"),  
+      strip.text.y = element_text(size = base_size*0.8, color = "white",angle = -90),  
+      # Specify plot options
+      plot.background = element_rect(color = "black", fill = "black"),  
+      plot.title = element_text(size = base_size*1.5, color = "white", vjust = 5),  
+      plot.margin = unit(rep(1, 4), "lines")
+      
+    )
+  
+}
+
+#cleaning up countries and selecting columns we want
+data_cleaned <-
+  data %>%
+  select(name, country, country_2, continent, age, date, year, location, latitude, longitude, cause_of_death) %>%
+  mutate(country_2 = ifelse(is.na(country_2), country, country_2)) %>%
+  mutate(country_2 = str_remove(.$country_2, ":[0-9]")) %>%
+  filter(!(cause_of_death %in% c("suicide", "possible suicide", "not reported", "no reported")))
+```
+
+# Trends in violence by region
+
+Here I'll bring in some population data, and analyze the number of murders overall, and number of murders per 100,000 people for the major regions (continents) represented in the dataset.
+
+```{r}
+#add population data, from wikipedia 11-26-2018
+pops <- tibble(continent = c("Asia", "Africa", "Europe", "North America", "South America", "Australia"), 
+               pop = c(4436224000, 1216130000, 738849000, 579024000, 422535000, 38304000))
+
+#summarize population and trans murder data for continents
+data_pops <- 
+  data_cleaned %>%
+  filter(!is.na(continent)) %>%
+  group_by(continent) %>%
+  tally() %>%
+  left_join(., pops, by = "continent") %>%
+  arrange(n)
+
+#plot number of trans murders per continent
+ggplot(data = data_pops, aes(x = reorder(continent, n), y = n)) + 
+  geom_bar(stat = "identity", fill = "#c62825") +
+  coord_flip() +
+  theme_black() +
+  labs(title = "Transgender Murders by Continent", x = "Region", y = "Murders from 2006-2018", fill = "Region")
+
+#trans murders per 100,000 people by continent
+data_pops %>%
+  mutate(deaths_scaled = (n/pop)*100000) %>%
+  ggplot(aes(x = reorder(continent, deaths_scaled), y = deaths_scaled)) + 
+    geom_bar(stat = "identity", fill = "#c62825") +
+    coord_flip() +
+    theme_black() +
+    labs(title = "Transgender Murders per 100,000 People", x = "Region", y = "Murders per 100,000 People from 2006-2018", fill = "Region")
+```
+
+From this data it looks clear that South America is a dangerous place to be a transgender person. North America is also looking pretty bad, but Africa and Europe are surprisingly low in the relative number of murders compared to the Americas. It turns out that this is likely due to missing data, because we do not have any data on transgender victims in much of Africa or Eastern Europe.
+
+## Is South America more dangerous for transgender people, or just for all people?
+
+After seeing how remarkably dangerous South America was looking, I wondered if this was simply an artifact of the fact that South and Central America have some of the highest murder rates in the world. To answer this, I pulled data on murder rates for countries from the UNODC Crime and Justice Report, and compared the number of transgender people murdered per region to the total number of people murdered from that region.
+
+```{r}
+#get murders data from UNODC 11-26-18
+murders <- read_csv("../../static/data/homicide_report.csv") 
+
+#clean up continents, summarize murders per continent
+murders_edited <-  
+  murders %>%
+  mutate(continent = case_when(
+    Region == "Africa" ~ "Africa",
+    Region == "Europe" ~ "Europe",
+    Region == "Oceania" ~ "Australia",
+    Region == "Asia" ~ "Asia",
+    Subregion == "Caribbean" ~ "North America",
+    Subregion == "Central America" ~ "North America",
+    Subregion == "South America" ~ "South America",
+    Subregion == "Northern America" ~ "North America"
+  )) %>%
+  select(continent, country = `UNODC Name`, 5:21) %>%
+  mutate_at(vars(starts_with("20")), funs(parse_number(.))) %>%
+  gather(key = "key", value = "value", -continent, -country) %>%
+  group_by(country) %>%
+  mutate(mean = round(mean(value, na.rm = TRUE), 0)) %>%
+  mutate(mean = ifelse(is.nan(mean), 0, mean)) %>%
+  filter(!is.na(continent)) %>%
+  select(continent, country, homicides = mean)
+
+#join murders + pop data, calculate summary stats
+murders_region <-  
+  murders_edited %>%
+  group_by(continent) %>%
+  summarize(total_murders = sum(homicides)) %>%
+  left_join(., data_pops, by = "continent") %>%
+  rename("trans_murders" = n) %>%
+  mutate(total_scaled = (total_murders/pop)*100000, 
+         trans_scaled = (trans_murders/pop)*100000,
+         trans_per_tot = (trans_murders/total_murders)*100)
+```
+```{r fig.width=8}
+#plot trans murders/murders by continent
+murders_region %>%
+  ggplot(aes(x = reorder(continent, trans_per_tot), y = trans_per_tot)) + 
+  geom_bar(stat = "identity", fill = "#c62825") +
+  scale_fill_viridis_d() +
+  coord_flip() +
+  theme_black() +
+  labs(title = "Proportion of Murder Victims that are Transgender", x = "Region", y = "% Murder Victims that are Transgender", fill = "Region")
+```
+
+Here we see things even out a bit between South America and North America (which includes Central America). But it still appears that Europe, Australia, and Asia are extremely low. To get a better idea of what's going on, we will move to the country level.
+
+# Country level analysis
+
+I'll start by making a world map, then getting some data on country populations from the `wbstats` package. We also need to do some cleaning of names and other small data tweaks because there's some discrepancy in naming between our tdor dataset and the wbstats data and the map data. 
+
+```{r}
+#going to country scale
+#get map data
+world <- map_data("world") %>%
+  filter(region != "Antarctica")
+
+#get population data for each country
+country_pops <- 
+  wbstats::wb(indicator = "SP.POP.TOTL", startdate = 2010, enddate = 2010) %>%
+  mutate(country = case_when(
+    country == "Venezuela, RB" ~ "Venezuela",
+    country == "Russian Federation" ~ "Russia",
+    country == "United States" ~ "United States of America",
+    TRUE ~ country
+  ))
+
+#get trans murder data per country
+country_data <-
+  data_cleaned %>%
+  filter(!is.na(country_2)) %>%
+  select(country = country_2, year) %>%
+  filter(country != "USA") %>%
+  group_by(country) %>%
+  tally() %>%
+  mutate(n = ifelse(country == "United States of America", 231, n),
+         country = ifelse(country == "Republic of Serbia", "Serbia", country))
+
+#join trans murders and population data, calculate summary stats
+country_data_edited <- 
+  country_data %>%
+  left_join(., country_pops, by = "country") %>%
+  select(country, trans_murders = n, pop = value) %>%
+  mutate(trans_murders = as.numeric(trans_murders),
+         trans_murders_scaled = (trans_murders/pop)*100000,
+         country = ifelse(country == "United States of America", "USA", country))
+```
+
+Now we have a dataframe with each country, the population, and statistics on number of transgender victims. We can start by plotting some choropleth maps to explore which countries are particularly safe or dangerous.
+
+```{r}
+#plot choropleth for trans murders per 100,000 people
+country_data_edited %>%
+  right_join(., world, by = c(country = "region")) %>%
+  ggplot(aes(long, lat, group = group, fill = trans_murders_scaled)) +
+  geom_polygon(color = "white", size = 0.1) +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0.3, na.value = "black") +
+  coord_map(xlim=c(-180,180)) +
+  theme_black_map() +
+  labs(title = "Transgender Murders per 100,000 People", fill = "")
+```
+
+```{r fig.width=9}
+#plot top 10 countries of trans murders per 100,000 people
+country_data_edited %>%
+  arrange(desc(trans_murders_scaled)) %>%
+  head(10) %>%
+  ggplot(aes(x = reorder(country, trans_murders_scaled), y = trans_murders_scaled)) + 
+  geom_bar(stat = "identity", fill = "#c62825") +
+  coord_flip() +
+  theme_black() +
+  labs(title = "Countries with Most Transgender Murders per 100,000 People", x = "Country", y = "Transgender Murders per 100,000 People from 2006-2018")
+```
+
+This exploration paints an equally grim picture for South/Central America. We can see that Brazil, Honduras, and El Salvador have extremely high rates of transgender violence. We can also see that there is tons of missing data in Africa and Eastern Europe which could be confounding our region-wide analysis. But what happens if we ask the same question as before? Are these places really more dangerous for transgender people, or just for all people? We can pull in our data on country murder rates and again get a proportion of transgender murders/total murders.
+
+## Proportion of murder victims that are transgender
+```{r}
+#join trans murder, population, and overall murder data for each country
+#clean up, and get summary stats
+murders_country <-  
+  murders %>%
+  select(country = `UNODC Name`, 5:21) %>%
+  mutate_at(vars(starts_with("20")), funs(parse_number(.))) %>%
+  gather(key = "key", value = "value", -country) %>%
+  group_by(country) %>%
+  mutate(mean = round(mean(value, na.rm = TRUE), 0)) %>%
+  mutate(mean = ifelse(is.nan(mean), 0, mean)) %>%
+  filter(!is.na(country)) %>%
+  select(country, homicides = mean) %>%
+  distinct(country, homicides) %>%
+  ungroup() %>%
+  mutate(country = str_remove_all(.$country, "\\*")) %>%
+  mutate(country = str_remove_all(.$country, "#")) %>%
+  mutate(country = case_when(
+    country == "Bolivia (Plurinational State of)" ~ "Bolivia",
+    country == "Venezuela (Bolivarian Republic of)" ~ "Venezuela",
+    country == "Iraq (Central Iraq)" ~ "Iraq",
+    country == "Iraq (Kurdistan Region)" ~ "Iraq",
+    country == "Russian Federation" ~ "Russia",
+    country == "United Kingdom (England and Wales)" ~ "United Kingdom",
+    country == "United Kingdom (Northern Ireland)" ~ "United Kingdom",
+    country == "United Kingdom (Scotland)" ~ "United Kingdom",
+    country == "United Kingdom of Great Britain and Northern Ireland" ~ "United Kingdom",
+    country == "United States of America" ~ "USA",
+    TRUE ~ country
+  )) %>%
+  group_by(country) %>%
+  summarize_all(sum) %>%
+  right_join(., country_data_edited, by = "country") %>%
+  mutate(trans_per_total = trans_murders/homicides)
+
+#plot choropleth of trans murders/total murders
+murders_country %>%
+  right_join(., world, by = c(country = "region")) %>%
+  ggplot(aes(long, lat, group = group, fill = trans_per_total)) +
+  geom_polygon(color = "white", size = 0.1) +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0.023, na.value = "black", labels = scales::percent_format()) +
+  coord_map(xlim=c(-180,180)) +
+  theme_black_map() +
+  labs(title = "Proportion of Murder Victims that are Transgender", fill = "")
+```
+```{r fig.width=9}
+murders_country %>%
+  arrange(desc(trans_per_total)) %>%
+  head(10) %>%
+  ggplot(aes(x = reorder(country, trans_per_total), y = trans_per_total)) + 
+  geom_bar(stat = "identity", fill = "#c62825") +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip() +
+  theme_black() +
+  labs(title = "Countries with Most Transgender Murders per Total Murders", x = "Country", y = "% Murder Victims that are Transgender")
+```
+
+This visualization shows a more nuanced picture. Here we can see that the proportion of murder victims that are transgender is actually highest in Italy and Fiji. There are also very high values in New Zealand, Chile, Argentina, Brazil, and others. Some of this could be due to low sample sizes or sampling bias, so let's look at the sample sizes. 
+
+```{r}
+murders_country %>%
+  arrange(desc(trans_per_total)) %>%
+  head(10) %>% 
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  column_spec(3, background = "yellow")
+```
+
+Now it's clear that Fiji, New Zealand, and Ireland can be easily ignored due to only having one trans murder each, which is just too low of a sample size to make a conclusion. Uruguay and Chile are also quite low, but they're both borderline if you ask me. Italy stands in my mind as a clear outlier--it seems to have a large enough sample size, meaning that it truly may be among the most dangerous places for a trans person.
+
+# Number of transgender victims by age
+
+The location data is certainly a powerful factor related to transgender victims, but we also have the age of victims in many cases. We can visualize this with a waffle plot binned by 10 year age ranges for the victims in our dataset. Note that for age ranges 0-10 there were three victims, and 70-80 there were two victims. These were excluded from the plot because each square represents ten victims. 
+
+```{r}
+#analyzing age data
+
+data_waffle <- 
+  data %>%
+  select(name, country, country_2, age, date, year, location, cause_of_death) %>%
+  mutate(country_2 = ifelse(is.na(country_2), country, country_2)) %>%
+  mutate(country_2 = str_remove(.$country_2, ":[0-9]")) %>%
+  filter(!is.na(age)) %>%
+  mutate(age = parse_number(age)) %>%
+  mutate(age2 = 10*(age %/% 10)) %>%
+  group_by(age2) %>%
+  summarize(n = n()) %>%
+  filter(!is.na(age2)) %>%
+  rename(names = age2, vals = n) %>%
+  slice(-c(1, 8)) %>%
+  mutate(names = c("10-20", "20-30", "30-40", "40-50", "50-60", "60-70"))
+
+data_waffle_vec <- data_waffle$vals
+names(data_waffle_vec) <- data_waffle$names
+
+waffle::waffle(data_waffle_vec/10, title = "Ages of Transgender Murder Victims")
+```
+Here we see that most victims are aged 20-40, but a really shocking number are also aged 10-20. 
+
+# Conclusions
+
+What did we learn? Most obvious is that South and Central America are dangerous places--for anyone. In some countries such as Brazil, Chile, Uruguay, and Argentina, transgender people do form a large portion of total murders. However, Italy is actually highest in terms of proportion of transgender vicims per total murders. We also learned that the majority of transgender victims are young, particularly aged 20-40. 
+
+I hope that this analysis can form a jumping off point for research into the countries that were identified as problematic. I am aware that violence against transgender people is currently an epidemic in Brazil, and indeed the largest single source in the tdor dataset is Brazil. I do not know much about other dangerous countries like Italy, but I think they deserve a closer look. This type of data could even serve as a pointer of where to focus efforts on education, prevention, and political action to protect transgender people. 
+
+My thoughts are with the loved ones all the victims in this dataset, and those who are not represented here. I hope to keep contributing to the Trans Lives Matter resources, and for those who wish to join me, you can visit <a href="https://github.com/rlgbtq/TDoR2018/issues" target="_blank">the tdor2018 GitHub</a> to see open issues that need contributions. 
