@@ -55,16 +55,16 @@ enableGitInfo = false
 
   # Your details.
   name = "William Chase"
-  role = "Research Assistant"
+  role = "Data Scientist"
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
-  organizations = [ { name = "The Pennsylvania State University", url = "" } ]
+  organizations = [ { name = "University of Pennsylvania", url = "" } ]
 
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = "will_face1_crop.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = "wchase14@gmail.com"
-  address = "352 North Frear Building, University Park, Pennsylvania, 16802"
+  address = ""
 
   # Enable Keybase in Contact widget by entering your keybase.io username.
   keybase = ""

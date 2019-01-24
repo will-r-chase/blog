@@ -10,10 +10,10 @@ weight = 5
 # List your academic interests.
 [interests]
   interests = [
-    "Molecular Evolution",
-    "Microbiology",
-    "Plant Cell Walls",
-    "History of Life"
+    "Data Visualization",
+    "Bioinformatics",
+    "Weird Biology",
+    "Generative/Algorithmic Art"
   ]
 
 # List your qualifications (such as academic degrees).
@@ -26,4 +26,4 @@ weight = 5
 
 # Biography
 
-Hi, I'm Will, a research technician at Penn State University currently researching microbial ecology, carbohydrate-active enzyme evolution, and the structure and formation of biomaterials. I love the R programming language and (semi) regularly share my triumphs and failures here on my blog. I'm broadly interested in the diverse microbes that blanket our planet and how they built the world in which we live. What allows certain microbes to thrive in an environment? How do those microbes influence the environments they inhabit? And what can this tell us about the history of our planet and life as we know it today? I study these questions by examining the evolution of some very interesting protein families, how the detailed structure of key proteins influences their function in diverse environments, and how the structure of some incredible biomaterials (namely the plant cell wall) informs their function. I'm also fascinated by the origins of life, origins of eukaryotic cells, and the evolution of multicellularity. I hope to use this platform as a place to share my work and teach bioinformatics, data science, and fun/silly Rstats stuff!
+Hi, I'm Will, a data scientist at Upenn. I love the R programming language and share my triumphs and failures here on my blog. My day job focuses on data visualization, bioinformatics, and biostatistics, while my nights and weekends are spent making generative and algorithmic art. In a former life I was a microbiologist and plant biologist, and while I gave up the pipets, I kept my love of wonderfully weird biology, which inspires much of my current work. If you like R, dataviz, generative art, and fresh gifs, follow me on Twitter <a href="https://twitter.com/W_R_Chase" target="_blank">@W_R_Chase</a>.
