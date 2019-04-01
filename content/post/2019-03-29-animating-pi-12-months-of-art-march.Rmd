@@ -1,0 +1,107 @@
+---
+title: Animating Pi (12 Months of aRt, March)
+author: Will
+date: '2019-03-29'
+slug: animating-pi-12-months-of-art-march
+categories:
+  - Art
+  - R
+tags:
+  - aRt
+  - Fun
+  - Generative
+  - gganimate
+  - Math
+header:
+  caption: ''
+  image: ''
+---
+
+>Pi is an infinite, non-repeating decimal – meaning that every possible number combination exists somewhere in pi. Converted into ASCII text, somewhere in that string of digits is the name of every person you will ever love, the date, time, and manner of your death, and the answers to all the great questions of the universe. Converted into a bitmap, somewhere in that infinite string of digits is a pixel-perfect representation of the first thing you saw on this earth, the last thing you will see before your life leaves you, and all the moments, momentous and mundane, that will occur between those points.
+>
+>All information that has ever existed or will ever exist, the DNA of every being in the universe.
+>
+>EVERYTHING: all contaned in the ratio of a circumference and a diameter.
+> 
+>- Unknown
+
+I have no idea where this quote came from, but it's quite poetic. Not convinced? Read it in Neil DeGrasse Tyson's voice. Boom, instant gravitas. Here's the problem, this quote is not technically correct. <img src="/img/correct.gif" width="70%">
+
+For a detailed explanation of why this quote is inaccurate, see <a href="http://www.goodmath.org/blog/2014/05/22/infinite-and-non-repeating-does-not-mean-unstructured/" target="_blank">this curmudgeonly essay</a> or <a href="http://justinparrtech.com/JustinParr-Tech/pi-does-not-contain-the-universe/" target="_blank">this exhausting manifesto</a>. From what I can tell, there are two main objections: 
+
+1. It has never been mathematically *proven* that pi actually contains every sequence of digits
+2. The infinite never-repeating property is not something unique to pi. We could just as easily say the same thing about *e* or any other irrational number
+
+In my opinion, the first argument is a little pedantic, it sounds like someone saying "you know gravity is just a theory", though I suppose being pedantic is basically the whole point of math, so maybe that just comes with the territory. And of course, this quote does misrepresent what it means to be inifinte and non-repeating. There's many sequences of digits that never appear in pi, such as *e* or any of the other irrational numbers. As they're all infinite and never repeating, none of them can be contained in another. 
+
+Despite these caveats, you can find much contained in the digits of pi, and I was inspired by the work of <a href="https://www.visualcinnamon.com/portfolio/the-art-in-pi" target="_blank">Nadieh Bremer</a> and <a href="http://mkweb.bcgsc.ca/pi/art/" target="_blank">Martin Krzywinski</a> to try my own hand at pi art. I figured this was the right month for a pi project, since anyone using the U.S. system of dates (AKA the correct system, don't @ me) will recognize that pi day (3/14) happens in March. I also thought this would be a good opportunity to expand my gganimate knowledge by practicing with some new transitions. Read on for bubble snakes, sPIrographs, random walks, maps, and all that sweet animation goodness. 
+
+## Random walk remix
+
+My first inspiration was Nadieh Bremer's pi random walk, in which she encoded each digit of pi to an angle, and then formed a path by walking one unit, turning the next angle, walking again, and so on. Nadieh's code was in R, so as a warm-up exercise I decided to see if I could animate her random walk. One interesting aspect of the images from this walk is that it tends to form little clumps, and then break out in a random direction, but in totally unpredictable ways (since of course pi is not predictable). I decided to try an animation that would do two things: 1) start very slowly and build up speed, so viewers could ease into the understanding of how the image was built up and 2) insert pauses at various points where I feel there is a transition in the path. I used Nadieh's code to get a dataframe of X and Y positions for the random walk points. 
+
+Since the random walk is plotted using `geom_path`, `transition_reveal` is the the perfect choice, since it will reveal our walk in a smooth transition. To create the slow->speed-up effect at the beginning of the animation, I created a new variable `reveal_time` which has larger gaps in the first few points than it does in the later points. For example, the `reveal_time` might be [500, 1000, 1200, 1300, 1301, ...]. If we use this `reveal_time` as the `along` argument in `transition_reveal` then it will take longer to reveal the first points, since the gaps between them are longer. This has the desired slow-down->speed-up effect we want. The pause effect is accomplished by simply duplicating the rows that we want to pause on, while still incrementing the `reveal_time` variable. I tried to meld both of these into one dataframe, but it ended up being too much trouble, so I went with the cheater's route of making two animations, one with a slow down and another with pausing, then stitching them together with a video editor. This effect will work with any line graph, here's how to make it:
+
+```{r eval = FALSE}
+library(tidyverse)
+
+#here Pi.frame contains X, Y, and id which is just the row number
+#first define a times variable that repeats for each row
+#then make the first 24 points slow down with decreasing gaps between them
+times <- rep(100, nrow(Pi.frame))
+times[1:24] <- c(50000, 40000, 30000, 30000, 30000, 30000, 20000, 20000, 20000, 10000, 10000, 10000, 10000, 10000, 5000, 5000, 5000, 5000, 1000, 1000, 1000, 500, 500, 500)
+
+#make each of the initial 100 points have a little slow effect
+#then calculate the reveal_time with cumulative sum
+pi_slowdown <- Pi.frame %>%
+  mutate(show_time = ifelse(ID %in% 1:100, times, 1),
+         reveal_time = cumsum(show_time))
+
+#for pausing, just choose which points should have a pause (ie. 500, 2000)
+#then make the show_time a large number for those rows (here I did 500)
+#use tidyr::uncount() to duplicate each row by the amount in show_time
+#then add them up with cumulative sum to get the reveal_time
+pi_pause <- Pi.frame %>%
+  mutate(show_time = ifelse(ID %in% c(500, 2000, 5000, 7000), 500, 1)) %>%
+  uncount(show_time) %>%
+  mutate(reveal_time = row_number())
+
+#to animate, add transition_time(along = reveal_time) to your ggplot
+```
+
+And here's the result:
+
+<iframe src="/img/hi_def.mp4" width=700 height=700 frameborder=0, marginwidth=0 marginheight=0></iframe>
+
+
+## Bubble snake
+
+Next I wondered what the result would look like if I did not keep all of the old path as we went along our random walk. For this I used `transition_events` which allows you to transition each "event" in and out on a defined lifecycle. Here I kept the same path for the random walk, but changed the geom to points. Having points also allowed me to define some extra parameters for the shape. I chose to make the bubble size and transparency scaled by the digit, so larger digits of pi have bigger and more transparent bubbles. The speed at which the bubbles enter is also linked to the size, so that larger bubbles enter faster. The bubbles are transitioned in and out with `enter_grow` and `exit_fade` so that they appear to grow in and fade out. All you need to define the lifecycle of each bubble is an `enter_length` which we already set to the size of the bubbles, and `exit_length`, which is just an integer that will define how long the component remains (proportional to the enter length). The overall effect reminds me a lot of the classic snake game which I used to play on my flip phone back in high school. I suppose if I were really going for the snake game aesthetic it would make more sense to use a `geom_path`, but I rather like the look of the different sized bubbles. 
+
+<img src="/img/bubble_snake.gif" width="80%">
+
+
+## Walk this way
+
+I thoroughly enjoyed Nadieh's random pi walk, but it was time to leave the nest and venture out on my own. To make my own random walk I chose to encode the positions as a traditional line graph, using a cumulative sum of the digits. This means I simply encode the X value as the index of the digit (1, 2, 3, ...), and then the Y is calculated by summing all of the digits. Of course that would just be a boring upwards line, so my added spice was to switch the sign of the digits (negative/positive) any time a zero appeared in the sequence. In this way we'll see a very up and down line, as the negative and positive digits fight for control. Again I used `transition_reveal` to animate the line. The line is quite spiky with lots of little fluctuation as you would expect, but there's also these long sequences where it soars upward or plummits downward.
+
+<img src="/img/my_walk.gif" width="80%">
+
+## sPIrobands
+
+Ever played with one of those spirograph toys? It's basically two gears that you can use to guide a pen to make a pretty flower-type pattern. Well I remembered playing with these as a kid, so I was delighted when a `geom_spiro` was introduced in the latest release of ggforce. It also gave me the opportunity to try line transformations and some elastic easeing functions. To generate the spirographs, I split the digits of pi into groups of 4, one digit each encoding the radius of the inner gear, radius of the outer gear, the distance of the point that will draw on the inner gear, and whether the inner gear will circle inside the outer gear, or outside of it. After generating many spirographs in this way, I choose a subset to animate, and then plot them using `transition_states`. There's one hiccup in that `geom_spiro` overwrites the group aesthetic, which makes gganimate fail, but special thanks to linz-sg who suggested on github that I extract the layer data from `geom_spiro` and use that to draw the path, which allows me to define a group for gganimate that will make it happy. I wanted the paths to look like rubber bands being pulled back and released when they transition. After trying several options, I found that `"back-in-out"` is the best easing option to achieve this look. 
+
+<img src="/img/spiroband.gif" width="80%">
+
+## Does pi really contain everything in the world?
+
+Let's loop back to that original quote about pi containing **everything**. There's no denying that there are some thing's pi doesn't contain, but it does contain planet earth. At least, it contains a map of the earth. I took the digits of pi, and split them into groups of 11. Five of the digits represented the latitude, five the longitude, and the final digit encoded color. I've tried making a map with over 10 million digits encoded this way, but even just using 30,000, the pattern of continents becomes clear. Note that I only show a point if it falls over a continent, but there are points covering the entire oceans as well. For this animation, since I have so many points and I just want them to appear, no tweening or easing, I just use an old-school animation style. I print a ggplot for every 100 points (300 plots in total), save them as pngs, and make them into a movie with ffmpeg. 
+
+<iframe src="/img/pi_map.mp4" width=700 height=700 frameborder=0, marginwidth=0 marginheight=0></iframe>
+
+
+## How he do that
+
+This post has been light on the technical aspects of making pi art, but as always, all of my code is <a href="https://github.com/will-r-chase/aRt" target="_blank">on my github</a>. Dealing with pi in R involves careful thinking about string manipulation and memory constraints as these vectors are quite large. The plotting code is fairly standard, and I've covered the animations here. There's ton's of ways to encode pi, so I encourage you to take the bones of my code and run with it!
+
+

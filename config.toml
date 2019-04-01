@@ -6,7 +6,7 @@
 baseurl = "/"
 
 # Title of your site
-title = "William Chase"
+title = "Will Chase"
 
 # Your copyright notice - appears in site footer.
 # To display a copyright symbol, type `&copy;`.
@@ -54,7 +54,7 @@ enableGitInfo = false
   font = "default"
 
   # Your details.
-  name = "William Chase"
+  name = "Will Chase"
   role = "Data Scientist"
 
   # Organizations/Affiliations.
