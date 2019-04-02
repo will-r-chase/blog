@@ -1,0 +1,71 @@
+---
+title: Making the Data Visualization Society Timeline
+author: Will
+date: '2019-04-02'
+slug: making-the-data-visualization-society-timeline
+categories:
+  - R
+  - dataviz
+tags:
+  - dataviz
+  - About
+  - ggplot
+  - tutorials
+header:
+  caption: ''
+  image: ''
+---
+
+The Data Visualization Society recently held their inaugural challenge. My final submission was a switchback style timeline that visualized each member as a watercolor splotch. I made the base graphic in R, and applied stylings to the SVG using manual editing and Inkscape. I got several questions about how I made it, so here's the story from concept to final design. 
+
+# Concept
+
+From first looking at the DVS challenge data, I knew I would make a timeline. There was detailed time data (to the hour), and I knew from following the DVS Twitter that there was a huge flood of applicants at the beginning and they even had to stagger invites, so I thought it would be interesting to visualize as a timeline. Also available were the applicant's rough latitude and longitude, and their self-assessed score in 3 categories: visualization, data, and society. 
+
+I can't say how it came to me, but early on I got the visual inspiration to visualize the timeline as a string of pearls. I remember my Mom buying a beautiful freshwater pearl bracelet at the flea market when I was a kid, and I imagined my viz would show each member as a pearl, colored by their region and sized according to some skill level, with the timeline being the string connecting all the pearls. 
+
+<img src="/img/pearls.jpg" width="50%">
+
+# Early sketches
+
+I did very little hand-sketching for this one, and when I started, I did not know if I would make the timeline linear, circular, break up individual days, or even how I would encode the different skills. I jumped right into coding and just tried to get something on the screen. My first task was to figure out which continent each person was from. Geocoding in R is super annoying now that google maps changed their API rules, so I used a rather long and janky way to geocode these without an API, but it worked well. I first plotted all of the points sized by visualization skill and colored by location. Each day is on the X-axis, and the Y-axis is the hour of the day. Of course, many hours had lots of people sign up, so the points are all stacked on top of each other. 
+
+<img src="/img/first_plot.png" width="60%">
+
+I continued designing-by-code, and next recoded the points to be evenly spaced within each hour. I also decided to encode the data and society scores by using them to jitter the points along the X-axis. To do this I calculated the difference between the data and society scores and set their X positions to correspond. I also did some custom spacing on the X-axis to create more padding between the days. Finally, adding a line to connect all of the points yielded my next sketch. 
+
+<img src="/img/pearls_test.png" width="90%">
+
+Eagle-eyed readers might spot that the connections between points aren't normal lines but diagonal bezier curves. This was my attempt to make the line look more like a natural string, and it was implemented using `geom_diagonal` from the ggforce package. I eventually scrapped this idea since it just doesn't look right, I think I would need fewer points and a smooth spline to make it look more natural. 
+
+# The switchback
+
+I loved the connectedness of the timeline in the last sketch, and knew that I wanted to change the connections to be like a switchback path, and flip the whole thing so it would read vertically. To achieve the switchback, I reversed the order of the points for every other day and added connections between the days. I tried many different types of connections, all of which I implemented with `geom_bezier` from ggforce. Calculating all of the control points for the bezier curves involved getting the endpoints for each day, and doing a little dplyr wrangling to make sure everything was even and in the right order. At this point, I had the bones of my final graphic, and exported a version to test out some aesthetics. Here's a version I made to test all the spacing and vertical alignment:
+
+<img src="/img/colors_test.png" width="100%">
+
+# Filters, design, decisions
+
+I was not sure if my original pearl idea would pan out, since I was suspicious of the links between the points, but I tried one anyways to see how it looked. To achieve a pearl look I created a different radial svg gradient for each color and applied it to my exported ggplot svg manually (search+replace makes this relatively easy). 
+
+<img src="/img/svg_pearls.png" width="80%">
+
+I actually really liked the pearls effect, and I'm definitely stocking that away for later, but it was clear that this just wasn't working visually for this project. 
+
+I had been messing around with watercolor effects recently, so I decided to switch gears and try applying a watercolor effect with an svg filter (also manually applied to the base plot). 
+
+<img src="/img/watercolor_test.png" width="100%">
+
+I thought this was gorgeous (except for the lines underneath), and decided to run with it. 
+
+# Sleeping on it
+
+I got busy around this time, and took almost a week without touching the project. This gave my ideas time to develop and I decided it was best to remove the connections between points and just have a straight line for each day. This gave a lot more readability and clarity to the plot and also made it easier to see which points were above or below the zero line (indicating a balance towards data or society skills). I also settled on cubic bezier links for the endpoints, and did a lot of refining of color choices. 
+
+When I had my base graphic all ironed out, and exported a large version to test, it looked awful. I didn't save any images, but the problem was that my svg filter looked good on small points, but looked ugly with the large sized points in the full-sized poster. After a lot of frantic tweaking of the filter, I got something I was 90% pleased with, and decided it was as good as it would get for now. I added a paper effect svg filter for the background and brought the poster into Inkscape for final edits. Lots of time was spent adding annotations, tweaking legends, colors, text, fonts, spacing, and all the other minutia that take 20 times longer than you expect. 
+
+<img src="/img/watercolor_poster_final_small.png" width="90%">
+
+The final result was a somewhat vintage looking poster that I was very pleased with. I could have gone full-on vintage by using more muted colors and some distressed filters, but I wasn't keen on the hyper-realistic antique look. Overall, I'm really happy with the snaking timeline structure, I like the typography, and I'm satisfied with the watercolor effect. I was aiming for something that really rode the line between data art and data viz, and I think I achieved that balance. I would be happy to print this and hang it on my wall. This first DVS challenge was super fun and definitely pushed me to come up with what I think is a pretty novel design and follow through on a tricky implementation. I also got some very useful feedback from the DVS critique channel, including a comment from Carl Manaster that the switchback style of reading the plot was similar to <a href="https://en.wikipedia.org/wiki/Boustrophedon" target="_blank">Boustrophedon</a>, a type of bi-directional text that was common in many ancient languages--how neat! All the code for the project is on <a href="https://github.com/will-r-chase/dvs" target="_blank">my github</a>. Hope you liked the end result and learned something from the process--I certainly did and I look forward to more DVS challenges!
+
+
