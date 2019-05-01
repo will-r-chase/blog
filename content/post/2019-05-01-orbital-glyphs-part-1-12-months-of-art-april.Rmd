@@ -1,0 +1,62 @@
+---
+title: Orbital glyphs, part 1 (12 Months of aRt, April)
+author: Will
+date: '2019-05-01'
+slug: orbital-glyphs-part-1-12-months-of-art-april
+categories:
+  - Art
+  - R
+tags:
+  - aRt
+  - Generative
+  - ggplot
+  - Math
+header:
+  caption: ''
+  image: ''
+---
+
+<img src="/img/WIP.png" width="90%">
+
+Welcome to my latest aRt project, which is very much a work-in-progress. I usually try to wrap things up in a nice bow before posting them, but this one was just too big for that, so I decided to split it over two months. This is part 1, in which I define a base algorithm for drawing various types of glyphs. 
+
+<img src="/img/summon_1.png" width="100%"> <img src="/img/orbit_1.png" width="100%">
+
+I honestly don't know what to call these, they started out with the idea of "orbits" and then evolved into something more like summoning circles. After adding all of the components, I decided it was best to split these two aesthetics into different algorithms as they weren't meshing too well. The original inspiration came from Gris, which is probably the most beautiful video game I've ever played. Gris is filled with stunning watercolor and handdrawn effects, but scattered throughout are these simple diagrams that resemble orbits. 
+
+<img src="/img/gris.png" width="80%">
+
+Without much idea of where it was going, I furiously wrote a script one night to draw a diagram emulating these Gris glyphs. It was more work than I thought, and involved consulting my "trigonometry for dummies" book. All it really takes to draw a diagram like this is being able to create a dataframe of (x, y) points that define circles, squares, diamonds, and points. Each of these shapes can be drawn if you give a radius. For example, a cirlce given radius `r` can be drawn like so:
+
+```{r message = FALSE}
+library(tidyverse)
+r <- 2
+circle <- tibble(angle = seq(0, 2*pi, length.out = 200), x = r*cos(angle), y = r*sin(angle))
+
+ggplot(circle, aes(x, y, group = 1)) +
+  geom_path() +
+  coord_equal()
+```
+
+Drawing other shapes like diamonds and squares is just a matter of changing the `angle` parameter and remembering your unit circle trig `r emo::ji("wink")`. After drawing one of these glyphs, I realized I could define an algorithm that would randomly generate these. I imagined an algorithm that would have all sorts of randomness in the size of the shapes, the presence of certian elements, the width of lines, the type of line (dotted or solid), and all sorts of other little tunable parameters so that we could generate a nearly infinite number of different glyphs. I kind of made these choices up as I went along, and I definitely made many mistakes. For one thing, I think the algorithm really got out of control; I tried to keep it tidy with most of the shape computations being handled by outside functions, but the number of elements I had and the way that they interact with each other led to this basically being a giant spaghetti heap of conditionals that is really hard to read or understand (even for me, the one who wrote it). I also should have commented a lot more. Comments are really helpful when you have big complex conditional nests like this, and when I took a couple weeks off from the algorithm and then tried to return, it took me a couple days to even remember how anything in the code worked. One upside of this complexity was that I learned a lot of tidyverse functions like `keep()` and `uncount()`, both of which are incredibly useful, and I even got to take advantage of Romain Francois's `rap` package. 
+
+There are still a couple of edge-case bugs, and the code definitely has some redundent or non-essential checks, but I'm pretty happy with where I've gotten so far. I think that at this point I have most of the components I want coded out, and I have two algorithms that work nicely to generate some cool shapes. I might tweak the number, position, and look of shapes going forward, but what I have now is a solid foundation. The two algorithms make slightly different drawings. The "summoning circle" will draw a "seed" shape at the center with some outlines, some large circles around the seed that I call "orbits", some shapes that are inscribed in the orbits, and possibly some "planets" that are on the corners of the inscribed shapes. The "orbits" algorithm will do all of the above, except it will not draw inscribed shapes, and it adds "planets" to the orbits. 
+
+I don't usually talk about my plans for future projects, but given that I've already told you this is only step one of two, I figure I'll chart my path a little. On the docket for next month:
+
+- Tweak to add more of certain components
+- Make a "vintage" astrology chart look out of the summoning algorithm
+- Build a shiny app to choose which glyphs to keep and which to toss
+- Build a tweet bot that tweets out random glyphs daily
+- Animate the shapes, spinning everything!
+- Glitch the shapes: I want to chop things up and rearrange them to bring more randomness and less "perfect" shapes to the party
+
+That's basically it for now. As usual, all the code for these is on <a href="https://github.com/will-r-chase/aRt" target="_blank">my github</a>. You can make your own shapes, tweak my algorithm, and please tell me about it if you do so! These are particularly easy to make, since there's just a single function that you can run over and over and generate different glyphs each time. I didn't want to bloat the post with a bunch of giant pictures, but if you want to see some more nice shapes, keep scrolling for a bunch of my favorite glyphs I've made so far. 
+
+<img src="/img/summon_2.png" width="90%">
+<img src="/img/summon_3.png" width="90%">
+<img src="/img/summon_4.png" width="90%">
+<img src="/img/summon_5.png" width="90%">
+<img src="/img/orbit_2.png" width="90%">
+<img src="/img/orbit_3.png" width="90%">
+<img src="/img/orbit_4.png" width="90%">
