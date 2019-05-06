@@ -1,0 +1,108 @@
+---
+title: Custom fonts and plot quality with ggplot on Windows
+author: Will
+date: '2019-05-06'
+slug: custom-fonts-and-plot-quality-with-ggplot-on-windows
+categories:
+  - dataviz
+  - R
+  - mini-tutorials
+tags:
+  - dataviz
+  - ggplot
+  - Tidyverse
+  - tutorials
+header:
+  caption: ''
+  image: ''
+---
+
+
+
+<p>Graphics devices are weird, and operating systems are even weirder. If you are a Mac of Linux user, lucky you, you can go on your merry way! But if you’re a Windows user and you’ve ever screamed at your computer “Why the #&amp;*$ wont my fonts work!?!?” or “Why are my plots so &amp;#**ing pixelated!?!”, then read on. <em>Note this is accurate as of May 2019. There is a lot of development happening on ggplot and graphics in R, courtesy of Thomas Lin Pederson and the rest of the ggplot team. Thomas has already written a new graphics device that should solve these issues, but I haven’t heard when it will be released, so until then…</em></p>
+<div id="problem-1-pixelated-graphics" class="section level2">
+<h2>Problem 1: Pixelated graphics</h2>
+<p>In R, the graphics device used in the plots pane of Rstudio depends on your operating system. Windows uses the eponymous <code>windows</code> graphics device… it sucks. If you’ve ever wondered why your plots look like they came out of a printer from 1995, this is the reason.
+<img src="/img/pixel_graphics.png" width="70%">
+The bad news is, I don’t have a fix for the Rstudio plots pane; the good news is I do have a fix for saving your plots without pixelation, and apparently the R/Rstudio team is <a href="https://github.com/rstudio/rstudio/issues/2142" target="_blank">considering a fix</a> for the plots pane. If you’re exporting your plots as PDFs, you won’t have any issues with pixelation, but if you want to export an image, you will. The reason is that the <code>windows</code> graphics device doesn’t implement <a href="https://en.wikipedia.org/wiki/Aliasing" target="_blank">anti-aliasing</a>. We can change this by setting the <code>type</code> argument of the png device to <code>"cairo"</code>, which does implement anti-aliasing. Note that this requires you have the <code>Cairo</code> package installed.</p>
+<pre class="r"><code>library(ggplot2)
+
+ggplot(mtcars) +
+  geom_violin(aes(x = cyl, y = mpg, group = cyl), size = 2)
+
+#the default behavior will produce a pixelated image
+ggsave(&quot;pixelated_plot.png&quot;)
+
+#this will produce a nice smoothed image
+ggsave(&quot;beautiful_plot.png&quot;, device = &quot;png&quot;, type = &quot;cairo&quot;)</code></pre>
+<p><img src="/img/pixelated_line.png" width="100%">
+<img src="/img/beautiful_line.png" width="100%"></p>
+</div>
+<div id="problem-2-custom-fonts" class="section level2">
+<h2>Problem 2: Custom fonts</h2>
+<p><code>ggplot2</code> is built on top of <code>grid</code>. <code>grid</code> does a lot of things well, but text is not one of them. Text, and fonts especially, are a tough problem in graphics libraries, especially given the quirks of how different operating systems work with them. A few packages have popped up for dealing with fonts in R, but the most popular is <code>extrafont</code>. This library works very well, but there are some tricks to getting it to work on Windows that are not easy to find, and beware a lot of the information I’ve seen on StackOverflow is just wrong. Here’s how to load and use custom fonts in ggplot on Windows:</p>
+<ul>
+<li>Install the fonts to your system, you can get them from Google fonts or anywhere else</li>
+<li>Install the <code>extrafont</code> and <code>extrafontdb</code> packages</li>
+<li>Import the fonts to R with <code>extrafont::font_import()</code>, this only needs to be done once or whenever you have installed a new font to your machine</li>
+<li>Restart your R session</li>
+<li>Load the fonts with <code>extrafont::loadfonts(device = "win")</code>, this has to be done <strong>BEFORE</strong> you load the <code>ggplot2</code> package, and it must be done every time you start your R session</li>
+</ul>
+<p>This is important, so let me say it again: you have to call <code>extrafont::loadfonts(device = "win")</code> ____ <strong>BEFORE</strong> ____ you load <code>ggplot2</code>. A good solution is to add this to your .Rprofile so that it automatically runs every time to start a new R session. Also remember that any time you install a new font, you have to import it to R with <code>extrafont::font_import()</code> before it will be useable. To see which fonts are available for use, you can use <code>extrafont::fonts()</code>.</p>
+</div>
+<div id="showing-off" class="section level2">
+<h2>Showing off</h2>
+<p>Let’s use what we’ve learned to make a quick graph using the Week 19 Tidy Tuesday dataset for 2019. This data is on student-to-teacher ratios around the world. I’ll make a beeswarm plot for each education level colored by continent. I’ll use the Comfortaa font and save the output using the png device with <code>type = "cairo"</code>.</p>
+<pre class="r"><code>#I&#39;ve downloaded and installed the &quot;Comfortaa&quot; font on my machine
+#I&#39;ve also imported the font to R with extrafont::font_import()
+
+extrafont::loadfonts(device=&quot;win&quot;)
+library(tidyverse)
+library(countrycode)
+library(ggbeeswarm)
+
+#get data
+student_ratio &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-07/student_teacher_ratio.csv&quot;)
+
+#get country codes + continents information 
+codes &lt;- 
+  codelist %&gt;%
+  select(iso3c, country.name.en, region, continent)
+
+#calculate summary statistics for each indicator and country
+data_summary &lt;- 
+  student_ratio %&gt;%
+  group_by(indicator, country_code) %&gt;%
+  summarize(mean = mean(student_ratio, na.rm = TRUE), median = median(student_ratio, na.rm = TRUE)) %&gt;%
+  left_join(., codes, by = c(&quot;country_code&quot; = &quot;iso3c&quot;)) %&gt;%
+  filter(!is.na(continent)) %&gt;%
+  filter(median &lt; 75) ##note some outliers were removed for aesthetics
+
+data_summary$indicator &lt;- fct_relevel(data_summary$indicator, &quot;Tertiary Education&quot;, &quot;Post-Secondary Non-Tertiary Education&quot;, 
+                                      &quot;Upper Secondary Education&quot;, &quot;Secondary Education&quot;, &quot;Lower Secondary Education&quot;,
+                                      &quot;Primary Education&quot;, &quot;Pre-Primary Education&quot;
+                                      )
+
+#plot, notice the base_family argument sets our custom font &quot;Comfortaa&quot;
+ggplot(data_summary) +
+  geom_quasirandom(aes(x = indicator, y = median, color = continent), size = 2.5) +
+  coord_flip() +
+  scale_color_manual(&quot;Continent&quot;, values = c(&quot;#E96149&quot;, &quot;#B6B800&quot;, &quot;#5B9F90&quot;, &quot;#DDB089&quot;, &quot;#F0C73B&quot;)) +
+  theme_minimal(base_family = &quot;Comfortaa&quot;, base_size = 14) +
+  guides(colour = guide_legend(override.aes = list(size=5))) +
+  labs(y = &quot;Student to teacher ratio\n(lower = fewer students/teacher)&quot;, x = &quot;&quot;,
+       title = &quot;Student to teacher ratios for world countries, 2012 - 2016&quot;, 
+       subtitle = &quot;Less prosperous countries have more students and fewer teachers&quot;,
+       caption = &quot;Graphic: @W_R_Chase\nData: UNESCO&quot;) +
+  theme(plot.background = element_rect(fill = &quot;#F6FCF8&quot;), 
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        plot.subtitle = element_text(face = &quot;italic&quot;, size = 14), 
+        plot.title = element_text(size = 18),
+        plot.caption = element_text(face = &quot;italic&quot;, size = 8, vjust = 0.5, hjust = 1),
+        axis.title.x = element_text(margin = margin(t = 20)))
+
+ggsave(&quot;tidytuesday_wk19_student_ratios.png&quot;, device = &quot;png&quot;, type = &quot;cairo&quot;, height = 10, width = 12)</code></pre>
+<p><img src="/img/tidytuesday_wk19_student_ratios.png" width="100%"></p>
+<p>Notice our fonts rendered with no issues, and our plot does not show any pixelation. Importantly, this script won’t work if you try to run it verbatim on a Mac or Linux machine, and this is one of the most frustrating parts of this whole mess. There are some fancy things you could try with your .Rprofile and detecting OS, but honestly I haven’t found a solution that I really love yet, so as someone that uses both Windows and Mac, I can just hope Thomas hurries it up with that new graphics device 😉</p>
+</div>
