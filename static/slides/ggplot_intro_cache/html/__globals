@@ -1,0 +1,21 @@
+xaringan-themer	
+unnamed-chunk-1	opts_chunk	set	library	ggplot2	reveal	upto	content	knit_code	get	name	gsub	T	highlight	paste	partial_knit_chunks	idx_lines	seq_along	chunk_name	partial_knit_steps	glue	glue_collapse
+complete	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
+plot1	ggplot	iris
+output1	ggplot	iris
+plot2	ggplot	iris	aes	Sepal.Length	Sepal.Width
+output2	ggplot	iris	aes	Sepal.Length	Sepal.Width
+plot3	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point
+output3	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point
+plot4	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output4	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot5	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output5	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot6	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output6	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot7	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output7	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot8	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species
+output8	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species
+plot9	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
+output9	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw

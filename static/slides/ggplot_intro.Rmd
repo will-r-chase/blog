@@ -1,0 +1,140 @@
+---
+title: "R you ready to make charts?"
+subtitle: "A gg-palooza!"
+author: "<br><br>Will Chase"
+date: "<br><br>29-5-2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["assets/beige.css", "assets/ninjutsu_wrc.css"]
+    df_print: kable
+    seal: false
+    self_contained: false
+    nature:
+      ratio: "16:9"
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: true
+      slideNumberFormat: "%current%"
+editor_options: 
+  chunk_output_type: console
+---
+exclude: true
+<style type="text/css">
+code.r{
+  font-size: 16px;
+}
+pre {
+  font-size: 16px !important;
+}
+</style>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=4.25, fig.height=3.5, fig.retina=3,
+                      out.width = "100%",
+                      message=FALSE, warning=FALSE, cache = TRUE, 
+                      autodep = TRUE, hiline=TRUE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+    options$out.height <- "99%"
+    options$fig.width <- 16
+    options$fig.height <- 8
+  }
+  options
+})
+
+options(
+  htmltools.dir.version = FALSE, 
+  width = 90,
+  max.print = 9999,
+  knitr.table.format = "html"
+)
+as_table <- function(...) knitr::kable(..., format='html', digits = 3)
+```
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_chunk$set(fig.height=6, out.width="100%")
+library(ggplot2)
+# reveal lines up to `upto` and highlight lines `highlight`
+reveal <- function(name, upto, highlight = upto) {
+  content <- knitr:::knit_code$get(name)
+  content[upto] <- gsub("+", "", content[upto], fixed=T)
+  content[highlight] <- paste(content[highlight], "#<<")
+  content[1:upto]
+}
+partial_knit_chunks <- function(chunk_name) {
+  # Create slide for lines 1:N for each line N in the given chunk
+  idx_lines <- seq_along(knitr:::knit_code$get(chunk_name))
+  partial_knit_steps <- glue::glue(
+    "class: split-40",
+    "count: false",
+    "",
+    ".column[.content[",
+    "```{r plot{{idx_lines}}, eval=FALSE, code=reveal('{{chunk_name}}', {{idx_lines}})}",
+    "```",
+    "]]",
+    ".column[.content.center[",
+    "```{r output{{idx_lines}}, echo=FALSE, code=reveal('{{chunk_name}}', {{idx_lines}})}",
+    "```",
+    "]]",
+    .open = "{{", .close = "}}", .sep = "\n"
+  )
+  glue::glue_collapse(partial_knit_steps, "\n---\n")
+}
+```
+---
+class: split-two
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+.column.bg-main1[
+.font3.comfortaa.coral[R you ready to make charts?]
+</br></br></br></br>
+.font2.comfortaa[Will Chase]
+.font_large.comfortaa[Philly dataviz meetup</br>
+Oct 29, 2018]
+</br>
+.font_large[
+<ul class="fa-ul">
+        <li><i class="fa-li fa fa-twitter" id="icon"></i><a href="https://twitter.com/W_R_Chase" target="_blank">@W_R_Chase</a></li>
+        <li><i class="fa-li fa fa-user" id="icon"></i><a href="williamrchase.com" target="_blank">williamrchase.com</a></li>
+			</ul>
+]
+]
+.column.bg-main3.center[
+<img src="slide_img/bad_bitches.gif" width=80%>
+]
+---
+class: bg-main1
+
+# A little about me
+
+
+---
+```{r complete, eval=F, echo=F}
+ggplot(iris) +
+  aes(Sepal.Length, Sepal.Width) +
+  geom_point() +
+  labs(x = "Sepal Length") +
+  labs(y = "Sepal Width") +
+  labs(title="The famous iris data") + 
+  labs(subtitle="Data collected by Anderson, Edgar (1935)") +
+  aes(color= Species) +
+  theme_bw(base_size=16)
+```
+
+`r paste(knitr::knit(text = partial_knit_chunks("complete")), collapse = "\n")`
+
+<!--
+Create slides for the "complete" chunk
+...it's just R Markdown as a vector of strings
+...and why not be super concise about it?
+-->
+
+<!-- This css chunk can't be before the first class: split-40... lines -->
+```{css, eval=TRUE}
+.remark-code{ line-height: 2; }
+```
+---
+   
+ 
