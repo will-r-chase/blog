@@ -1,2 +1,11 @@
 base
+dplyr
+DT
 ggplot2
+tidyverse
+tibble
+tidyr
+readr
+purrr
+stringr
+forcats

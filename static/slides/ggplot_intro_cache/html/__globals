@@ -1,10 +1,15 @@
-xaringan-themer	
-unnamed-chunk-1	opts_chunk	set	library	ggplot2	reveal	upto	content	knit_code	get	name	gsub	T	highlight	paste	partial_knit_chunks	idx_lines	seq_along	chunk_name	partial_knit_steps	glue	glue_collapse
-complete	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
+unnamed-chunk-1	opts_chunk	set	library	ggplot2	reveal	upto	content	knit_code	get	name	gsub	highlight	paste	partial_knit_chunks	code_split	chunk_name	idx_lines	sort	c	grep	list	i	length	partial_knit_steps	glue	glue_collapse
+unnamed-chunk-2	library	dplyr	DT	data	read_csv	hfi	%>%	select	year	countries	region_simple	ef_score	pf_score	gdp_ppp_cap	gdp_rank	population	pop_rank	mutate	round	datatable	list
+unnamed-chunk-3	library	ggplot2	ggplot	hfi_2016	geom_point	aes	population	gdp	ef_score	region_simple	scale_color_manual	c	theme_minimal
+unnamed-chunk-4	library	ggplot2	hfi_2016	hfi	%>%	filter	year	ggplot	geom_point	aes	population	gdp	ef_score	region_simple	scale_color_manual	c	theme_minimal
+aesthetic	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
 plot1	ggplot	iris
 output1	ggplot	iris
 plot2	ggplot	iris	aes	Sepal.Length	Sepal.Width
 output2	ggplot	iris	aes	Sepal.Length	Sepal.Width
+unnamed-chunk-6	ggplot	hfi_2016	aes	pop_rank	gdp_rank	ef_score	geom_point
+unnamed-chunk-7	ggplot	hfi_2016	aes	pop_rank	gdp_rank	ef_score	geom_point
+complete	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
 plot3	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point
 output3	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point
 plot4	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
@@ -19,3 +24,58 @@ plot8	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species
 output8	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species
 plot9	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
 output9	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
+plot_aesthetic_1	ggplot	hfi_2016
+output_aesthetic_1	ggplot	hfi_2016
+plot_aesthetic_2	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
+output_aesthetic_2	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
+plot_complete_1	ggplot	iris
+output_complete_1	ggplot	iris
+plot_complete_2	ggplot	iris	aes	Sepal.Length	Sepal.Width
+output_complete_2	ggplot	iris	aes	Sepal.Length	Sepal.Width
+plot_complete_3	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point
+output_complete_3	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point
+plot_complete_4	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output_complete_4	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot_complete_5	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output_complete_5	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot_complete_6	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output_complete_6	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot_complete_7	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+output_complete_7	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs
+plot_complete_8	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species
+output_complete_8	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species
+plot_complete_9	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
+output_complete_9	ggplot	iris	aes	Sepal.Length	Sepal.Width	geom_point	labs	Species	theme_bw
+plot_aesthetic_4	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
+output_aesthetic_4	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
+unnamed-chunk-8	ggplot	aes	pop_rank	gdp_rank	ef_score	geom_point	hfi_2016
+unnamed-chunk-9	ggplot	aes	pop_rank	gdp_rank	ef_score	geom_point	hfi_2016
+unnamed-chunk-10	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
+unnamed-chunk-11	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score
+unnamed-chunk-12	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-13	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-14	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-15	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-16	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-17	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-18	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-19	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple
+unnamed-chunk-20	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c
+unnamed-chunk-21	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c
+unnamed-chunk-22	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size
+unnamed-chunk-23	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size
+unnamed-chunk-24	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size
+unnamed-chunk-25	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size
+unnamed-chunk-26	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size
+unnamed-chunk-27	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size
+unnamed-chunk-28	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal
+unnamed-chunk-29	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal
+unnamed-chunk-30	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect
+unnamed-chunk-31	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect
+unnamed-chunk-32	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect
+unnamed-chunk-33	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect
+unnamed-chunk-34	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect	element_blank
+unnamed-chunk-35	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect	element_blank
+unnamed-chunk-36	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect	element_blank	labs
+unnamed-chunk-37	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect	element_blank	labs
+unnamed-chunk-38	ggplot	hfi_2016	geom_point	aes	pop_rank	gdp_rank	ef_score	region_simple	scale_color_manual	c	scale_size	theme_minimal	theme	element_rect	element_blank	labs
