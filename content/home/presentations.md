@@ -17,7 +17,7 @@ weight = 5
 
 **Here are the slides from my talks**
 
-- [Philly Dataviz Meetup (2019): Dataviz in R](/slides/intro_ggplot.html)
+- [Philly Dataviz Meetup (2019): Dataviz in R](/slides/ggplot_intro.html)
 - [PSU Anthropology Department (2018): What I Wish I Knew When I Started R](/slides/intro_R_anthropology_2018.html)
 - [We R PSU useR group (2018): Building Websites in R with the Blogdown Package](/slides/blogdown_weR_2018.html)
 - [PSU Libraries (2018): Phylogenetic trees in R with ggtree](/slides/ggtree_lightning_talk_2018.html)
