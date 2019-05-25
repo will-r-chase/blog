@@ -807,11 +807,35 @@ https://socviz.co/index.html#preface </br>
 .font_large[How to google (Programming is professional googling)</br>]
 http://datacarpentry.org/semester-biology/materials/googling-for-help/
 ---
+class: bg-main1
+## Level up your skills with .coral[#TidyTuesday]
+
+.center[<img src="slide_img/tt_logo.png" width="50%">]
+
+https://github.com/rfordatascience/tidytuesday
+
+.font_large[
+- Access to tidy datasets each week
+- Make a vis and share it on Twitter
+- Learn ggplot and tidyverse skills 
+- Network, share, and learn with the #rstats community
+]
+---
+class: bg-main1 
+<img src="slide_img/box_color.png" width="33%">
+<img src="slide_img/giraffe_constrained.png" width="32%">
+<img src="slide_img/glitch_spike5.png" width="33%">
+</br></br>
+.center.coral[
+# Thanks!
+]
+</br>
+.font_large[For more dataviz, R, and generative art, follow me on Twitter .coral[@W_R_Chase]]</br></br>
+.font_large[These slides: https://www.williamrchase.com/slides/ggplot_intro.html#1] 
 
 
 ```{css, eval=TRUE, echo=FALSE}
 .remark-code{ line-height: 2; }
 ```
----
    
  
