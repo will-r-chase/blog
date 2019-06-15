@@ -1,0 +1,638 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Darwin's voyage in the Galapagos</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.1/TweenMax.min.js"></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Alegreya&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Alegreya+SC&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<style>
+#map { position:absolute; top:0; bottom:0; width:100%; }
+
+.mapboxgl-popup-content {
+	background-color: #EFEAE4;
+	max-width: 500px;
+	max-height: 400px;
+	overflow-y: auto;
+	font-family: 'Alegreya', serif;
+	font-size: 16px;
+	color: #50270C;
+	padding: 1.4rem;
+}
+
+.mapboxgl-popup-content-wrapper {
+	padding: 1%;
+}
+h3 {
+	margin: 0px;
+	padding: 0px;
+	color: #633F27;
+	font-family: 'Alegreya SC', serif;
+}
+h4 {
+	margin: 0px;
+	padding: 0px;
+	color: #633F27;
+	font-family: 'Alegreya SC', serif;
+}
+
+.wrap-collabsible {
+  margin-bottom: 1.2rem 0;
+}
+
+input[type='checkbox'] {
+  display: none;
+}
+
+.lbl-toggle {
+  display: block;
+
+  font-family: 'Alegreya SC', serif;
+  font-size: 1.2rem;
+  text-align: center;
+
+  padding: 1rem;
+
+  color: #633F27;
+  background: #C7B9AD;
+
+  cursor: pointer !important;
+
+  border-radius: 7px;
+  transition: all 0.25s ease-out;
+}
+
+.lbl-toggle:hover {
+  color: #957C6A;
+}
+
+.lbl-toggle::before {
+  content: ' ';
+  display: inline-block;
+
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid currentColor;
+  vertical-align: middle;
+  margin-right: .7rem;
+  transform: translateY(-2px);
+
+  transition: transform .2s ease-out;
+}
+
+.toggle:checked + .lbl-toggle::before {
+  transform: rotate(90deg) translateX(-3px);
+}
+
+.collapsible-content {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height .25s ease-in-out;
+}
+
+.toggle:checked + .lbl-toggle + .collapsible-content {
+  max-height: 10000px;
+}
+
+.toggle:checked + .lbl-toggle {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.collapsible-content .content-inner {
+  background: #EFEAE4;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  padding: .5rem 1rem;
+  color: #50270C;
+}
+
+</style>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+  function Minimap ( options )
+{
+  Object.assign(this.options, options);
+
+  this._ticking = false;
+  this._lastMouseMoveEvent = null;
+  this._parentMap = null;
+  this._isDragging = false;
+  this._isCursorOverFeature = false;
+  this._previousPoint = [0, 0];
+  this._currentPoint = [0, 0];
+  this._trackingRectCoordinates = [[[], [], [], [], []]];
+}
+
+Minimap.prototype = Object.assign({}, mapboxgl.NavigationControl.prototype, {
+
+  options: {
+    id: "mapboxgl-minimap",
+    width: "320px",
+    height: "180px",
+    style: "mapbox://styles/mapbox/streets-v8",
+    center: [0, 0],
+    zoom: 6,
+
+    // should be a function; will be bound to Minimap
+    zoomAdjust: null,
+
+    // if parent map zoom >= 18 and minimap zoom >= 14, set minimap zoom to 16
+    zoomLevels: [
+      [18, 14, 16],
+      [16, 12, 14],
+      [14, 10, 12],
+      [12, 8, 10],
+      [10, 6, 8]
+    ],
+
+    lineColor: "#08F",
+    lineWidth: 1,
+    lineOpacity: 1,
+
+    fillColor: "#F80",
+    fillOpacity: 0.25,
+
+    dragPan: false,
+    scrollZoom: false,
+    boxZoom: false,
+    dragRotate: false,
+    keyboard: false,
+    doubleClickZoom: false,
+    touchZoomRotate: false
+  },
+
+  onAdd: function ( parentMap )
+  {
+    this._parentMap = parentMap;
+
+    var opts = this.options;
+    var container = this._container = this._createContainer(parentMap);
+    var miniMap = this._miniMap = new mapboxgl.Map({
+      attributionControl: false,
+      container: container,
+      style: opts.style,
+      zoom: opts.zoom,
+      center: opts.center
+    });
+
+    if (opts.maxBounds) miniMap.setMaxBounds(opts.maxBounds);
+
+    miniMap.on("load", this._load.bind(this));
+
+    return this._container;
+  },
+
+  _load: function ()
+  {
+    var opts = this.options;
+    var parentMap = this._parentMap;
+    var miniMap = this._miniMap;
+    var interactions = [
+      "dragPan", "scrollZoom", "boxZoom", "dragRotate",
+      "keyboard", "doubleClickZoom", "touchZoomRotate"
+    ];
+
+    interactions.forEach(function(i){
+      if( opts[i] !== true ) {
+        miniMap[i].disable();
+      }
+    });
+
+    if( typeof opts.zoomAdjust === "function" ) {
+      this.options.zoomAdjust = opts.zoomAdjust.bind(this);
+    } else if( opts.zoomAdjust === null ) {
+      this.options.zoomAdjust = this._zoomAdjust.bind(this);
+    }
+
+    var bounds = miniMap.getBounds();
+
+    this._convertBoundsToPoints(bounds);
+
+    miniMap.addSource("trackingRect", {
+      "type": "geojson",
+      "data": {
+        "type": "Feature",
+        "properties": {
+          "name": "trackingRect"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": this._trackingRectCoordinates
+        }
+      }
+    });
+
+    miniMap.addLayer({
+      "id": "trackingRectOutline",
+      "type": "line",
+      "source": "trackingRect",
+      "layout": {},
+      "paint": {
+        "line-color": opts.lineColor,
+        "line-width": opts.lineWidth,
+        "line-opacity": opts.lineOpacity
+      }
+    });
+
+    // needed for dragging
+    miniMap.addLayer({
+      "id": "trackingRectFill",
+      "type": "fill",
+      "source": "trackingRect",
+      "layout": {},
+      "paint": {
+        "fill-color": opts.fillColor,
+        "fill-opacity": opts.fillOpacity
+      }
+    });
+
+    this._trackingRect = this._miniMap.getSource("trackingRect");
+
+    this._update();
+
+    parentMap.on("move", this._update.bind(this));
+
+    miniMap.on("mousemove", this._mouseMove.bind(this));
+    miniMap.on("mousedown", this._mouseDown.bind(this));
+    miniMap.on("mouseup", this._mouseUp.bind(this));
+
+    miniMap.on("touchmove", this._mouseMove.bind(this));
+    miniMap.on("touchstart", this._mouseDown.bind(this));
+    miniMap.on("touchend", this._mouseUp.bind(this));
+
+    this._miniMapCanvas = miniMap.getCanvasContainer();
+    this._miniMapCanvas.addEventListener("wheel", this._preventDefault);
+    this._miniMapCanvas.addEventListener("mousewheel", this._preventDefault);
+  },
+
+  _mouseDown: function ( e )
+  {
+    if( this._isCursorOverFeature )
+    {
+      this._isDragging = true;
+      this._previousPoint = this._currentPoint;
+      this._currentPoint = [e.lngLat.lng, e.lngLat.lat];
+    }
+  },
+
+  _mouseMove: function (e)
+  {
+    this._ticking = false;
+
+    var miniMap = this._miniMap;
+    var features = miniMap.queryRenderedFeatures(e.point, {
+      layers: ["trackingRectFill"]
+    });
+
+    // don't update if we're still hovering the area
+    if( ! (this._isCursorOverFeature && features.length > 0) )
+    {
+      this._isCursorOverFeature = features.length > 0;
+      this._miniMapCanvas.style.cursor = this._isCursorOverFeature ? "move" : "";
+    }
+
+    if( this._isDragging )
+    {
+      this._previousPoint = this._currentPoint;
+      this._currentPoint = [e.lngLat.lng, e.lngLat.lat];
+
+      var offset = [
+        this._previousPoint[0] - this._currentPoint[0],
+        this._previousPoint[1] - this._currentPoint[1]
+      ];
+
+      var newBounds = this._moveTrackingRect(offset);
+
+      this._parentMap.fitBounds(newBounds, {
+        duration: 80,
+        noMoveStart: true
+      });
+    }
+  },
+
+  _mouseUp: function ()
+  {
+    this._isDragging = false;
+    this._ticking = false;
+  },
+
+  _moveTrackingRect: function ( offset )
+  {
+    var source = this._trackingRect;
+    var data = source._data;
+    var bounds = data.properties.bounds;
+
+    bounds._ne.lat -= offset[1];
+    bounds._ne.lng -= offset[0];
+    bounds._sw.lat -= offset[1];
+    bounds._sw.lng -= offset[0];
+
+    this._convertBoundsToPoints(bounds);
+    source.setData(data);
+
+    return bounds;
+  },
+
+  _setTrackingRectBounds: function ( bounds )
+  {
+    var source = this._trackingRect;
+    var data = source._data;
+
+    data.properties.bounds = bounds;
+    this._convertBoundsToPoints(bounds);
+    source.setData(data);
+  },
+
+  _convertBoundsToPoints: function ( bounds )
+  {
+    var ne = bounds._ne;
+    var sw = bounds._sw;
+    var trc = this._trackingRectCoordinates;
+
+    trc[0][0][0] = ne.lng;
+    trc[0][0][1] = ne.lat;
+    trc[0][1][0] = sw.lng;
+    trc[0][1][1] = ne.lat;
+    trc[0][2][0] = sw.lng;
+    trc[0][2][1] = sw.lat;
+    trc[0][3][0] = ne.lng;
+    trc[0][3][1] = sw.lat;
+    trc[0][4][0] = ne.lng;
+    trc[0][4][1] = ne.lat;
+  },
+
+  _update: function ( e )
+  {
+    if( this._isDragging  ) {
+      return;
+    }
+
+    var parentBounds = this._parentMap.getBounds();
+
+    this._setTrackingRectBounds(parentBounds);
+
+    if( typeof this.options.zoomAdjust === "function" ) {
+      this.options.zoomAdjust();
+    }
+  },
+
+  _zoomAdjust: function ()
+  {
+    var miniMap = this._miniMap;
+    var parentMap = this._parentMap;
+    var miniZoom = parseInt(miniMap.getZoom(), 10);
+    var parentZoom = parseInt(parentMap.getZoom(), 10);
+    var levels = this.options.zoomLevels;
+    var found = false;
+
+    levels.forEach(function(zoom)
+    {
+      if( ! found && parentZoom >= zoom[0] )
+      {
+        if( miniZoom >= zoom[1] ) {
+          miniMap.setZoom(zoom[2]);
+        }
+
+        miniMap.setCenter(parentMap.getCenter());
+        found = true;
+      }
+    });
+
+    if( ! found && miniZoom !== this.options.zoom )
+    {
+      if( typeof this.options.bounds === "object" ) {
+        miniMap.fitBounds(this.options.bounds, {duration: 50});
+      }
+
+      miniMap.setZoom(this.options.zoom)
+    }
+  },
+
+  _createContainer: function ( parentMap )
+  {
+    var opts = this.options;
+    var container = document.createElement("div");
+
+    container.className = "mapboxgl-ctrl-minimap mapboxgl-ctrl";
+    container.setAttribute('style', 'width: ' + opts.width + '; height: ' + opts.height + ';');
+    container.addEventListener("contextmenu", this._preventDefault);
+
+    parentMap.getContainer().appendChild(container);
+
+    if( opts.id !== "" ) {
+      container.id = opts.id;
+    }
+
+    return container;
+  },
+
+  _preventDefault: function ( e ) {
+    e.preventDefault();
+  }
+});
+
+mapboxgl.Minimap = Minimap;
+</script>
+
+<script>
+var popup = null
+mapboxgl.accessToken = 'pk.eyJ1Ijoid2NoYXNlMTQiLCJhIjoiY2p2dnYwOXBvMGJvNDQzcDkxcTZqNWd3dCJ9.UqxE9xtZJevAQem-lKCYnA';
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/wchase14/cjwxrlga5bwas1cny5krldfah',
+  center: [-90.258, -0.4],
+  zoom: 7.99
+});
+
+map.scrollZoom.disable();
+
+map.on('load', function () {
+
+  map.addSource("islands", {
+    type: "geojson",
+    data: "https://gist.githubusercontent.com/will-r-chase/3c828bb6dabaefd2ad9227174f26fd04/raw/51abec7820cc3f9f90c728db7fa6710b34719075/islands2.geojson"
+  });
+  map.addSource("path", {
+    type: "geojson",
+    data: "https://gist.githubusercontent.com/will-r-chase/017d9de2fb4d34823486f03fdb69fd8c/raw/c5b0a982ca6ccdbb6e7eefc8da46b2380443e4bd/lines.geojson"
+  });
+  map.addSource("labels", {
+    type: "geojson",
+    data: "https://gist.githubusercontent.com/will-r-chase/ff6593aac027ae86a38fb2c5117840f2/raw/54b5c13b84d223446c2f89699fe7a14569536861/labels.geojson"
+  });
+
+map.addControl(new mapboxgl.Minimap(
+  {
+  id: "mapboxgl-minimap",
+  width: "320px",
+  height: "180px",
+  style: "mapbox://styles/wchase14/cjwxrlga5bwas1cny5krldfah",
+  center: [-81.716, 0.074],
+  zoom: 2.8,
+
+  // should be a function; will be bound to Minimap
+  zoomAdjust: null,
+
+  // if parent map zoom >= 18 and minimap zoom >= 14, set minimap zoom to 16
+
+  lineColor: "#50270C",
+  lineWidth: 1,
+  lineOpacity: 1,
+
+  fillColor: "#F80",
+  fillOpacity: 0,
+
+  dragPan: false,
+  scrollZoom: false,
+  boxZoom: false,
+  dragRotate: false,
+  keyboard: false,
+  doubleClickZoom: false,
+  touchZoomRotate: false
+}), 'bottom-right');
+
+map.addLayer({
+    'id': 'my_lines',
+    'type': 'line',
+    'source': 'path',
+    'layout': {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
+    'paint': {
+      'line-color': '#50270C',
+      'line-width': 2,
+      'line-opacity': 1,
+      'line-dasharray': [3, 3]
+    }
+  });
+
+map.addLayer({
+    'id': 'my_points',
+    'type': 'circle',
+    'source': 'islands',
+    'interactive': true,
+    'paint': {
+      'circle-radius': {
+        'base': 1.75,
+        'stops': [[12, 7], [22, 15]]
+      },
+    'circle-color': '#593319',
+    'circle-opacity': 1
+    }
+  });
+map.addLayer({
+    'id': 'my_points_clicked',
+    'type': 'circle',
+    'source': 'islands',
+    'interactive': true,
+    'paint': {
+      'circle-radius': {
+        'base': 1.75,
+        'stops': [[12, 7], [22, 15]]
+      },
+    'circle-color': '#593319',
+    'circle-opacity': 1,
+    'circle-stroke-width': 5,
+    'circle-stroke-color': '#E9E3DD',
+    'circle-stroke-opacity:': 1
+    },
+    'filter': [ '==', 'date', '' ] 
+  });
+map.addLayer({
+    'id': 'symbols',
+    'type': 'symbol',
+    'source': 'labels',
+    'layout': {
+      'text-field': '{title}',
+      'text-font': ['Alegreya SC Regular'],
+      'text-size': 12,
+      'text-anchor': 'bottom',
+      'text-max-width': Infinity
+    },
+    'paint': {
+      'text-color': '#50270C',
+      'text-translate': [0, 20],
+      'text-halo-width': 0.5,
+      'text-halo-color': '#EEE9E3',
+      'text-halo-blur': 0.5
+    }
+  });
+});
+
+
+map.on('click', function(e) {
+ //get the spatial features where your mouse is currently located. 
+ //note we use the pixel location (e.point) and not lat/lon here.
+ //also specify the feature we want to pay attention 
+ //to - 'academic_positions'
+ var features = map.queryRenderedFeatures(e.point, {
+ layers: ['my_points']
+ });
+ if (!features.length) {
+ return;
+ }
+
+ popup = new mapboxgl.Popup({
+ closeButton: true,
+ closeOnClick: true
+ });
+
+ //set a filter on the academic_positions_clicked layer 
+ //so that the point we clicked on shows up
+ map.setFilter('my_points_clicked',['==','date',features[0].properties.date]);
+ //set the location of our popup to the 
+ //lnglat of our click (note we use e.lnglat here and NOT e.point)
+ popup.setLngLat(e.lngLat);
+ //give the popup content
+ popup.setHTML(
+ "<h3>" + features[0].properties.island + "</h3><h4>" + 
+ features[0].properties.date +
+ "</h4><br>" + features[0].properties.notes +
+ "</br></br>" +
+ "<div class='wrap-collabsible'><input id='collapsible' class='toggle' type='checkbox'><label for='collapsible' class='lbl-toggle'>Read Darwin's journal entries from this time</label><div class='collapsible-content'><div class='content-inner'><p>" +
+ features[0].properties.journals +
+ "</p></div></div></div>"
+ );
+ //finally add the popup to the map
+ popup.addTo(map);
+ //map.panTo(e.lngLat);
+ });
+
+//When the mouse moves over a spatial layer 
+//we care about (e.g. a point) let's change the mouse cursor
+map.on("mousemove", function(e) {
+ //get the province feature underneath the mouse
+ var features = map.queryRenderedFeatures(e.point, {
+ layers: ["my_points"]
+ });
+ //if there's a point under our mouse, then do the following.
+ if (features.length > 0) {
+ //use the following code to change the 
+ //cursor to a pointer ('pointer') instead of the default ('')
+ map.getCanvas().style.cursor = (features[0].properties.date !== null) ? 'pointer' : '';
+ }
+ //if there are no points under our mouse, 
+ //then change the cursor back to the default
+ else {
+ map.getCanvas().style.cursor = '';
+ }
+});
+  </script>
+</body>
+</html>
+
