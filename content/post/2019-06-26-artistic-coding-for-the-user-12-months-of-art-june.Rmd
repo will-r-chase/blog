@@ -1,0 +1,106 @@
+---
+title: Artistic coding for the useR (12 Months of aRt, June)
+author: Will
+date: '2019-06-26'
+slug: artistic-coding-for-the-user-12-months-of-art-june
+categories:
+  - Art
+  - R
+tags:
+  - aRt
+  - Generative
+  - tutorials
+authors: []
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+This month marks the halfway point of my 12 Months of aRt project, and I want to take the opportunity to reflect on the experience so far and share what I've learned with you. This past week I was preparing my lightning talk for useR2019, where I'll be talking about artistic coding in R, and it gave me a chance to realize how much I've learned from this project in such a short time. Here's a short list of things I've learned or improved upon from making aRt:
+
+- functions
+- loops
+- conditionals
+- trigonometry
+- data structures
+- working with complex lists
+- fractals
+- purrr
+- chaos theory
+- 1001 ggplot hacks
+- 1001 tidyverse data wrangling tricks
+- statistical distributions and sampling from them
+- writing packages
+- writing shiny apps
+- Rcpp (sort of)
+- writing about your work
+- sharing your work
+
+For my useR talk, I'm emphasizing how artistic coding can be a great way to learn R (just look at those skills listed above, and you can learn them while making art!). But unfortunately, R is not traditionally seen as an artistic coding environment, and so there are not the same number of tutorials and resources out there to help those who want to participate. I'm very privilaged to have the free time to devote to artistic coding, and I've spent countless hours over the past six months learning and gathering resources, so in this post I'll share my favorite packages, tutorials, and sources of inspiration to help you get started making aRt. 
+
+## Packages for making aRt
+
+- `ggplot2` Since this is all about drawing pretty visuals, `ggplot` has to be top of my list. It's certainly possible to draw with the base plotting system, but I imagine that 90% of folks using R are more familiar with `ggplot`, and `ggplot` is packed full of convenient time-savers. There are a few tips I've collected for leveraging `ggplot` to make aRt:
+    + Don't be afraid to combine many layers of data. It's not something you do every day with standard plots, but it's perfectly fine to make a `ggplot` where you stack 10 different `geom_()` calls that each use a different dataset and different aesthetics. To keep things clean and readable when you do this, make sure to specify your data and aesthetics separately in each `geom_()` call, like `geom_point(data = df, aes(x = x, y = y, color = colors))`.
+    + Familiarize yourself with the "workhorse" geoms: `geom_polygon()`, `geom_point()`, `geom_path()`, and `geom_point()` are all extremely powerful and flexible and you will benefit greatly from knowing them in and out. For example, did you know `geom_point()` can draw any unicode character by setting the `shape` argument? Maybe you want to make some unicode art a-la <a href="https://twitter.com/mattdesl/status/1049734129850478592" target="_blank">Matt DesLauriers</a>, these shapes can all be made by just using `geom_point(shape = "=")` and other variants. 
+    + It's often useful to draw a shape and then crop it, this is done by adjusting your canvas size with ie: `lims(x = c(0, 400), y = c(0, 400))`. This will set the canvas size to the min and max you provide, and clip any values outside of the limits. 
+    + Axes and grid lines can be helpful when composing or for debugging, but we usually want to get rid of them for our final artwork. `theme_void()` will remove all theme elements, leaving you with a blank canvas. However, this won't remove legends, for that you can set `guide = FALSE` when you set the scale, ie. `scale_color_manual(guide = FALSE)`. To set a background color for your canvas, add `theme(plot.background = element_rect(fill = "steelblue"))` and substitute whatever color you want as the `fill` argument. 
+- `gganimate` Drawing static graphics is great, but we all know everyone loves gifs. The redesigned `gganimate` is a total game changer for making animations in R. For making aRt, I find myself using `transition_reveal()`, `transition_states()`, and `transition_components()` most often, but of course use whatever the job calls for. It's very important to understand the `group` argument in `ggplot` when using these functions, and I guesstimate that this is where 75% of issues occur for people. The <a href="https://gganimate.com/articles/gganimate.html#your-first-animation" target="_blank">gganimate webpage</a> is a good place to start learning. From there you might want to head to the <a href="https://github.com/ropenscilabs/learngganimate" target="_blank">learngganimate repo</a>. Beware that some of the examples on that repo might be outdated, but it's got some excellent explanations of topics not covered in the main gganimate site, like `shadow_()` functions and `view_follow()`. 
+- `deldir` This is the go-to package for <a href="https://en.wikipedia.org/wiki/Voronoi_diagram" target="_blank">voronoi tessellation</a> and <a href="https://en.wikipedia.org/wiki/Delaunay_triangulation" target="_blank">Delaunay Triangulation</a>. Both of these algorithms have numerous applications in artistic coding, either for directly visualizing the resulting diagrams, or helping to space and layout other components. To calculate both the Voronoi and Delaunay tessellations, just call `deldir(pts)` where `pts` is a data frame with an `x` and `y` column. You can extract the resulting polygons as a list using `tile.list()` or `triang.list()`. From here you can squish the list into a dataframe using `dplyr::bind_rows()`, but note that you may need to remove some elements prior to binding the list, and be sure to include an `.id` artument when row binding, so that you can use it as the `group` argument in `geom_polygon()` later. 
+- `ggforce` May the force be with you... ok sorry I had to slip at least one pun in with this one. But `ggforce` is no joke, this package contains a suite of useful geoms that fills many of the gaps in `ggplot`. You need bezier curves? Lines with gradient colors? Rounded polygons? Arcs? Then `ggforce` is the place to find them. 
+- `poissoned` Poisson disc sampling is surprisingly pretty. And besides pretty dots, it can be super useful for creating seed points for Voronoi/Delaunay diagrams, adding texture to graphics, creating pseudo color gradients, and lots of other applications. I actually wrote <a href="https://github.com/will-r-chase/poissondisc" target="_blank">my own package</a> for poisson disc sampling a few months ago, but recently <a href="https://twitter.com/coolbutuseless" target="_blank">@coolbutuseless</a> made <a href="https://github.com/coolbutuseless/poissoned" target="_blank">his own implementation</a>, which is better in every possible way. 
+- `ambient` Noise algorithms generate random values according to some rules. There are many types of noise, but the most famous is Perlin Noise, which is used extensively in generative art, graphic design (for making textures), video game design, and countless other fields. The `ambient` package provides an interface for generating Perlin noise, and several other types of noise. It's also just recieved an update that allows much better data formats and several helper functions. 
+- `packcircles` This package implements the circlepacking algorithm. I've only used it once, but if you need circlepacking it is the place to go!
+- `purrr` This one, as you may know, is a Tidyverse package for working with lists. I include it here because I've found that lists are often times the best data structure in R for construcing and wrangling generative art data... they just keep coming up over and over. And as I've progressed I've needed increasingly complex list operations, which `purrr` makes quite painless. 
+- `mathart` The <a href="https://github.com/marcusvolz/mathart" target="_blank">mathart package</a> contains a collection of algorithms and functions by Marcus Volz for creating generative art in R. This package is pretty high-level, being more focused on creating a specific type of art with a function rather than functions to come up with your own designs. But certainly there is much creativity to be had here, and reading the source code is also very enlightening. 
+- `glyph` Much like `mathart`, `glyph` is a high-level package that I wrote to create generative glyphs, which are described in my <a href="https://www.williamrchase.com/post/orbital-glyphs-part-1-12-months-of-art-april/" target="_blank">last</a> <a href="https://www.williamrchase.com/post/orbital-glyphs-part-2-12-months-of-art-may/" target="_blank">two</a> blog posts. It contains algorithms for creating various types of glyphs, and an Rstudio addin shiny app to make glyphs without having to write any code! The package can be found <a href="https://github.com/will-r-chase/glyph" target="_blank">on my github</a>. 
+
+## Tutorials and blogs
+
+- <a href="https://fronkonstin.com/" target="_blank">https://fronkonstin.com/</a> Antonio Chinchón has been using R to make math art for years, and he shares his experiments on his blog, fronkonstin. Antonio's work is always fascinating and he has inspired so many people, myself included. He always gives excellent explanations of the math behind the project, and provides R code to create your own. 
+
+- <a href="https://www.data-imaginist.com/" target="_blank">https://www.data-imaginist.com/</a> This is Thomas Lin Pedersen's personal blog. You may have noticed that about half the packages listed above are written or maintained by Thomas, so naturally his blog is a good place to go to learn more about them. He often blogs about new package releases, but Thomas is also an artistic coder, and he has several blog posts where you can pick up tips for creating your own art. 
+
+- <a href="https://chichacha.netlify.com/" target="_blank">https://chichacha.netlify.com/</a> This is the blog of Chisato, where you can find several really detailed and well-written tutorials on making aRt, joyful dataviz, and tools for general graphics work in R. I've picked up lots of great tips from Chi's blog and hope to see more from her soon!
+
+- <a href="https://www.williamrchase.com/categories/art/" target="_blank">https://www.williamrchase.com/categories/art/</a> Ok, I couldn't write this list without including my own work. If you're here, you already know that I write tutorials about artistic coding in R, but here's the link to all the blog posts, and you can find the code <a href="https://github.com/will-r-chase/aRt" target="_blank">on my github</a>. 
+
+- <a href="https://tylerxhobbs.com/essays" target="_blank">https://tylerxhobbs.com/essays</a> and <a href="https://inconvergent.net/#writing" target="_blank">https://inconvergent.net/#writing</a> Tyler Hobbs and Anders Hoff are not R programmers, but they are algorithmic artists, and produce some of the most inspiring work out there today. Both write essays on their blogs which I think are very helpful to all generative artists, regardless of toolset. There are descriptions of algorithms, discussions of composition, tips and tricks for artistic coding, and reflections on their own experiences in the field. 
+
+- <a href="https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw" target="_blank">The coding train!!!</a> Daniel Shiffman runs The Coding Train, a YouTube channel where he makes amazing and informative videos of coding challenges, algorithms, tool tutorials, and so much more, all centered around artistic coding. The tools are mainly Processing and Javascript, but it's a great resource for inspiration, and if you're savvy you can take a lot of lessons from how he codes things in Processing/js and apply those lessons to R. 
+
+## Inspiration (a list of people to follow on Twitter)
+
+- <a href="https://twitter.com/tylerxhobbs" target="_blank">Tyler Hobbs</a>
+- <a href="https://twitter.com/aschinchon" target="_blank">Antonio Chinchón</a>
+- <a href="https://twitter.com/inconvergent" target="_blank">Anders Hoff (inconvergent)</a>
+- <a href="https://twitter.com/zachlieberman" target="_blank">Zach Lieberman</a>
+- <a href="https://twitter.com/nervous_jessica" target="_blank">Jessica Rosenkrantz (Nervous System)</a>
+- <a href="https://twitter.com/thomasp85" target="_blank">Thomas Lin Pedersen</a>
+- <a href="https://twitter.com/RavenKwok" target="_blank">Raven Kwok</a>
+- <a href="https://twitter.com/manoloidee" target="_blank">Manolo Gamboa Naon</a>
+- <a href="https://twitter.com/mattdesl" target="_blank">Matt DesLauriers</a>
+- <a href="https://twitter.com/yuanchuan23" target="_blank">Yuan Chuan</a>
+- <a href="https://twitter.com/etiennejcb" target="_blank">Étienne Jacob</a>
+- <a href="https://twitter.com/mxsage" target="_blank">Sage Jensen</a>
+- <a href="https://twitter.com/ozachou_g" target="_blank">Masaru Fujii</a>
+- <a href="https://twitter.com/deconbatch" target="_blank">deconbatch</a>
+- <a href="https://twitter.com/quasimondo" target="_blank">Mario Klingemann</a>
+- <a href="https://twitter.com/marpistudio" target="_blank">Marpi Studio</a>
+- <a href="https://twitter.com/beesandbombs" target="_blank">Dave Whyte</a>
+- <a href="https://twitter.com/Julien_Espagnon" target="_blank">Julien Espagnon</a>
+- <a href="https://twitter.com/ojelibalon" target="_blank">Deniz Bicer</a>
+- <a href="https://twitter.com/JoshWComeau" target="_blank">Josh Comeau</a>
+- <a href="https://twitter.com/mikebrondbjerg" target="_blank">Mike Brondbjerg</a>
+- <a href="https://twitter.com/kGolid" target="_blank">Kjetil Golid</a>
+- <a href="https://twitter.com/JoanieLemercier" target="_blank">Joanie Lemercier</a>
+
+Sorry to the many many amazing artists I missed on this list. These are just the people that came to mind right away or featured in my recent Twitter history. 
+
+Hopefully this post has given you a place to start on making aRt. The most important thing to do is let go of fear and just make something. You can make aRt with a very simple set of rules, there's no need for complex algorithms. And if you get stuck or need help, I'm always available on <a href="https://twitter.com/W_R_Chase" target="_blank">Twitter</a>, just shoot me a DM. 
+
+
+
+
+
